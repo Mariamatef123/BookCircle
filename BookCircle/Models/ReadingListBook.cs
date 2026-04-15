@@ -1,19 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BookCircle.Data.Models
+namespace BookCircle.Models
 {
     public class ReadingListBook
     {
 
+        [ForeignKey("ReadingList")]
         public int ReadingListId { get; set; }
 
-        [ForeignKey(nameof(ReadingListId))]
+
         public ReadingList ReadingList { get; set; } = null!;
 
+
+        [ForeignKey("Book")]
         public int BookId { get; set; }
 
-        [ForeignKey(nameof(BookId))]
+
         public Book Book { get; set; } = null!;
 
         public DateTime AddedAt { get; set; } = DateTime.UtcNow;

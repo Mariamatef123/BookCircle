@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BookCircle.Data.Models
+namespace BookCircle.Models
 {
     public class Comment
     {
@@ -21,12 +21,14 @@ namespace BookCircle.Data.Models
         public int UserId { get; set; }
 
         [ForeignKey(nameof(UserId))]
-        public User User { get; set; } = null!;
+        public User User { get; set; }
 
-        public int PostId { get; set; }
 
-        [ForeignKey(nameof(PostId))]
-        public Post Post { get; set; } = null!;
+        [ForeignKey("Book")]
+        public int BookId { get; set; }
+
+
+        public Book Book { get; set; }
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 }

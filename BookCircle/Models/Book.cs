@@ -1,8 +1,9 @@
-﻿using BookCircle.Enums;
+﻿using BookCircle.Enum;
+using BookCircle.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-namespace BookCircle.Data.Models
+namespace BookCircle.Models
 {
     [Index(nameof(Genre))]
     [Index(nameof(Language))]
@@ -29,24 +30,33 @@ namespace BookCircle.Data.Models
 
         [Column(TypeName = "decimal(10,2)")]
         public decimal BorrowPrice { get; set; }
-        public BookStatus Borrow_Status { get; set; } = BookStatus.AVAILABLE;
+        public BookStatus BorrowStatus { get; set; } = BookStatus.AVAILABLE;
         public DateTime PublicationDate { get; set; }
         public ICollection<AvailabilityDate> AvailabilityDates { get; set; } = new List<AvailabilityDate>();
         public byte[]? CoverImage { get; set; }
 
+        public PostStatus Status { get; set; } = PostStatus.PENDING;
 
-        public int OwnerId { get; set; }
-        [ForeignKey("OwnerId")]
-        public BookOwner Owner { get; set; }
+
+
+        public int OwnerId { get; set; }//1 owner can manage Many book posts,1 admin can accept,reject many book posts(dont put it)
+
+        [ForeignKey(nameof(OwnerId))]
+        public User Owner { get; set; } = null!;//Navigation property
 
         public ICollection<BorrowRequest> BorrowRequests { get; set; } = new List<BorrowRequest>();
         public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
 
 
+        [ForeignKey(nameof(CurrentBorrower))]
+        public int? CurrentBorrowerId { get; set; }
+        public User? CurrentBorrower { get; set; }
 
         public ICollection<ReadingListBook> ReadingListBooks { get; set; } = new List<ReadingListBook>();
 
-        public Post? Post { get; set; }
+
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

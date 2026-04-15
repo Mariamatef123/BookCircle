@@ -1,0 +1,69 @@
+﻿using BookCircle.Enum;
+using BookCircle.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+
+namespace BookCircle.Data
+{
+    public class DataContext : DbContext
+    {
+        public DataContext(DbContextOptions<DataContext> options)
+            : base(options) { }
+
+        public DbSet<User> Users { get; set; }
+        //public DbSet<Admin> Admins { get; set; }
+        //public DbSet<BookOwner> BookOwners { get; set; }
+        //public DbSet<Reader> Readers { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<AvailabilityDate> AvailabilityDates { get; set; }
+        //public DbSet<Post> Posts { get; set; }
+        public DbSet<BorrowRequest> BorrowRequests { get; set; }
+        public DbSet<Reaction> Reactions { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<ReadingList> ReadingLists { get; set; }
+        public DbSet<ReadingListBook> ReadingListBooks { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // ================= USER =================
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            // ================= READING LIST BOOK (ONLY COMPOSITE KEY) =================
+            modelBuilder.Entity<ReadingListBook>()
+                .HasKey(x => new { x.ReadingListId, x.BookId });
+
+
+            modelBuilder.Entity<Book>()
+    .HasOne(b => b.Owner)
+    .WithMany(u => u.OwnedBooks)
+    .HasForeignKey(b => b.OwnerId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Book>()
+                .HasOne(b => b.CurrentBorrower)
+                .WithMany(u => u.BorrowedBooks)
+                .HasForeignKey(b => b.CurrentBorrowerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Notification>()
+    .HasOne(n => n.Receiver)
+    .WithMany(u => u.Notifications)
+    .HasForeignKey(n => n.ReceiverId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Sender)
+                .WithMany(u => u.SentNotifications)
+                .HasForeignKey(n => n.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
+
+
+
+    }
+}

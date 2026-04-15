@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace BookCircle.Data.Models
+namespace BookCircle.Models
 {
     public class AvailabilityDate
     {

@@ -1,5 +1,4 @@
-﻿
-namespace BookCircle.Data.Models;
+﻿namespace BookCircle.Models;
 
 using BookCircle.Enums;
 using System.CodeDom.Compiler;
@@ -8,10 +7,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 
 
-    public class BorrowRequest
+public class BorrowRequest
 {
     [Key]
-    
+
     public int Id { get; set; }
 
 
@@ -20,10 +19,7 @@ using System.ComponentModel.DataAnnotations.Schema;
     [ForeignKey(nameof(BookId))]
     public Book Book { get; set; } = null!;
 
-    public int ReaderId { get; set; }
 
-    [ForeignKey(nameof(ReaderId))]
-    public Reader Reader { get; set; } = null!;
 
     public BorrowRequestStatus Status { get; set; } = BorrowRequestStatus.PENDING;
 
@@ -31,8 +27,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
     public DateTime? RespondedAt { get; set; }
 
-    public int OwnerId { get; set; }
-    [ForeignKey(nameof(OwnerId))]
-    public BookOwner Owner { get; set; }
+    //public int OwnerId { get; set; }
+    //[ForeignKey(nameof(OwnerId))]
+    //public User Owner { get; set; }
+
+    public int ReaderId { get; set; }
+
+    [ForeignKey(nameof(ReaderId))]
+    public User Reader { get; set; } = null!;
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

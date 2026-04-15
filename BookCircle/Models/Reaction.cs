@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BookCircle.Data.Models
+namespace BookCircle.Models
 {
     public class Reaction
     {
@@ -14,14 +14,14 @@ namespace BookCircle.Data.Models
 
 
 
+        [ForeignKey("Book")]
         public int BookId { get; set; }
+        public Book Book { get; set; }
 
-        [ForeignKey(nameof(BookId))]
-        public Book Book { get; set; }//post or book?
 
-        public int ReaderId { get; set; }
-        [ForeignKey(nameof(ReaderId))]
-        public Reader Reader { get; set; }
+        [ForeignKey("User")]
+        public int UserId { get; set; }
+        public User User { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

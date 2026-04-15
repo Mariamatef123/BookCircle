@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BookCircle.Data.Models
+namespace BookCircle.Models
 {
     public class ReadingList
     {
@@ -10,10 +10,11 @@ namespace BookCircle.Data.Models
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public int ReaderId { get; set; }
+        [ForeignKey("User")]
+        public int UserId { get; set; }//reaader
 
-        [ForeignKey(nameof(ReaderId))]
-        public Reader Reader { get; set; } = null!;
+
+        public User User { get; set; } = null!;
 
         public ICollection<ReadingListBook> ReadingListBooks { get; set; } = new List<ReadingListBook>();
 

@@ -1,24 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BookCircle.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BookCircle.Data.Models
+namespace BookCircle.Models
 {
     public class Notification
     {
         [Key]
         public int Id { get; set; }
 
-        // Receiver (who gets the notification)
-        public int UserId { get; set; }
 
-        [ForeignKey(nameof(UserId))]
-        public User User { get; set; } = null!;
 
-        // Sender (who triggered it)
+        public int ReceiverId { get; set; }
+
+        [ForeignKey(nameof(ReceiverId))]
+        public User Receiver { get; set; } = null!;
+
+        // 🔹 Sender (Optional)
         public int? SenderId { get; set; }
 
         [ForeignKey(nameof(SenderId))]
         public User? Sender { get; set; }
+
 
         public string Message { get; set; } = null!;
 
@@ -41,5 +44,6 @@ namespace BookCircle.Data.Models
 
         [ForeignKey(nameof(BookId))]
         public Book? Book { get; set; }
+        public NotificationType Type { get; set; }   // 🔥 IMPORTANT ADDITION
     }
 }
