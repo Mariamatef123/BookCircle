@@ -1,7 +1,6 @@
 ﻿namespace BookCircle.Enums
 {
-    public enum NotificationType
-    {
+public enum NotificationType{
         BORROW_REQUEST,
 BORROW_ACCEPTED,
         BORROW_REJECTED,

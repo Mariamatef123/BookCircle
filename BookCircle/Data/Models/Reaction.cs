@@ -7,8 +7,7 @@ namespace BookCircle.Data.Models
     public class Reaction
     {
 
-        [Key]
-        public int Id { get; set; }
+
 
         public ReactionType Type { get; set; }
 

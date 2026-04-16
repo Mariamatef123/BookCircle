@@ -71,5 +71,33 @@ namespace BookCircle.Data.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<Book?> GetBookWithCommentsAsync(int bookId)
+        {
+            return await _context.Books
+                .Include(b => b.Comments)
+                    .ThenInclude(c => c.Replies)
+                .FirstOrDefaultAsync(b => b.Id == bookId);
+        }
+
+
+        public async Task<IEnumerable<Book>> SearchBooksAsync(string? genre, string? language, decimal? borrowPrice)
+        {
+            var query = _context.Books
+     .Include(b => b.AvailabilityDates)
+     .Where(b => b.BorrowStatus == BookStatus.AVAILABLE)
+     .Where(b => b.Status == PostStatus.ACCEPTED)
+     .AsQueryable();
+
+            if (!string.IsNullOrEmpty(genre))
+                query = query.Where(b => b.Genre.ToLower() == genre.ToLower());
+
+            if (!string.IsNullOrEmpty(language))
+                query = query.Where(b => b.Language.ToLower() == language.ToLower());
+
+            if (borrowPrice.HasValue)
+                query = query.Where(b => b.BorrowPrice <= borrowPrice.Value);
+
+            return await query.ToListAsync();
+        }
     }
 }

@@ -3,6 +3,7 @@ using BookCircle.Data.Models;
 using BookCircle.Data.Repositories.Intefaces;
 using BookCircle.DTOs.Books;
 using BookCircle.Enum;
+using BookCircle.Enums;
 using BookCircle.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,14 @@ namespace BookCircle.Services.Implementations
         private readonly IRepository<User> _userRepo;
 
         private readonly IBookRepository _bookRepository;
+        private readonly INotificationService _notificationService;
 
-        public BookService(IRepository<Book> bookRepo, IRepository<User> userRepo, IBookRepository bookRepository)
+        public BookService(IRepository<Book> bookRepo, IRepository<User> userRepo, IBookRepository bookRepository, INotificationService notificationService)
         {
             _bookRepo = bookRepo;
             _userRepo = userRepo;
             _bookRepository = bookRepository;
+            _notificationService = notificationService;
         }
         public async Task<BookResponseDTO> CreateBookPostAsync(BookRequestDTO dto, int userId)
         {
@@ -117,7 +120,8 @@ namespace BookCircle.Services.Implementations
 
             if (user.Role != Role.BOOK_OWNER || user.IsApproved == false)
                 throw new Exception("Only Book Owners can delete book");
-
+            if(book.BorrowStatus==Enums.BookStatus.BORROWED)
+                throw new Exception("cant delete borrowed Books");
             await _bookRepo.DeleteByIdAsync(bookId);
             return new BookResponseDTO
             {
@@ -286,6 +290,13 @@ namespace BookCircle.Services.Implementations
                 throw new Exception("Book not found");
             book.Status = PostStatus.ACCEPTED;
             await _bookRepo.SaveAsync();
+            await _notificationService.SendNotificationAsync(
+    receiverId: book.OwnerId,
+    senderId: userId,
+    message: "Your book has been approved",
+    type: NotificationType.BOOK_APPROVED,
+    bookId: book.Id
+);
         }
         public async Task RejectPost(int bookId, int userId)
         {
@@ -302,6 +313,13 @@ namespace BookCircle.Services.Implementations
             if (book == null)
                 throw new Exception("Book not found");
             book.Status = PostStatus.REJECTED;
+            await _notificationService.SendNotificationAsync(
+    receiverId: book.OwnerId,
+    senderId: userId,
+    message: "Your book has been rejected",
+    type: NotificationType.BOOK_REJECTED,
+    bookId: book.Id
+);
             _bookRepo.Delete(book);
             await _bookRepo.SaveAsync();
         }
@@ -323,6 +341,37 @@ namespace BookCircle.Services.Implementations
             if (books == null || !books.Any())
                 return new List<BookResponseDTO>();
 
+            return books.Select(book => new BookResponseDTO
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Genre = book.Genre,
+                ISBN = book.ISBN,
+                Language = book.Language,
+
+                BorrowPrice = book.BorrowPrice,
+                BorrowStatus = book.BorrowStatus.ToString(),
+
+                PublicationDate = book.PublicationDate,
+                Status = book.Status.ToString(),
+
+                CoverImageBase64 = book.CoverImage != null
+                    ? Convert.ToBase64String(book.CoverImage)
+                    : null,
+
+                AvailabilityDates = book.AvailabilityDates
+                    .Select(a => new AvailabilityDateDTO
+                    {
+                        StartDate = a.StartDate,
+                        EndDate = a.EndDate
+                    }).ToList()
+            });
+        }
+
+
+        public async Task<IEnumerable<BookResponseDTO>> SearchBooksAsync(string? genre, string? language, decimal? maxPrice)
+        {
+            var books = await _bookRepository.SearchBooksAsync(genre, language, maxPrice);
             return books.Select(book => new BookResponseDTO
             {
                 Id = book.Id,

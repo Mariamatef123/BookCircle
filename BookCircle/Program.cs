@@ -3,6 +3,8 @@ using BookCircle.Data.Models;
 using BookCircle.Data.Repositories.Implementations;
 using BookCircle.Data.Repositories.Intefaces;
 using BookCircle.DTOs.Books;
+using BookCircle.Hubs;
+using BookCircle.Services;
 using BookCircle.Services.Implementations;
 using BookCircle.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -22,9 +24,27 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReactionRepository, ReactionRepository>();
+
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IBookRequestRepository, BorrowRequestRepository>();
+builder.Services.AddScoped<IReadingListBookRepository, ReadingListBookRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IReadingListService, ReadingListService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IReadingListRepository, ReadingListRepository>();
+// add SignalR
+builder.Services.AddSignalR();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+
+// map hub
+
 var app = builder.Build();
 
+
+app.MapHub<NotificationHub>("/hubs/notifications");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

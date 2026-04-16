@@ -38,6 +38,13 @@ namespace BookCircle.Data
                 .HasKey(x => new { x.ReadingListId, x.BookId });
 
 
+            modelBuilder.Entity<ReadingListBook>()
+                .HasOne(rlb => rlb.ReadingList)
+                .WithMany(rl => rl.ReadingListBooks)
+                .HasForeignKey(rlb => rlb.ReadingListId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
             modelBuilder.Entity<Book>()
     .HasOne(b => b.Owner)
     .WithMany(u => u.OwnedBooks)
@@ -62,7 +69,11 @@ namespace BookCircle.Data
                 .HasForeignKey(n => n.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
+            modelBuilder.Entity<Comment>()
+    .HasOne(c => c.Parent)
+    .WithMany(c => c.Replies)
+    .HasForeignKey(c => c.ParentId)
+    .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Book>()
     .HasOne(b => b.Owner)
@@ -70,6 +81,8 @@ namespace BookCircle.Data
     .HasForeignKey(b => b.OwnerId)
     .OnDelete(DeleteBehavior.Restrict); // 🔥 NOT CASCADE
 
+            modelBuilder.Entity<Reaction>()
+        .HasKey(r => new { r.BookId, r.UserId }); 
 
         }
     }

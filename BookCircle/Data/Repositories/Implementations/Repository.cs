@@ -1,6 +1,7 @@
 ﻿using BookCircle.Data.Repositories.Intefaces;
 using BookCircle.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 public class Repository<T> : IRepository<T> where T : class
 {
@@ -65,4 +66,9 @@ public class Repository<T> : IRepository<T> where T : class
     {
         await _context.SaveChangesAsync();
     }
+
+public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+{
+    return await _dbSet.Where(predicate).ToListAsync();
+}
 }

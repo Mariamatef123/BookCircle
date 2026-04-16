@@ -1,4 +1,7 @@
-﻿namespace BookCircle.Data.Repositories.Intefaces
+﻿
+using System.Linq.Expressions;
+
+namespace BookCircle.Data.Repositories.Intefaces
 {
         public interface IRepository<T> where T : class
         {
@@ -11,9 +14,9 @@
         Task<T?> UpdateAsync(int id, T newEntity);
         Task<T?> DeleteByIdAsync(int id);
 
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
 
-
-            Task SaveAsync();
+        Task SaveAsync();
         
     }
 }

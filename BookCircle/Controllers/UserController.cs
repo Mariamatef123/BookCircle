@@ -4,6 +4,7 @@ using BookCircle.Services.Implementations;
 using BookCircle.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace BookCircle.Controllers
 {
@@ -44,7 +45,7 @@ namespace BookCircle.Controllers
             return Ok(books);
         }
 
-        [HttpDelete("{userId}delete-book/{bookId}")]
+        [HttpDelete("{userId}/delete-book/{bookId}")]
         public async Task<ActionResult<BookResponseDTO>> DeleteBookById([FromRoute] int userId, [FromRoute] int bookId)
         {
             var book = await _bookService.DeleteBookById(userId, bookId);
@@ -122,6 +123,61 @@ namespace BookCircle.Controllers
         {
             var users = await _userService.GetPendingOwners(adminId);
             return Ok(users);
+        }
+
+        [HttpPost("{readerId}/send-request/{bookId}")]
+        public async Task<IActionResult> sendBorrowRequest(int readerId, int bookId)
+        {
+            await _userService.sendBorrowRequest(readerId,bookId);
+            return Ok();
+        }
+
+        [HttpPost("{ownerId}/accept-request/{borrowRequestId}")]
+        public async Task<IActionResult> acceptBorrowRequest(int ownerId, int borrowRequestId)
+        {
+            await _userService.AcceptBorrowRequest(ownerId, borrowRequestId);
+            return Ok();
+        }
+
+        [HttpPost("{ownerId}/reject-request/{borrowRequestId}")]
+        public async Task<IActionResult> rejectBorrowRequest(int ownerId, int borrowRequestId)
+        {
+            await _userService.RejectBorrowRequest(ownerId, borrowRequestId);
+            return Ok();
+        }
+
+
+        [HttpPost("{userId}/like/{bookId}")]
+        public async Task<IActionResult> like(int userId, int bookId)
+        {
+            await _userService.Like(userId, bookId);
+            return Ok();
+        }
+        [HttpPost("{userId}/dislike/{bookId}")]
+        public async Task<IActionResult> dislike(int userId, int bookId)
+        {
+            await _userService.Dislike(userId, bookId);
+            return Ok();
+        }
+
+
+
+
+        [HttpGet("browse")]
+        public async Task<IActionResult> Browse(
+        [FromQuery] string? genre,
+        [FromQuery] string? language,
+        [FromQuery] decimal? maxPrice)
+        {
+            try
+            {
+                var books = await _bookService.SearchBooksAsync(genre, language, maxPrice);
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

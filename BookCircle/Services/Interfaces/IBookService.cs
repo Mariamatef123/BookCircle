@@ -18,6 +18,9 @@ namespace BookCircle.Services.Interfaces
         Task RejectPost(int bookId, int userId);
 
         Task<IEnumerable<BookResponseDTO>> GetPendingPosts(int userId);
-   
+
+        Task<IEnumerable<BookResponseDTO>> SearchBooksAsync(string? genre, string? language, decimal? maxPrice);
+
+
     }
 }
