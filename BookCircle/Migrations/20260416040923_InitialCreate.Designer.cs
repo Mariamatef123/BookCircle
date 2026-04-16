@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookCircle.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20260415190634_InitialCreate")]
+    [Migration("20260416040923_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace BookCircle.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BookCircle.Models.AvailabilityDate", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.AvailabilityDate", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,7 +49,7 @@ namespace BookCircle.Migrations
                     b.ToTable("AvailabilityDates");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.Book", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,7 +113,7 @@ namespace BookCircle.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.BorrowRequest", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.BorrowRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -145,7 +145,7 @@ namespace BookCircle.Migrations
                     b.ToTable("BorrowRequests");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.Comment", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -180,7 +180,7 @@ namespace BookCircle.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.Notification", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.Notification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -231,7 +231,7 @@ namespace BookCircle.Migrations
                     b.ToTable("Notification");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.Reaction", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.Reaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -260,7 +260,7 @@ namespace BookCircle.Migrations
                     b.ToTable("Reactions");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.ReadingList", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.ReadingList", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -289,7 +289,7 @@ namespace BookCircle.Migrations
                     b.ToTable("ReadingLists");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.ReadingListBook", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.ReadingListBook", b =>
                 {
                     b.Property<int>("ReadingListId")
                         .HasColumnType("int");
@@ -307,7 +307,7 @@ namespace BookCircle.Migrations
                     b.ToTable("ReadingListBooks");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.User", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -344,9 +344,9 @@ namespace BookCircle.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.AvailabilityDate", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.AvailabilityDate", b =>
                 {
-                    b.HasOne("BookCircle.Models.Book", "Book")
+                    b.HasOne("BookCircle.Data.Models.Book", "Book")
                         .WithMany("AvailabilityDates")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -355,14 +355,14 @@ namespace BookCircle.Migrations
                     b.Navigation("Book");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.Book", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.Book", b =>
                 {
-                    b.HasOne("BookCircle.Models.User", "CurrentBorrower")
+                    b.HasOne("BookCircle.Data.Models.User", "CurrentBorrower")
                         .WithMany("BorrowedBooks")
                         .HasForeignKey("CurrentBorrowerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("BookCircle.Models.User", "Owner")
+                    b.HasOne("BookCircle.Data.Models.User", "Owner")
                         .WithMany("OwnedBooks")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -373,15 +373,15 @@ namespace BookCircle.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.BorrowRequest", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.BorrowRequest", b =>
                 {
-                    b.HasOne("BookCircle.Models.Book", "Book")
+                    b.HasOne("BookCircle.Data.Models.Book", "Book")
                         .WithMany("BorrowRequests")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookCircle.Models.User", "Reader")
+                    b.HasOne("BookCircle.Data.Models.User", "Reader")
                         .WithMany("BorrowRequests")
                         .HasForeignKey("ReaderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -392,19 +392,19 @@ namespace BookCircle.Migrations
                     b.Navigation("Reader");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.Comment", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.Comment", b =>
                 {
-                    b.HasOne("BookCircle.Models.Book", "Book")
+                    b.HasOne("BookCircle.Data.Models.Book", "Book")
                         .WithMany("Comments")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookCircle.Models.Comment", "Parent")
+                    b.HasOne("BookCircle.Data.Models.Comment", "Parent")
                         .WithMany("Replies")
                         .HasForeignKey("ParentId");
 
-                    b.HasOne("BookCircle.Models.User", "User")
+                    b.HasOne("BookCircle.Data.Models.User", "User")
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -417,27 +417,27 @@ namespace BookCircle.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.Notification", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.Notification", b =>
                 {
-                    b.HasOne("BookCircle.Models.Book", "Book")
+                    b.HasOne("BookCircle.Data.Models.Book", "Book")
                         .WithMany("Notifications")
                         .HasForeignKey("BookId");
 
-                    b.HasOne("BookCircle.Models.BorrowRequest", "BorrowRequest")
+                    b.HasOne("BookCircle.Data.Models.BorrowRequest", "BorrowRequest")
                         .WithMany("Notifications")
                         .HasForeignKey("BorrowRequestId");
 
-                    b.HasOne("BookCircle.Models.Comment", "Comment")
+                    b.HasOne("BookCircle.Data.Models.Comment", "Comment")
                         .WithMany("Notifications")
                         .HasForeignKey("CommentId");
 
-                    b.HasOne("BookCircle.Models.User", "Receiver")
+                    b.HasOne("BookCircle.Data.Models.User", "Receiver")
                         .WithMany("Notifications")
                         .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BookCircle.Models.User", "Sender")
+                    b.HasOne("BookCircle.Data.Models.User", "Sender")
                         .WithMany("SentNotifications")
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -453,15 +453,15 @@ namespace BookCircle.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.Reaction", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.Reaction", b =>
                 {
-                    b.HasOne("BookCircle.Models.Book", "Book")
+                    b.HasOne("BookCircle.Data.Models.Book", "Book")
                         .WithMany("Reactions")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookCircle.Models.User", "User")
+                    b.HasOne("BookCircle.Data.Models.User", "User")
                         .WithMany("Reactions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -472,9 +472,9 @@ namespace BookCircle.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.ReadingList", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.ReadingList", b =>
                 {
-                    b.HasOne("BookCircle.Models.User", "User")
+                    b.HasOne("BookCircle.Data.Models.User", "User")
                         .WithMany("ReadingLists")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -483,15 +483,15 @@ namespace BookCircle.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.ReadingListBook", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.ReadingListBook", b =>
                 {
-                    b.HasOne("BookCircle.Models.Book", "Book")
+                    b.HasOne("BookCircle.Data.Models.Book", "Book")
                         .WithMany("ReadingListBooks")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookCircle.Models.ReadingList", "ReadingList")
+                    b.HasOne("BookCircle.Data.Models.ReadingList", "ReadingList")
                         .WithMany("ReadingListBooks")
                         .HasForeignKey("ReadingListId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -502,7 +502,7 @@ namespace BookCircle.Migrations
                     b.Navigation("ReadingList");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.Book", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.Book", b =>
                 {
                     b.Navigation("AvailabilityDates");
 
@@ -517,24 +517,24 @@ namespace BookCircle.Migrations
                     b.Navigation("ReadingListBooks");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.BorrowRequest", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.BorrowRequest", b =>
                 {
                     b.Navigation("Notifications");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.Comment", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.Comment", b =>
                 {
                     b.Navigation("Notifications");
 
                     b.Navigation("Replies");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.ReadingList", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.ReadingList", b =>
                 {
                     b.Navigation("ReadingListBooks");
                 });
 
-            modelBuilder.Entity("BookCircle.Models.User", b =>
+            modelBuilder.Entity("BookCircle.Data.Models.User", b =>
                 {
                     b.Navigation("BorrowRequests");
 

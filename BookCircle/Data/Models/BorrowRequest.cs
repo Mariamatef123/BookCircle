@@ -1,4 +1,4 @@
-﻿namespace BookCircle.Models;
+﻿namespace BookCircle.Data.Models;
 
 using BookCircle.Enums;
 using System.CodeDom.Compiler;

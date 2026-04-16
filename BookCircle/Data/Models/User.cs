@@ -1,7 +1,7 @@
 ﻿using BookCircle.Enum;
 using System.ComponentModel.DataAnnotations;
 
-namespace BookCircle.Models
+namespace BookCircle.Data.Models
 {
     public class User
     {
@@ -17,7 +17,7 @@ namespace BookCircle.Models
 
         public Role Role { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }=DateTime.UtcNow;
         public bool IsApproved { get; set; }//for owner approval
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
@@ -30,6 +30,7 @@ namespace BookCircle.Models
         public ICollection<Notification> SentNotifications { get; set; } = new List<Notification>();
 
         //public ICollection<Book> Books { get; set; } = new List<Book>();// owner can manage many books/ admin can accept,reject books
+        //public ICollection<Book> OwnedBooks { get; set; } = new List<Book>();
         public ICollection<Book> OwnedBooks { get; set; } = new List<Book>();
         public ICollection<Book> BorrowedBooks { get; set; } = new List<Book>();
         public ICollection<BorrowRequest> BorrowRequests { get; set; } = new List<BorrowRequest>();

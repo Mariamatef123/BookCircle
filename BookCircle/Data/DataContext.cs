@@ -1,5 +1,5 @@
-﻿using BookCircle.Enum;
-using BookCircle.Models;
+﻿using BookCircle.Data.Models;
+using BookCircle.Enum;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -61,9 +61,16 @@ namespace BookCircle.Data
                 .WithMany(u => u.SentNotifications)
                 .HasForeignKey(n => n.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+
+            modelBuilder.Entity<Book>()
+    .HasOne(b => b.Owner)
+    .WithMany(u => u.OwnedBooks)
+    .HasForeignKey(b => b.OwnerId)
+    .OnDelete(DeleteBehavior.Restrict); // 🔥 NOT CASCADE
+
+
         }
-
-
-
     }
 }

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BookCircle.Models
+namespace BookCircle.Data.Models
 {
     public class Notification
     {
