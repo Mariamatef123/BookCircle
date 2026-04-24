@@ -15,18 +15,19 @@ namespace BookCircle.Services.Implementations
     public class BookService : IBookService
     {
 
-        private readonly IRepository<Book> _bookRepo;
-        private readonly IRepository<User> _userRepo;
-
-        private readonly IBookRepository _bookRepository;
+        private readonly IGenericRepository<Book> _bookRepo;
+        private readonly IGenericRepository<User> _userRepo;
+        private readonly IGenericRepository<BorrowRequest> _borrowRequest;
+        //private readonly IBookRepository _bookRepository;
         private readonly INotificationService _notificationService;
 
-        public BookService(IRepository<Book> bookRepo, IRepository<User> userRepo, IBookRepository bookRepository, INotificationService notificationService)
+        public BookService(IGenericRepository<Book> bookRepo, IGenericRepository<User> userRepo, INotificationService notificationService, IGenericRepository<BorrowRequest> borrowRequest)
         {
             _bookRepo = bookRepo;
             _userRepo = userRepo;
-            _bookRepository = bookRepository;
+            //_bookRepository = bookRepository;
             _notificationService = notificationService;
+            _borrowRequest = borrowRequest;
         }
         public async Task<BookResponseDTO> CreateBookPostAsync(BookRequestDTO dto, int userId)
         {
@@ -61,8 +62,7 @@ namespace BookCircle.Services.Implementations
                 AvailabilityDates = dto.AvailabilityDates
                     .Select(d => new AvailabilityDate
                     {
-                        StartDate = d.StartDate,
-                        EndDate = d.EndDate
+                       Duration=d.Duration,
                     })
                 .ToList()
             };
@@ -92,22 +92,41 @@ namespace BookCircle.Services.Implementations
                 AvailabilityDates = book.AvailabilityDates
                     .Select(a => new AvailabilityDateDTO
                     {
-                        StartDate = a.StartDate,
-                        EndDate = a.EndDate
+                      Duration=a.Duration,
                     })
                     .ToList()
             };
         }
         public async Task<IEnumerable<BookResponseDTO>> GetAllAcceptedBook()
         {
-            var books = await _bookRepository.GetAllAcceptedBooks();
+            var books = await _bookRepo.GetAllAsync(
+                criteria: b => b.Status == PostStatus.ACCEPTED,
+                includes: new[] { "AvailabilityDates" }
+            );
 
-            if (books == null)
-                return new List<BookResponseDTO>();
+            return books.Select(b => new BookResponseDTO
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Genre = b.Genre,
+                ISBN = b.ISBN,
+                Language = b.Language,
+                BorrowPrice = b.BorrowPrice,
+                BorrowStatus = b.BorrowStatus.ToString(),
+                PublicationDate = b.PublicationDate,
+                Status = b.Status.ToString(),
+                CoverImageBase64 = b.CoverImage != null
+                    ? Convert.ToBase64String(b.CoverImage)
+                    : null,
 
-            return books;
+                AvailabilityDates = b.AvailabilityDates != null
+                    ? b.AvailabilityDates.Select(a => new AvailabilityDateDTO
+                    {
+                        Duration = a.Duration
+                    }).ToList()
+                    : new List<AvailabilityDateDTO>()
+            });
         }
-
         public async Task<BookResponseDTO> DeleteBookById(int userId, int bookId)
         {
             var user = await _userRepo.GetByIdAsync(userId);
@@ -144,8 +163,7 @@ namespace BookCircle.Services.Implementations
                 AvailabilityDates = book.AvailabilityDates
                     .Select(a => new AvailabilityDateDTO
                     {
-                        StartDate = a.StartDate,
-                        EndDate = a.EndDate
+                        Duration = a.Duration,
                     })
                     .ToList()
             };
@@ -196,8 +214,7 @@ namespace BookCircle.Services.Implementations
                 {
                     book.AvailabilityDates.Add(new AvailabilityDate
                     {
-                        StartDate = d.StartDate,
-                        EndDate = d.EndDate,
+                      Duration=d.Duration,
                         BookId = book.Id
                     });
                 }
@@ -226,8 +243,7 @@ namespace BookCircle.Services.Implementations
                 AvailabilityDates = book.AvailabilityDates
                     .Select(a => new AvailabilityDateDTO
                     {
-                        StartDate = a.StartDate,
-                        EndDate = a.EndDate
+                        Duration = a.Duration,
                     }).ToList()
             };
         }
@@ -241,7 +257,10 @@ namespace BookCircle.Services.Implementations
             if (user.Role != Role.BOOK_OWNER || !user.IsApproved)
                 throw new Exception("Only Book Owners can show their books");
 
-            var books = await _bookRepository.GetBooksByOwnerIdAsync(ownerId);
+            var books = await _bookRepo.GetAllAsync(
+        criteria: b => b.OwnerId == ownerId,
+        includes: new[] { "AvailabilityDates" }
+    );
 
             if (books == null || !books.Any())
                 return new List<BookResponseDTO>();
@@ -267,8 +286,7 @@ namespace BookCircle.Services.Implementations
                 AvailabilityDates = book.AvailabilityDates
                     .Select(a => new AvailabilityDateDTO
                     {
-                        StartDate = a.StartDate,
-                        EndDate = a.EndDate
+                        Duration = a.Duration,
                     })
                     .ToList()
             });
@@ -336,7 +354,10 @@ namespace BookCircle.Services.Implementations
             if (user.Role != Role.ADMIN)
                 throw new Exception("Only Admin can view pending posts");
 
-            var books = await _bookRepository.GetPendingPostsAsync();
+            var books = await _bookRepo.GetAllAsync(
+        criteria: b => b.Status == PostStatus.PENDING,
+        includes: new[] { "AvailabilityDates" }
+    );
 
             if (books == null || !books.Any())
                 return new List<BookResponseDTO>();
@@ -362,8 +383,7 @@ namespace BookCircle.Services.Implementations
                 AvailabilityDates = book.AvailabilityDates
                     .Select(a => new AvailabilityDateDTO
                     {
-                        StartDate = a.StartDate,
-                        EndDate = a.EndDate
+                        Duration = a.Duration,
                     }).ToList()
             });
         }
@@ -371,7 +391,15 @@ namespace BookCircle.Services.Implementations
 
         public async Task<IEnumerable<BookResponseDTO>> SearchBooksAsync(string? genre, string? language, decimal? maxPrice)
         {
-            var books = await _bookRepository.SearchBooksAsync(genre, language, maxPrice);
+            var books = await _bookRepo.GetAllAsync(
+      criteria: b =>
+          b.BorrowStatus == BookStatus.AVAILABLE &&
+          b.Status == PostStatus.ACCEPTED &&
+          (string.IsNullOrEmpty(genre) || b.Genre.ToLower() == genre.ToLower()) &&
+          (string.IsNullOrEmpty(language) || b.Language.ToLower() == language.ToLower()) &&
+          (!maxPrice.HasValue || b.BorrowPrice <= maxPrice.Value),
+      includes: new[] { "AvailabilityDates" }
+  );
             return books.Select(book => new BookResponseDTO
             {
                 Id = book.Id,
@@ -393,10 +421,37 @@ namespace BookCircle.Services.Implementations
                 AvailabilityDates = book.AvailabilityDates
                     .Select(a => new AvailabilityDateDTO
                     {
-                        StartDate = a.StartDate,
-                        EndDate = a.EndDate
+                        Duration = a.Duration,
                     }).ToList()
             });
         }
+        public async Task UpdateBookStatuses()
+        {
+            var books = await _bookRepo.GetAllAsync();
+
+            foreach (var book in books)
+            {
+                var activeBorrow = await _borrowRequest.GetFirstOrDefaultAsync(
+                    br => br.BookId == book.Id &&
+                          br.Status == BorrowRequestStatus.ACCEPTED &&
+                          br.EndedAt > DateTime.UtcNow
+                );
+
+                if (activeBorrow == null)
+                {
+                    book.BorrowStatus = BookStatus.AVAILABLE;
+                    book.CurrentBorrowerId = null;
+                }
+                else
+                {
+                    book.BorrowStatus = BookStatus.BORROWED;
+                }
+
+                await _bookRepo.UpdateAsync(book);
+            }
+
+            await _bookRepo.SaveAsync();
+        }
+
     }
 }

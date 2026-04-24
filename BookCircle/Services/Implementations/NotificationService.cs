@@ -8,11 +8,11 @@ namespace BookCircle.Services
 {
     public class NotificationService : INotificationService
     {
-        private readonly INotificationRepository _notificationRepo;
+        private readonly IGenericRepository<Notification> _notificationRepo;
         private readonly IHubContext<NotificationHub> _hubContext;
 
         public NotificationService(
-            INotificationRepository notificationRepo,
+           IGenericRepository<Notification> notificationRepo,
             IHubContext<NotificationHub> hubContext)
         {
             _notificationRepo = notificationRepo;
@@ -45,27 +45,38 @@ namespace BookCircle.Services
             await _notificationRepo.AddAsync(notification);
             await _notificationRepo.SaveAsync();
 
-            // 2. Send via SignalR (GROUP based)
-            await _hubContext.Clients
-                .Group($"user_{receiverId}")
-                .SendAsync("ReceiveNotification", new
-                {
-                    notification.Id,
-                    notification.Message,
-                    notification.Type,
-                    notification.CreatedAt,
-                    notification.IsRead,
-                    notification.SenderId,
-                    notification.BorrowRequestId,
-                    notification.CommentId,
-                    notification.BookId
-                });
+            // 2. Send via SignalR — won't crash if hub is not connected
+            try
+            {
+                await _hubContext.Clients
+                    .Group($"user_{receiverId}")
+                    .SendAsync("ReceiveNotification", new
+                    {
+                        notification.Id,
+                        notification.Message,
+                        notification.Type,
+                        notification.CreatedAt,
+                        notification.IsRead,
+                        notification.SenderId,
+                        notification.BorrowRequestId,
+                        notification.CommentId,
+                        notification.BookId
+                    });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SignalR failed: {ex.Message}");
+                // notification is already saved to DB, so no data loss
+            }
         }
-
         // GET USER NOTIFICATIONS
         public async Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId)
         {
-            return await _notificationRepo.GetByReceiverIdAsync(userId);
+            return await _notificationRepo.GetAllAsync(
+         criteria: n => n.ReceiverId == userId,
+         orderBy: n => n.CreatedAt,
+         orderByDirection: "DESC"
+     );
         }
 
         // MARK AS READ

@@ -8,20 +8,20 @@ namespace BookCircle.Services.Implementations
 {
     public class CommentService : ICommentService
     {
-        private readonly IRepository<Comment> _commentRepo;
-        private readonly ICommentRepository _comment;
-        private readonly IRepository<User> _userRepo;
-        private readonly IRepository<Book> _bookRepo;
-        private readonly IBookRepository _book;
+        private readonly IGenericRepository<Comment> _commentRepo;
+        //private readonly ICommentRepository _comment;
+        private readonly IGenericRepository<User> _userRepo;
+        private readonly IGenericRepository<Book> _bookRepo;
+        //private readonly IBookRepository _book;
         private readonly INotificationService _notificationService;
 
-        public CommentService(IRepository<Comment> commentRepo, IRepository<User> userRepo, IRepository<Book> bookRepo, ICommentRepository comment, IBookRepository book, INotificationService notificationService)
+        public CommentService(IGenericRepository<Comment> commentRepo, IGenericRepository<User> userRepo, IGenericRepository<Book> bookRepo, INotificationService notificationService)
         {
             _commentRepo = commentRepo;
             _userRepo = userRepo;
             _bookRepo = bookRepo;
-            _comment = comment;
-            _book = book;
+            //_comment = comment;
+            //_book = book;
             _notificationService = notificationService;
         }
 
@@ -89,7 +89,10 @@ namespace BookCircle.Services.Implementations
         // In Service
         public async Task DeleteComment(int userId, int commentId)
         {
-            var comment = await _comment.GetByIdWithRepliesAsync(commentId);
+            var comment = await _commentRepo.GetFirstOrDefaultAsync(
+        criteria: c => c.Id == commentId,
+        includes: new[] { "Replies" }
+    );
 
             if (comment == null)
                 throw new Exception("Comment not found");
@@ -108,7 +111,10 @@ namespace BookCircle.Services.Implementations
         }
         public async Task<List<CommentDTO>> GetBookCommentsAsync(int bookId)
         {
-            var comments = await _comment.GetCommentsByBookAsync(bookId);
+            var comments = await _commentRepo.GetAllAsync(
+        criteria: c => c.BookId == bookId && c.ParentId == null,
+        includes: new[] { "Replies" }
+    );
 
             return comments.Select(c => new CommentDTO
             {

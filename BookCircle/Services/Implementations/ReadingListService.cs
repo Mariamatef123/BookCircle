@@ -8,19 +8,20 @@ namespace BookCircle.Services.Implementations
 {
     public class ReadingListService : IReadingListService
     {
-        private readonly IRepository<User> _userRepo;
-        private readonly IRepository<Book> _bookRepo;
-        private readonly IRepository<ReadingList> _readingListRepo;
-        private readonly IRepository<ReadingListBook> _readingListBookRepo;
-        private readonly IReadingListBookRepository _readingListBook;
-        private readonly IReadingListRepository _readingList;
+        private readonly IGenericRepository<User> _userRepo;
+        private readonly IGenericRepository<Book> _bookRepo;
+        private readonly IGenericRepository<ReadingList> _readingListRepo;
+        private readonly IGenericRepository<ReadingListBook> _readingListBookRepo;
+        //private readonly IReadingListBookRepository _readingListBook;
+        //private readonly IReadingListRepository _readingList;
 
         public ReadingListService(
-            IRepository<User> userRepo,
-            IRepository<ReadingList> readingListRepo,
-            IRepository<ReadingListBook> readingListBookRepo,
-            IRepository<Book> bookRepo, IReadingListBookRepository  readingListBook,
-            IReadingListRepository readingList
+            IGenericRepository<User> userRepo,
+            IGenericRepository<ReadingList> readingListRepo,
+            IGenericRepository<ReadingListBook> readingListBookRepo,
+            IGenericRepository<Book> bookRepo
+            //IReadingListBookRepository  readingListBook
+            //IReadingListRepository readingList
 
             )
 
@@ -29,8 +30,8 @@ namespace BookCircle.Services.Implementations
             _readingListRepo = readingListRepo;
             _readingListBookRepo = readingListBookRepo;
             _bookRepo = bookRepo;
-            _readingListBook = readingListBook;
-            _readingList = readingList;
+            //_readingListBook = readingListBook;
+            //_readingList = readingList;
         }
 
         public async Task<ReadingListDTO> CreateReadingListAsync(ReadingListDTO dto, int userId)
@@ -73,8 +74,10 @@ namespace BookCircle.Services.Implementations
             if (book == null)
                 throw new Exception("Book not found");
 
-            var exists = await _readingListBook
-                .ExistsAsync(readingListId, bookId);
+            var exists = await _readingListBookRepo
+              .AnyAsync(
+            criteria: x => x.ReadingListId == readingListId && x.BookId == bookId
+        );
 
             if (exists)
                 throw new Exception("Book already exists in reading list");
@@ -92,8 +95,9 @@ namespace BookCircle.Services.Implementations
 
         public async Task RemoveBookFromReadingList(int readingListId, int bookId)
         {
-            var readingListBook = await _readingListBook
-                .GetAsync(readingListId, bookId);
+            var readingListBook = await _readingListBookRepo.GetFirstOrDefaultAsync(
+            criteria: x => x.ReadingListId == readingListId && x.BookId == bookId
+        );
 
             if (readingListBook == null)
                 throw new Exception("Book not found in reading list");
@@ -111,8 +115,10 @@ namespace BookCircle.Services.Implementations
                 throw new Exception("Reading list not found");
 
             // delete related books first
-            var items = await _readingListBook
-                .GetByReadingListIdAsync(readingListId);
+            var items = await _readingListBookRepo.
+                GetAllAsync(
+            criteria: x => x.ReadingListId == readingListId
+        );
 
             foreach (var item in items)
             {
@@ -150,10 +156,17 @@ namespace BookCircle.Services.Implementations
 
         public async Task<IEnumerable<BookResponseDTO>> GetBooksInReadingList(int readingListId)
         {
-            var list = await _readingList.GetReadingListWithBooks(readingListId);
+            var list = await _readingListRepo.GetFirstOrDefaultAsync(
+                criteria: r => r.Id == readingListId,
+                includes: new[] { "ReadingListBooks.Book" }
+            );
+            Console.WriteLine($"ReadingListBooks count: {list?.ReadingListBooks?.Count}");
 
             if (list == null)
                 throw new Exception("Reading list not found");
+
+            if (list.ReadingListBooks == null || !list.ReadingListBooks.Any())
+                return Enumerable.Empty<BookResponseDTO>();
 
             return list.ReadingListBooks.Select(rb => new BookResponseDTO
             {
@@ -165,11 +178,13 @@ namespace BookCircle.Services.Implementations
                 BorrowPrice = rb.Book.BorrowPrice,
                 BorrowStatus = rb.Book.BorrowStatus.ToString(),
                 PublicationDate = rb.Book.PublicationDate,
-
                 CoverImageBase64 = rb.Book.CoverImage != null
                     ? Convert.ToBase64String(rb.Book.CoverImage)
                     : null
             }).ToList();
         }
+   
+    
+    
     }
 }

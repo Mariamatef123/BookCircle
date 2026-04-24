@@ -32,7 +32,7 @@ namespace BookCircle.Data.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal BorrowPrice { get; set; }
         public BookStatus BorrowStatus { get; set; } = BookStatus.AVAILABLE;
-        public DateTime PublicationDate { get; set; }
+        public DateTime PublicationDate { get; set; } 
         public ICollection<AvailabilityDate> AvailabilityDates { get; set; }
      = new List<AvailabilityDate>();
         public byte[]? CoverImage { get; set; }
@@ -63,5 +63,8 @@ namespace BookCircle.Data.Models
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        //public ICollection<WaitingList> WaitingLists { get; set; } = new List<WaitingList>();
+     
+        public Book() { }   
     }
 }

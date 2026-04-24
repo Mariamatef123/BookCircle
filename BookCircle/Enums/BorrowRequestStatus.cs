@@ -2,8 +2,11 @@
 {
     public enum BorrowRequestStatus
     {
-        ACCEPTED,
-        REJECTED,
-        PENDING
+          PENDING=0,
+        ACCEPTED=1,
+        REJECTED=2,
+    
+        EXPIRED=3,
+        RETURNED=4
     }
 }

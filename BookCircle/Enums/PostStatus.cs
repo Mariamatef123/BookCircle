@@ -3,9 +3,9 @@
 namespace BookCircle.Enum
 {
     public enum PostStatus
-    {
-        ACCEPTED,
-        REJECTED,
-        PENDING
+    {   PENDING=0,
+        ACCEPTED=1,
+        REJECTED=2
+     
     }
 }

@@ -2,8 +2,8 @@
 {
     public enum Role
     {
-        ADMIN,
-        BOOK_OWNER,
-        READER
+        ADMIN=0,
+        BOOK_OWNER=1,
+        READER=2
     }
 }

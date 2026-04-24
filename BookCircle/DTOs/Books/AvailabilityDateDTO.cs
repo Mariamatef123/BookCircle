@@ -3,8 +3,7 @@
 
     public class AvailabilityDateDTO
     {
-        public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
+        public int Duration { get; set; }
     }
 
 }

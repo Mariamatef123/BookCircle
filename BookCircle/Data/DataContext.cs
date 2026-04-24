@@ -28,12 +28,10 @@ namespace BookCircle.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // ================= USER =================
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            // ================= READING LIST BOOK (ONLY COMPOSITE KEY) =================
             modelBuilder.Entity<ReadingListBook>()
                 .HasKey(x => new { x.ReadingListId, x.BookId });
 
@@ -79,10 +77,40 @@ namespace BookCircle.Data
     .HasOne(b => b.Owner)
     .WithMany(u => u.OwnedBooks)
     .HasForeignKey(b => b.OwnerId)
-    .OnDelete(DeleteBehavior.Restrict); // 🔥 NOT CASCADE
+    .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Reaction>()
-        .HasKey(r => new { r.BookId, r.UserId }); 
+        .HasKey(r => new { r.BookId, r.UserId });
+
+
+
+
+
+            modelBuilder.Entity<BorrowRequest>()
+    .HasOne(br => br.Book)
+    .WithMany(b => b.BorrowRequests)
+    .HasForeignKey(br => br.BookId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BorrowRequest>()
+    .HasOne(br => br.AvailabilityDate)
+    .WithMany()
+    .HasForeignKey(br => br.AvailabilityDateId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+            //        modelBuilder.Entity<WaitingList>()
+            //.HasIndex(w => new { w.BookId, w.UserId })
+            //.IsUnique();
+
+            //        modelBuilder.Entity<WaitingList>()
+            //            .HasOne(w => w.Book)
+            //            .WithMany(b => b.WaitingLists)
+            //            .HasForeignKey(w => w.BookId);
+
+            //        modelBuilder.Entity<WaitingList>()
+            //            .HasOne(w => w.User)
+            //            .WithMany(u => u.WaitingLists)
+            //            .HasForeignKey(w => w.UserId);
 
         }
     }

@@ -33,11 +33,8 @@ namespace BookCircle.Migrations
                     b.Property<int>("BookId")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -118,8 +115,14 @@ namespace BookCircle.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AvailabilityDateId")
+                        .HasColumnType("int");
+
                     b.Property<int>("BookId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("ReaderId")
                         .HasColumnType("int");
@@ -134,6 +137,8 @@ namespace BookCircle.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AvailabilityDateId");
 
                     b.HasIndex("BookId");
 
@@ -367,10 +372,16 @@ namespace BookCircle.Migrations
 
             modelBuilder.Entity("BookCircle.Data.Models.BorrowRequest", b =>
                 {
+                    b.HasOne("BookCircle.Data.Models.AvailabilityDate", "AvailabilityDate")
+                        .WithMany()
+                        .HasForeignKey("AvailabilityDateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("BookCircle.Data.Models.Book", "Book")
                         .WithMany("BorrowRequests")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("BookCircle.Data.Models.User", "Reader")
@@ -378,6 +389,8 @@ namespace BookCircle.Migrations
                         .HasForeignKey("ReaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AvailabilityDate");
 
                     b.Navigation("Book");
 

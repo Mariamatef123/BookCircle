@@ -37,6 +37,8 @@ namespace BookCircle.Data.Models
 
         public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();//any user can  react on a book
         public ICollection<ReadingList> ReadingLists { get; set; } = new List<ReadingList>();//reader can create many readinglists
+
+        //public ICollection<WaitingList> WaitingLists { get; set; } = new List<WaitingList>();
         public User() { }
 
     }

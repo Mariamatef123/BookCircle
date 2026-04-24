@@ -2,8 +2,9 @@
 {
     public enum BookOwnerStatus
     {
-        ACCEPTED,
-        REJECTED,
-        PENDING
+       PENDING=0,
+        ACCEPTED=1,
+        REJECTED=2,
+       
     }
 }

@@ -55,7 +55,6 @@ namespace BookCircle.Controllers
         }
 
 
-        // ✅ Get all reading lists for a user (NO books)
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<IEnumerable<ReadingListDTO>>> GetAllByUser(int userId)
         {

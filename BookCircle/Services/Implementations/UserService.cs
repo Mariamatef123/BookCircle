@@ -18,33 +18,34 @@ namespace BookCircle.Services.Implementations
     {
         private readonly DataContext _context;
 
-        private readonly IRepository<User> _userRepo;
+        private readonly IGenericRepository<User> _userRepo;
 
-        private readonly IUserRepository _userRepository;
-        private readonly IRepository<Book> _bookRepo;
+        //private readonly IUserRepository _userRepository;
+        private readonly IGenericRepository<Book> _bookRepo;
 
-        private readonly IRepository<BorrowRequest> _borrowRequest;
-        private readonly IRepository<Reaction> _reaction;
-        private readonly IReactionRepository _reactionRepo;
-        private readonly IRepository<Comment> _commentRepo;
+        private readonly IGenericRepository<BorrowRequest> _borrowRequest;
+        private readonly IGenericRepository<Reaction> _reaction;
+        //private readonly IReactionRepository _reactionRepo;
+        private readonly IGenericRepository<Comment> _commentRepo;
 
 
-        private readonly IBookRequestRepository _borrowRequestRepo;
+        //private readonly IBookRequestRepository _borrowRequestRepo;
         private readonly INotificationService _notificationService;
 
-        public UserService( IRepository<User> userRepo, IUserRepository userRepository, IRepository<Book> bookRepo, IRepository<BorrowRequest>borrowRequest, IBookRequestRepository borrowRequestRepo, IRepository<Reaction> reaction, IReactionRepository reactionRepo, IRepository<Comment> commentRepo, INotificationService notificationService)
+        public UserService( IGenericRepository<User> userRepo, IGenericRepository<Book> bookRepo, IGenericRepository<BorrowRequest>borrowRequest, IGenericRepository<Reaction> reaction ,IGenericRepository<Comment> commentRepo, INotificationService _NotificationService)
         {
            
             _userRepo = userRepo;
-            _userRepository = userRepository;
+      
             _bookRepo = bookRepo;
             _borrowRequest = borrowRequest;
-            _borrowRequestRepo = borrowRequestRepo;
+            //_borrowRequestRepo = borrowRequestRepo;
             _reaction = reaction;
-            _reactionRepo = reactionRepo;
+            //_reactionRepo = reactionRepo;
             _commentRepo = commentRepo;
-            _notificationService = notificationService;
+            _notificationService = _NotificationService;
         }
+    
         public async Task AcceptOwner(int ownerId, int userId)
         {
             var user = await _userRepo.GetByIdAsync(userId);
@@ -81,230 +82,47 @@ namespace BookCircle.Services.Implementations
             if (admin.Role != Role.ADMIN)
                 throw new Exception("Only Admin can view pending users");
 
-            return await _userRepository.GetPendingOwnersAsync();
+            return await _userRepo.GetAllAsync(
+    criteria: u => u.IsApproved == false && u.Role == Role.BOOK_OWNER
+);
+
 
         }
 
         public async Task RejectOwner(int ownerId, int userId)
         {
             var user = await _userRepo.GetByIdAsync(userId);
-
             if (user == null)
                 throw new Exception("User not found");
 
             if (user.Role != Role.ADMIN)
-                throw new Exception("Only  admins can reject owners ");
+                throw new Exception("Only admins can reject owners");
 
             var owner = await _userRepo.GetByIdAsync(ownerId);
-
-
             if (owner == null)
-                throw new Exception("owner not found");
+                throw new Exception("Owner not found");
+
             if (owner.Role != Role.BOOK_OWNER)
-                throw new Exception("must be owner ");
+                throw new Exception("Must be an owner");
+
+            // ── Option A: Just reject (keep account, mark as not approved) ──
             owner.IsApproved = false;
-            await _notificationService.SendNotificationAsync(
-    receiverId: ownerId,
-    senderId: userId,
-    message: "Your account has been rejected",
-    type: NotificationType.OWNER_REJECTED
-);
-            _userRepo.Delete(owner);
-          
+            await _userRepo.UpdateAsync(owner);
             await _userRepo.SaveAsync();
 
-        }
-       public async Task sendBorrowRequest(int readerId,int bookId)
-        {
-            var reader = await _userRepo.GetByIdAsync(readerId);
-            var book =await _bookRepo.GetByIdAsync(bookId);
+            // ── Option B: Delete the owner account ──
+            // _userRepo.Delete(owner);
+            // await _userRepo.SaveAsync();
 
-
-            if (reader == null)
-                throw new Exception("User not found");
-
-            if (reader.Role != Role.READER)
-                throw new Exception("Only  reader can send borrow request");
-
-            if (book == null)
-                throw new Exception("book not found");
-            BorrowRequest bookRequest =new BorrowRequest();
-            bookRequest.ReaderId = readerId;
-            bookRequest.BookId = bookId;
-          await  _borrowRequest.AddAsync(bookRequest);
-          await  _borrowRequest.SaveAsync();
+            // Notify AFTER save succeeds ✅
             await _notificationService.SendNotificationAsync(
-    receiverId: book.OwnerId,
-    senderId: readerId,
-    message: "You have a new borrow request",
-    type: NotificationType.BORROW_REQUEST,
-    borrowRequestId: bookRequest.Id,
-    bookId: book.Id
-);
+                receiverId: ownerId,
+                senderId: userId,
+                message: "Your account has been rejected",
+                type: NotificationType.OWNER_REJECTED
+            );
         }
 
-        public async Task AcceptBorrowRequest(int ownerId, int borrowRequestId)
-        {
-            var owner = await _userRepo.GetByIdAsync(ownerId);
-            if (owner == null)
-                throw new Exception("User not found");
-            if (owner.Role != Role.BOOK_OWNER)
-                throw new Exception("Only owners can accept borrow requests");
-
-            var borrowRequest = await _borrowRequestRepo.GetByIdWithBookAsync(borrowRequestId);
-            if (borrowRequest == null)
-                throw new Exception("Borrow request not found");
-
-            var book = borrowRequest.Book;
-            if (book == null)
-                throw new Exception("Book not found");
-            if (book.BorrowStatus == BookStatus.BORROWED)
-                throw new Exception("Book already borrowed");
-
-           
-            borrowRequest.Status = BorrowRequestStatus.ACCEPTED;
-            borrowRequest.RespondedAt = DateTime.UtcNow;
-
-            book.CurrentBorrowerId = borrowRequest.ReaderId;
-            book.BorrowStatus = BookStatus.BORROWED;
-
-            await _borrowRequest.UpdateAsync(borrowRequest);
-            await _bookRepo.UpdateAsync(book);
-
-            var otherRequests = await _borrowRequestRepo
-                .GetOtherRequestsForBook(book.Id, borrowRequestId);
-
-            foreach (var r in otherRequests)
-            {
-                r.Status = BorrowRequestStatus.REJECTED;
-                r.RespondedAt = DateTime.UtcNow;
-                await _borrowRequest.UpdateAsync(r);
-            }
-
-            await _borrowRequestRepo.SaveAsync();
-            await _notificationService.SendNotificationAsync(
-    receiverId: borrowRequest.ReaderId,
-    senderId: ownerId,
-    message: "Your borrow request has been accepted",
-    type: NotificationType.BORROW_ACCEPTED,
-    borrowRequestId: borrowRequest.Id,
-    bookId: book.Id
-);
-        }
-
-
-        public async Task RejectBorrowRequest(int ownerId, int borrowRequestId)
-        {
-            var owner = await _userRepo.GetByIdAsync(ownerId);
-            if (owner == null)
-                throw new Exception("User not found");
-            if (owner.Role != Role.BOOK_OWNER)
-                throw new Exception("Only owners can reject borrow requests");
-
-            var borrowRequest = await _borrowRequestRepo.GetByIdWithBookAsync(borrowRequestId);
-            if (borrowRequest == null)
-                throw new Exception("Borrow request not found");
-            borrowRequest.Status = BorrowRequestStatus.REJECTED;
-            borrowRequest.RespondedAt = DateTime.UtcNow;
-            await _borrowRequest.UpdateAsync(borrowRequest);
-            await _borrowRequestRepo.SaveAsync();
-            await _notificationService.SendNotificationAsync(
-    receiverId: borrowRequest.ReaderId,
-    senderId: ownerId,
-    message: "Your borrow request has been rejected",
-    type: NotificationType.BORROW_REJECTED,
-    borrowRequestId: borrowRequest.Id,
-    bookId: borrowRequest.BookId
-);
-        }
-        public async Task Like(int userId, int bookId)
-        {
-            var user = await _userRepo.GetByIdAsync(userId);
-            if (user == null)
-                throw new Exception("User not found");
-
-            var book = await _bookRepo.GetByIdAsync(bookId);
-            if (book == null)
-                throw new Exception("Book not found");
-
-            var existing = await _reactionRepo.GetByIdAsync(bookId, userId);
-
-            if (existing == null)
-            {
-                // No reaction yet → add LIKE
-                await _reaction.AddAsync(new Reaction
-                {
-                    UserId = userId,
-                    BookId = bookId,
-                    Type = ReactionType.LIKE,
-                    CreatedAt = DateTime.UtcNow
-                });
-            }
-            else if (existing.Type == ReactionType.LIKE)
-            {
-                // Already liked → toggle off
-               _reaction.Delete(existing);
-            }
-            else
-            {
-                // Had a different reaction → switch to LIKE
-                existing.Type = ReactionType.LIKE;
-                await _reaction.UpdateAsync(existing);
-            }
-
-            await _reactionRepo.SaveAsync();
-            await _notificationService.SendNotificationAsync(
-    receiverId: book.OwnerId,
-    senderId: userId,
-    message: "Someone liked your book",
-    type: NotificationType.BOOK_LIKED,
-    bookId: book.Id
-);
-        }
-        public async Task Dislike(int userId, int bookId)
-        {
-            var user = await _userRepo.GetByIdAsync(userId);
-            if (user == null)
-                throw new Exception("User not found");
-
-            var book = await _bookRepo.GetByIdAsync(bookId);
-            if (book == null)
-                throw new Exception("Book not found");
-
-            var existing = await _reactionRepo.GetByIdAsync(bookId, userId);
-
-            if (existing == null)
-            {
-            
-                await _reaction.AddAsync(new Reaction
-                {
-                    UserId = userId,
-                    BookId = bookId,
-                    Type = ReactionType.DISLIKE,
-                    CreatedAt = DateTime.UtcNow
-                });
-            }
-            else if (existing.Type == ReactionType.DISLIKE)
-            {
-
-                 _reaction.Delete(existing);
-            }
-            else
-            {
-       
-                existing.Type = ReactionType.DISLIKE;
-                await _reaction.UpdateAsync(existing);
-            }
-
-            await _reactionRepo.SaveAsync();
-            await _notificationService.SendNotificationAsync(
-    receiverId: book.OwnerId,
-    senderId: userId,
-    message: "Someone disliked your book",
-    type: NotificationType.BOOK_DISLIKED,
-    bookId: book.Id
-);
-        }
 
         public async Task RegisterAsync(RegisterDTO dto)
         {

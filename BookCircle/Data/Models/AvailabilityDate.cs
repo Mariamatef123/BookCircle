@@ -8,11 +8,15 @@ namespace BookCircle.Data.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        public DateOnly StartDate { get; set; }
+        //[Required]
+        //public DateOnly StartDate { get; set; }
 
+        //[Required]
+        //public DateOnly EndDate { get; set; }
         [Required]
-        public DateOnly EndDate { get; set; }
+        public int Duration { get; set; }
+
+
 
         public int BookId { get; set; }
 

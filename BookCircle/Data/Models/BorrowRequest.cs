@@ -27,6 +27,15 @@ public class BorrowRequest
 
     public DateTime? RespondedAt { get; set; }
 
+    public DateTime? EndedAt { get; set; }
+
+
+
+    public int AvailabilityDateId { get; set; }
+
+    [ForeignKey(nameof(AvailabilityDateId))]
+    public AvailabilityDate AvailabilityDate { get; set; } = null!;
+
     //public int OwnerId { get; set; }
     //[ForeignKey(nameof(OwnerId))]
     //public User Owner { get; set; }
