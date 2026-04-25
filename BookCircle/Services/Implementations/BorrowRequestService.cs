@@ -16,50 +16,57 @@ namespace BookCircle.Services.Implementations
         private readonly IGenericRepository<User> _userRepo;
         private readonly IGenericRepository<Book> _bookRepo;
         private readonly IGenericRepository<BorrowRequest> _borrowRequest;
+        private readonly IGenericRepository<AvailabilityDate> _availabilityRepo;
         private readonly INotificationService _notificationService;
 
-        public BorrowRequestService(IGenericRepository<User> userRepo, IGenericRepository<Book> bookRepo, IGenericRepository<BorrowRequest> borrowRequest,INotificationService _NotificationService)
+        public BorrowRequestService(IGenericRepository<User> userRepo, IGenericRepository<Book> bookRepo, IGenericRepository<BorrowRequest> borrowRequest,INotificationService NotificationService, IGenericRepository<AvailabilityDate> availabilityRepo)
         {
 
             _userRepo = userRepo;
             _bookRepo = bookRepo;
             _borrowRequest = borrowRequest;
-            _notificationService = _NotificationService;
+            _notificationService = NotificationService;
+            _availabilityRepo = availabilityRepo;
         }
 
         public async Task sendBorrowRequest(int readerId, int bookId, int chosenDuration)
         {
             var reader = await _userRepo.GetByIdAsync(readerId);
             var book = await _bookRepo.GetByIdAsync(bookId);
-
+            var availability = await _availabilityRepo.GetFirstOrDefaultAsync(
+       criteria: a => a.Duration == chosenDuration && a.BookId == bookId
+   );
 
             if (reader == null)
                 throw new Exception("User not found");
 
             if (reader.Role != Role.READER)
-                throw new Exception("Only  reader can send borrow request");
+                throw new Exception("Only reader can send borrow request");
 
             if (book == null)
+                throw new Exception("Book not found");
 
-                throw new Exception("book not found");
             if (!await IsBookAvailable(bookId))
                 throw new Exception("Book is currently borrowed");
+            if (availability == null)
+            {
+                throw new Exception("book duration not available");
+            }
 
-            BorrowRequest bookRequest = new BorrowRequest();
-            bookRequest.ReaderId = readerId;
-            bookRequest.BookId = bookId;
-            bookRequest.AvailabilityDate.Duration = chosenDuration;
+            BorrowRequest bookRequest = new BorrowRequest(); bookRequest.ReaderId = readerId; bookRequest.BookId = bookId;
 
+            bookRequest.AvailabilityDate = availability;
+          
             await _borrowRequest.AddAsync(bookRequest);
-            await _borrowRequest.SaveAsync();
-            await _notificationService.SendNotificationAsync(
-    receiverId: book.OwnerId,
-    senderId: readerId,
-    message: "You have a new borrow request",
-    type: NotificationType.BORROW_REQUEST,
-    borrowRequestId: bookRequest.Id,
-    bookId: book.Id
-);
+            await _borrowRequest.SaveAsync(); 
+            await _notificationService.SendNotificationAsync( 
+                receiverId: book.OwnerId, 
+                senderId: readerId,
+                message: "You have a new borrow request",
+                type: NotificationType.BORROW_REQUEST, 
+                borrowRequestId: bookRequest.Id,
+                bookId: book.Id );
+
         }
         public async Task<bool> IsBookAvailable(int bookId)
         {

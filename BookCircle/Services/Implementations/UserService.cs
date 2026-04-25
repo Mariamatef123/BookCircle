@@ -105,22 +105,18 @@ namespace BookCircle.Services.Implementations
             if (owner.Role != Role.BOOK_OWNER)
                 throw new Exception("Must be an owner");
 
-            // ── Option A: Just reject (keep account, mark as not approved) ──
+            //await _notificationService.SendNotificationAsync(
+            //      receiverId: ownerId,
+            //      senderId: userId,
+            //      message: "Your account has been rejected",
+            //      type: NotificationType.OWNER_REJECTED
+            //  );
             owner.IsApproved = false;
-            await _userRepo.UpdateAsync(owner);
+            _userRepo.Delete(owner);
             await _userRepo.SaveAsync();
 
-            // ── Option B: Delete the owner account ──
-            // _userRepo.Delete(owner);
-            // await _userRepo.SaveAsync();
-
             // Notify AFTER save succeeds ✅
-            await _notificationService.SendNotificationAsync(
-                receiverId: ownerId,
-                senderId: userId,
-                message: "Your account has been rejected",
-                type: NotificationType.OWNER_REJECTED
-            );
+
         }
 
 
@@ -143,7 +139,6 @@ namespace BookCircle.Services.Implementations
             await _userRepo.AddAsync(user);
             await _userRepo.SaveAsync();
         }
-
         public async Task<User> LoginAsync(LoginDTO dto)
         {
             var users = await _userRepo.FindAsync(u => u.Email == dto.Email);
@@ -152,7 +147,12 @@ namespace BookCircle.Services.Implementations
             if (user == null)
                 throw new Exception("User not found");
 
-            if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+            if (string.IsNullOrWhiteSpace(user.PasswordHash))
+                throw new Exception("Invalid stored password (not hashed)");
+
+            bool isValidPassword = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+
+            if (!isValidPassword)
                 throw new Exception("Invalid password");
 
             if (user.Role == Role.BOOK_OWNER && user.IsApproved == false)
@@ -162,7 +162,7 @@ namespace BookCircle.Services.Implementations
         }
 
 
-   
+
     }
 
 

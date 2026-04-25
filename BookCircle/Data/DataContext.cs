@@ -55,11 +55,12 @@ namespace BookCircle.Data
                 .HasForeignKey(b => b.CurrentBorrowerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+
             modelBuilder.Entity<Notification>()
-    .HasOne(n => n.Receiver)
-    .WithMany(u => u.Notifications)
-    .HasForeignKey(n => n.ReceiverId)
-    .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(n => n.Receiver)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.ReceiverId)
+                .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.Sender)
@@ -96,7 +97,13 @@ namespace BookCircle.Data
     .HasOne(br => br.AvailabilityDate)
     .WithMany()
     .HasForeignKey(br => br.AvailabilityDateId)
-    .OnDelete(DeleteBehavior.Restrict);
+    .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Notification>()
+    .HasOne(n => n.Book)
+    .WithMany(b => b.Notifications)
+    .HasForeignKey(n => n.BookId)
+    .OnDelete(DeleteBehavior.Cascade);
 
             //        modelBuilder.Entity<WaitingList>()
             //.HasIndex(w => new { w.BookId, w.UserId })

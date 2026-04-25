@@ -9,6 +9,7 @@ using BookCircle.Services.Implementations;
 using BookCircle.Services.Interfaces;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,13 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler =
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
+builder.Services.AddControllers()
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(
+        new JsonStringEnumConverter()
+    );
+});
 // map hub
 
 builder.Services.AddHangfire(config =>
@@ -54,9 +62,20 @@ builder.Services.AddHangfire(config =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddHangfireServer();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 
 var app = builder.Build();
-
+app.UseCors("AllowReactApp");
 app.UseHangfireDashboard();
 
 // ✅ FIXED JOB REGISTRATION

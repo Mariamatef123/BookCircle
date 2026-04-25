@@ -18,7 +18,7 @@ namespace BookCircle.Data.Repositories.Intefaces
 
         Task SaveAsync();
 
-
+       public void RemoveRange(IEnumerable<T> entities);
         Task<IEnumerable<T>> GetAllAsync(
             Expression<Func<T, bool>>? criteria = null,
             Expression<Func<T, object>>? orderBy = null,

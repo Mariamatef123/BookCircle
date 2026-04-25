@@ -29,6 +29,10 @@ namespace BookCircle.Data.Models
         [MaxLength(50)]
         public string Language { get; set; } = string.Empty;
 
+
+        public string Description { get; set; }
+
+
         [Column(TypeName = "decimal(10,2)")]
         public decimal BorrowPrice { get; set; }
         public BookStatus BorrowStatus { get; set; } = BookStatus.AVAILABLE;

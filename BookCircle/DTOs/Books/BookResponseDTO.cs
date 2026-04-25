@@ -1,4 +1,5 @@
 ﻿using BookCircle.Data.Models;
+using BookCircle.DTOs.Users;
 
 namespace BookCircle.DTOs.Books
 {
@@ -17,6 +18,8 @@ namespace BookCircle.DTOs.Books
         public DateTime PublicationDate { get; set; }
 
         public List<AvailabilityDateDTO> AvailabilityDates { get; set; }  // ✔ correct
+        public string Description { get; set; }
+        public UserDTO Owner { get; set; }
 
         public string Status { get; set; }
 

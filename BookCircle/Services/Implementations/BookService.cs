@@ -2,11 +2,14 @@
 using BookCircle.Data.Models;
 using BookCircle.Data.Repositories.Intefaces;
 using BookCircle.DTOs.Books;
+using BookCircle.DTOs.Users;
 using BookCircle.Enum;
 using BookCircle.Enums;
 using BookCircle.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Extensions;
+using System.Linq;
 using static System.Reflection.Metadata.BlobBuilder;
 using AvailabilityDateDTO = BookCircle.DTOs.Books.AvailabilityDateDTO;
 
@@ -20,14 +23,19 @@ namespace BookCircle.Services.Implementations
         private readonly IGenericRepository<BorrowRequest> _borrowRequest;
         //private readonly IBookRepository _bookRepository;
         private readonly INotificationService _notificationService;
+        private readonly IGenericRepository<AvailabilityDate> _availabilityRepo;
+        private readonly IGenericRepository<Notification> _notificationRepo;
 
-        public BookService(IGenericRepository<Book> bookRepo, IGenericRepository<User> userRepo, INotificationService notificationService, IGenericRepository<BorrowRequest> borrowRequest)
+
+        public BookService(IGenericRepository<Book> bookRepo, IGenericRepository<User> userRepo, INotificationService notificationService, IGenericRepository<BorrowRequest> borrowRequest, IGenericRepository<AvailabilityDate> availabilityRepo, IGenericRepository<Notification> notificationRepo)
         {
             _bookRepo = bookRepo;
             _userRepo = userRepo;
             //_bookRepository = bookRepository;
             _notificationService = notificationService;
             _borrowRequest = borrowRequest;
+            _availabilityRepo = availabilityRepo;
+            _notificationRepo = notificationRepo;
         }
         public async Task<BookResponseDTO> CreateBookPostAsync(BookRequestDTO dto, int userId)
         {
@@ -58,6 +66,8 @@ namespace BookCircle.Services.Implementations
                 PublicationDate = dto.PublicationDate,
                 OwnerId = user.Id,
                 CoverImage = imageBytes,
+                Description = dto.Description,
+             
 
                 AvailabilityDates = dto.AvailabilityDates
                     .Select(d => new AvailabilityDate
@@ -84,6 +94,8 @@ namespace BookCircle.Services.Implementations
 
                 PublicationDate = book.PublicationDate,
                 Status = book.Status.ToString(),
+                Description=book.Description,
+               
 
                 CoverImageBase64 = book.CoverImage != null
                     ? Convert.ToBase64String(book.CoverImage)
@@ -100,8 +112,8 @@ namespace BookCircle.Services.Implementations
         public async Task<IEnumerable<BookResponseDTO>> GetAllAcceptedBook()
         {
             var books = await _bookRepo.GetAllAsync(
-                criteria: b => b.Status == PostStatus.ACCEPTED,
-                includes: new[] { "AvailabilityDates" }
+                criteria: b => b.Status == PostStatus.ACCEPTED,   
+                includes: new[] { "AvailabilityDates","Owner" }
             );
 
             return books.Select(b => new BookResponseDTO
@@ -113,6 +125,8 @@ namespace BookCircle.Services.Implementations
                 Language = b.Language,
                 BorrowPrice = b.BorrowPrice,
                 BorrowStatus = b.BorrowStatus.ToString(),
+                Description = b.Description,
+             
                 PublicationDate = b.PublicationDate,
                 Status = b.Status.ToString(),
                 CoverImageBase64 = b.CoverImage != null
@@ -124,24 +138,93 @@ namespace BookCircle.Services.Implementations
                     {
                         Duration = a.Duration
                     }).ToList()
-                    : new List<AvailabilityDateDTO>()
+                    : new List<AvailabilityDateDTO>(),
+                Owner = b.Owner == null
+    ? null
+    : new UserDTO
+    {
+        Id = b.Owner.Id,
+        Name = b.Owner.Name,
+        Role = b.Owner.Role.ToString()
+    }
             });
         }
         public async Task<BookResponseDTO> DeleteBookById(int userId, int bookId)
         {
             var user = await _userRepo.GetByIdAsync(userId);
-            var book = await _bookRepo.GetByIdAsync(bookId);
 
             if (user == null)
                 throw new Exception("User not found");
-            if (book == null)
-                throw new Exception("Book not found");
 
             if (user.Role != Role.BOOK_OWNER || user.IsApproved == false)
                 throw new Exception("Only Book Owners can delete book");
-            if(book.BorrowStatus==Enums.BookStatus.BORROWED)
-                throw new Exception("cant delete borrowed Books");
-            await _bookRepo.DeleteByIdAsync(bookId);
+
+            var book = await _bookRepo.GetFirstOrDefaultAsync(
+                b => b.Id == bookId,
+                include: q => q
+                    .Include(b => b.AvailabilityDates)
+                    .Include(b => b.Owner)
+            );
+
+            if (book == null)
+                throw new Exception("Book not found");
+
+            if (book.BorrowStatus == Enums.BookStatus.BORROWED)
+                throw new Exception("Can't delete borrowed books");
+
+            // =========================
+            // 1. Availability IDs
+            // =========================
+            var availabilityIds = book.AvailabilityDates.Select(a => a.Id).ToList();
+
+            // =========================
+            // 2. BorrowRequests
+            // =========================
+            var borrowRequests = await _borrowRequest
+                .GetAllAsync(br => availabilityIds.Contains(br.AvailabilityDateId));
+
+            var borrowRequestIds = borrowRequests.Select(b => b.Id).ToList();
+
+            // =========================
+            // 3. Notifications (child first)
+            // =========================
+            if (borrowRequestIds.Any())
+            {
+                var notifications = await _notificationRepo
+                    .GetAllAsync(n =>
+                        n.BorrowRequestId.HasValue &&
+                        borrowRequestIds.Contains(n.BorrowRequestId.Value)
+                    );
+
+                if (notifications.Any())
+
+                     _notificationRepo.RemoveRange(notifications);
+                await _notificationRepo.SaveAsync();
+            }
+
+            // =========================
+            // 4. Delete BorrowRequests
+            // =========================
+            if (borrowRequests.Any())
+                 _borrowRequest.RemoveRange(borrowRequests);
+            await _borrowRequest.SaveAsync();
+
+            // =========================
+            // 5. Delete AvailabilityDates
+            // =========================
+            if (book.AvailabilityDates.Any())
+                 _availabilityRepo.RemoveRange(book.AvailabilityDates);
+            await _availabilityRepo.SaveAsync();
+
+            // =========================
+            // 6. Delete Book
+            // =========================
+            await _bookRepo.DeleteByIdAsync(book.Id);
+            await _bookRepo.SaveAsync();
+            // IMPORTANT: ensure SaveChanges happens in repo methods
+            // OR uncomment this if your repo does NOT auto-save:
+            // await _bookRepo.SaveAsync();
+
             return new BookResponseDTO
             {
                 Id = book.Id,
@@ -149,10 +232,9 @@ namespace BookCircle.Services.Implementations
                 Genre = book.Genre,
                 ISBN = book.ISBN,
                 Language = book.Language,
-
+                Description = book.Description,
                 BorrowPrice = book.BorrowPrice,
                 BorrowStatus = book.BorrowStatus.ToString(),
-
                 PublicationDate = book.PublicationDate,
                 Status = book.Status.ToString(),
 
@@ -163,14 +245,19 @@ namespace BookCircle.Services.Implementations
                 AvailabilityDates = book.AvailabilityDates
                     .Select(a => new AvailabilityDateDTO
                     {
-                        Duration = a.Duration,
-                    })
-                    .ToList()
+                        Duration = a.Duration
+                    }).ToList(),
+
+                Owner = book.Owner == null
+                    ? null
+                    : new UserDTO
+                    {
+                        Id = book.Owner.Id,
+                        Name = book.Owner.Name,
+                        Role = book.Owner.Role.ToString()
+                    }
             };
-
-
         }
-
         public async Task<BookResponseDTO> UpdateBookAsync(int bookId, BookRequestDTO dto, int userId)
         {
             var user = await _userRepo.GetByIdAsync(userId);
@@ -179,50 +266,101 @@ namespace BookCircle.Services.Implementations
                 throw new Exception("User not found");
 
             if (user.Role != Role.BOOK_OWNER || user.IsApproved == false)
-                throw new Exception("Only Book Owners can create books");
+                throw new Exception("Only Book Owners can update books");
 
-            var book = await _bookRepo.GetByIdAsync(bookId);
+            // ✅ IMPORTANT: load AvailabilityDates + Owner
+            var book = await _bookRepo.GetFirstOrDefaultAsync(
+                b => b.Id == bookId,
+                include: q => q
+                    .Include(b => b.AvailabilityDates)
+                    .Include(b => b.Owner)
+            );
 
             if (book == null)
                 throw new Exception("Book not found");
 
+            // ✅ Update only if provided
+            if (!string.IsNullOrWhiteSpace(dto.Title))
+                book.Title = dto.Title;
 
-            byte[] imageBytes = null;
+            if (!string.IsNullOrWhiteSpace(dto.Genre))
+                book.Genre = dto.Genre;
 
+            if (!string.IsNullOrWhiteSpace(dto.ISBN))
+                book.ISBN = dto.ISBN;
+
+            if (!string.IsNullOrWhiteSpace(dto.Language))
+                book.Language = dto.Language;
+
+            if (dto.BorrowPrice > 0)
+                book.BorrowPrice = dto.BorrowPrice;
+
+            if (dto.PublicationDate != default)
+                book.PublicationDate = dto.PublicationDate;
+
+            if (!string.IsNullOrWhiteSpace(dto.Description))
+                book.Description = dto.Description;
+
+            // ✅ Keep owner محفوظ
+            book.OwnerId = userId;
+
+            // ✅ Image: update only if new uploaded
             if (dto.CoverImage != null)
             {
                 using var ms = new MemoryStream();
                 await dto.CoverImage.CopyToAsync(ms);
-                imageBytes = ms.ToArray();
+                book.CoverImage = ms.ToArray();
             }
-
-
-            book.Title = dto.Title;
-            book.Genre = dto.Genre;
-            book.ISBN = dto.ISBN;
-            book.Language = dto.Language;
-            book.BorrowPrice = dto.BorrowPrice;
-            book.PublicationDate = dto.PublicationDate;
-            book.OwnerId = userId;
-            book.CoverImage = imageBytes;
-
-            book.AvailabilityDates.Clear();
 
             if (dto.AvailabilityDates != null && dto.AvailabilityDates.Any())
             {
+                // 1. Get availability ids
+                var availabilityIds = book.AvailabilityDates
+                    .Select(a => a.Id)
+                    .ToList();
+
+                // 2. Get BorrowRequests linked to these dates
+                var borrowRequests = await _borrowRequest
+                    .GetAllAsync(br => availabilityIds.Contains(br.AvailabilityDateId));
+
+                var borrowRequestIds = borrowRequests.Select(br => br.Id).ToList();
+
+                // 3. Delete Notifications FIRST (child of BorrowRequests)
+                if (borrowRequestIds.Any())
+                {
+
+                    var notifications = await _notificationRepo
+            .GetAllAsync(n =>
+                n.BorrowRequestId != null &&
+                borrowRequestIds.Contains(n.BorrowRequestId.Value)
+            );
+
+                    if (notifications.Any())
+                         _notificationRepo.RemoveRange(notifications);
+                }
+
+                // 4. Delete BorrowRequests
+                if (borrowRequests.Any())
+                     _borrowRequest.RemoveRange(borrowRequests);
+
+                // 5. Delete AvailabilityDates
+                if (book.AvailabilityDates.Any())
+                     _availabilityRepo.RemoveRange(book.AvailabilityDates);
+
+                book.AvailabilityDates.Clear();
+
+                // 6. Add new AvailabilityDates
                 foreach (var d in dto.AvailabilityDates)
                 {
                     book.AvailabilityDates.Add(new AvailabilityDate
                     {
-                      Duration=d.Duration,
+                        Duration = d.Duration,
                         BookId = book.Id
                     });
                 }
             }
-
             await _bookRepo.UpdateAsync(book);
             await _bookRepo.SaveAsync();
-
 
             return new BookResponseDTO
             {
@@ -235,6 +373,7 @@ namespace BookCircle.Services.Implementations
                 BorrowStatus = book.BorrowStatus.ToString(),
                 PublicationDate = book.PublicationDate,
                 Status = book.Status.ToString(),
+                Description = book.Description,
 
                 CoverImageBase64 = book.CoverImage != null
                     ? Convert.ToBase64String(book.CoverImage)
@@ -243,8 +382,17 @@ namespace BookCircle.Services.Implementations
                 AvailabilityDates = book.AvailabilityDates
                     .Select(a => new AvailabilityDateDTO
                     {
-                        Duration = a.Duration,
-                    }).ToList()
+                        Duration = a.Duration
+                    }).ToList(),
+
+                Owner = book.Owner == null
+                    ? null
+                    : new UserDTO
+                    {
+                        Id = book.Owner.Id,
+                        Name = book.Owner.Name,
+                        Role = book.Owner.Role.ToString()
+                    }
             };
         }
         public async Task<IEnumerable<BookResponseDTO>> GetAllBooks(int ownerId)
@@ -259,7 +407,7 @@ namespace BookCircle.Services.Implementations
 
             var books = await _bookRepo.GetAllAsync(
         criteria: b => b.OwnerId == ownerId,
-        includes: new[] { "AvailabilityDates" }
+        includes: new[] { "AvailabilityDates","Owner" }
     );
 
             if (books == null || !books.Any())
@@ -272,6 +420,8 @@ namespace BookCircle.Services.Implementations
                 Genre = book.Genre,
                 ISBN = book.ISBN,
                 Language = book.Language,
+                Description = book.Description,
+         
 
                 BorrowPrice = book.BorrowPrice,
                 BorrowStatus = book.BorrowStatus.ToString(),
@@ -288,8 +438,17 @@ namespace BookCircle.Services.Implementations
                     {
                         Duration = a.Duration,
                     })
-                    .ToList()
-            });
+                    .ToList(),
+                Owner = book.Owner == null
+    ? null
+    : new UserDTO
+    {
+        Id = book.Owner.Id,
+        Name = book.Owner.Name,
+        Role = book.Owner.Role.ToString()
+    }
+           
+        });
         }
 
        public async Task AcceptPost(int bookId, int userId)
@@ -338,6 +497,7 @@ namespace BookCircle.Services.Implementations
     type: NotificationType.BOOK_REJECTED,
     bookId: book.Id
 );
+            book.Notifications.Clear();
             _bookRepo.Delete(book);
             await _bookRepo.SaveAsync();
         }
@@ -355,8 +515,8 @@ namespace BookCircle.Services.Implementations
                 throw new Exception("Only Admin can view pending posts");
 
             var books = await _bookRepo.GetAllAsync(
-        criteria: b => b.Status == PostStatus.PENDING,
-        includes: new[] { "AvailabilityDates" }
+        criteria: b => b.Status == PostStatus.PENDING && b.BorrowStatus==BookStatus.AVAILABLE,
+        includes: new[] { "AvailabilityDates","Owner" }
     );
 
             if (books == null || !books.Any())
@@ -369,7 +529,8 @@ namespace BookCircle.Services.Implementations
                 Genre = book.Genre,
                 ISBN = book.ISBN,
                 Language = book.Language,
-
+                Description = book.Description,
+              
                 BorrowPrice = book.BorrowPrice,
                 BorrowStatus = book.BorrowStatus.ToString(),
 
@@ -384,7 +545,15 @@ namespace BookCircle.Services.Implementations
                     .Select(a => new AvailabilityDateDTO
                     {
                         Duration = a.Duration,
-                    }).ToList()
+                    }).ToList(),
+                Owner = book.Owner == null
+    ? null
+    : new UserDTO
+    {
+        Id = book.Owner.Id,
+        Name = book.Owner.Name,
+        Role = book.Owner.Role.ToString()
+    }
             });
         }
 
@@ -398,7 +567,7 @@ namespace BookCircle.Services.Implementations
           (string.IsNullOrEmpty(genre) || b.Genre.ToLower() == genre.ToLower()) &&
           (string.IsNullOrEmpty(language) || b.Language.ToLower() == language.ToLower()) &&
           (!maxPrice.HasValue || b.BorrowPrice <= maxPrice.Value),
-      includes: new[] { "AvailabilityDates" }
+      includes: new[] { "AvailabilityDates" , "Owner" }
   );
             return books.Select(book => new BookResponseDTO
             {
@@ -407,7 +576,8 @@ namespace BookCircle.Services.Implementations
                 Genre = book.Genre,
                 ISBN = book.ISBN,
                 Language = book.Language,
-
+                Description = book.Description,
+            
                 BorrowPrice = book.BorrowPrice,
                 BorrowStatus = book.BorrowStatus.ToString(),
 
@@ -422,7 +592,15 @@ namespace BookCircle.Services.Implementations
                     .Select(a => new AvailabilityDateDTO
                     {
                         Duration = a.Duration,
-                    }).ToList()
+                    }).ToList(),
+                Owner = book.Owner == null
+    ? null
+    : new UserDTO
+    {
+        Id = book.Owner.Id,
+        Name = book.Owner.Name,
+        Role = book.Owner.Role.ToString()
+    }
             });
         }
         public async Task UpdateBookStatuses()
