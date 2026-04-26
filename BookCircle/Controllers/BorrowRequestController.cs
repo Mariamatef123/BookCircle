@@ -1,4 +1,5 @@
-﻿using BookCircle.Services.Interfaces;
+﻿using BookCircle.Data.Models;
+using BookCircle.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +27,12 @@ namespace BookCircle.Controllers
             await _borrowRequestService.sendBorrowRequest(readerId, bookId, chosenDuration);
             return Ok();
         }
-
+        [HttpGet("{ownerId}/get-pending-borrow-requests")]
+        public async Task<IActionResult> GetPendingBorrowRequests(int ownerId)
+        {
+          IEnumerable<BorrowRequest>borrowRequests=  await _borrowRequestService.GetPendingBorrowRequests(ownerId);
+            return Ok(borrowRequests);
+        }
         [HttpPost("{ownerId}/accept-request/{borrowRequestId}")]
         public async Task<IActionResult> acceptBorrowRequest(int ownerId, int borrowRequestId)
         {

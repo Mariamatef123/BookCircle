@@ -6,7 +6,7 @@ namespace BookCircle.DTOs.ReadingLists
     public class ReadingListDTO
     {
      
-  
+      public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 

@@ -101,21 +101,25 @@ namespace BookCircle.Controllers
 
         [HttpGet("browse")]
         public async Task<IActionResult> Browse(
-        [FromQuery] string? genre,
-        [FromQuery] string? language,
-        [FromQuery] decimal? maxPrice)
+    [FromQuery] string? title,
+    [FromQuery] string? genre,
+    [FromQuery] string? language,
+    [FromQuery] decimal? maxPrice)
         {
+            if (maxPrice.HasValue && maxPrice.Value < 0)
+                return BadRequest(new { message = "maxPrice cannot be negative." });
+
             try
             {
-                var books = await _bookService.SearchBooksAsync(genre, language, maxPrice);
-                return Ok(books);
+                var results = await _bookService.SearchBooksAsync(title, genre, language, maxPrice);
+                return Ok(results);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, new { message = "Something went wrong.", detail = ex.Message });
             }
         }
-
     }
+
 
 }

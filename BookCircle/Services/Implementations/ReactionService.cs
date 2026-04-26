@@ -122,10 +122,9 @@ namespace BookCircle.Services.Implementations
         public async Task<IEnumerable<Reaction>> GetReactionsByBookId(int bookId)
         {
             var reactions = await _reaction.GetAllAsync(
-                criteria: r => r.BookId == bookId,
-                includes: new[] { "" }
-            );
-
+       criteria: r => r.BookId == bookId,
+       includes: new[] { "User" }
+   );
             return reactions;
         }
     }

@@ -3,6 +3,7 @@ using BookCircle.DTOs.ReadingLists;
 using BookCircle.Services.Interfaces;
 using BookCircle.Data.Repositories.Intefaces;
 using BookCircle.DTOs.Books;
+using BookCircle.Migrations;
 
 namespace BookCircle.Services.Implementations
 {
@@ -55,7 +56,7 @@ namespace BookCircle.Services.Implementations
             await _readingListRepo.SaveAsync();
 
             return new ReadingListDTO
-            {
+            {  Id=readingList.Id,
                 Name = readingList.Name,
                   CreatedAt = readingList.CreatedAt,
                   UserId= userId,
@@ -142,11 +143,12 @@ namespace BookCircle.Services.Implementations
 
             return lists.Select(r => new ReadingListDTO
             {
-         
+                Id = r.Id,
                 Name = r.Name,
                 Description=r.Description,
                 CreatedAt=r.CreatedAt,
                 UserId=r.UserId
+
 
 
 
@@ -174,8 +176,11 @@ namespace BookCircle.Services.Implementations
                 Title = rb.Book.Title,
                 Genre = rb.Book.Genre,
                 ISBN = rb.Book.ISBN,
+                Description = rb.Book.Description,
                 Language = rb.Book.Language,
                 BorrowPrice = rb.Book.BorrowPrice,
+                Status=rb.Book.Status.ToString(),
+                
                 BorrowStatus = rb.Book.BorrowStatus.ToString(),
                 PublicationDate = rb.Book.PublicationDate,
                 CoverImageBase64 = rb.Book.CoverImage != null

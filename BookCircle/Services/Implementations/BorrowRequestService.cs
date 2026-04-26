@@ -68,6 +68,19 @@ namespace BookCircle.Services.Implementations
                 bookId: book.Id );
 
         }
+
+        public async Task<IEnumerable<BorrowRequest>> GetPendingBorrowRequests(int ownerId)
+        {
+            var borrowRequests = await _borrowRequest.GetAllAsync(
+                br => br.Book.OwnerId == ownerId && br.Status == BorrowRequestStatus.PENDING,
+                includes: new[] { "Reader", "AvailabilityDate" ,"Book"}
+            );
+
+            if (borrowRequests == null || !borrowRequests.Any())
+                throw new Exception("No borrow requests");
+
+            return borrowRequests;
+        }
         public async Task<bool> IsBookAvailable(int bookId)
         {
             var activeBorrow = await _borrowRequest.GetFirstOrDefaultAsync(
@@ -108,32 +121,34 @@ namespace BookCircle.Services.Implementations
             var owner = await _userRepo.GetByIdAsync(ownerId);
             if (owner == null)
                 throw new Exception("User not found");
+
             if (owner.Role != Role.BOOK_OWNER)
                 throw new Exception("Only owners can accept borrow requests");
 
             var borrowRequest = await _borrowRequest.GetFirstOrDefaultAsync(
-        criteria: br => br.Id == borrowRequestId,
-        includes: new[] { "Book" }
-    );
+                criteria: br => br.Id == borrowRequestId,
+                includes: new[] { "Book", "AvailabilityDate" } // 🔥 FIX HERE
+            );
+
             if (borrowRequest == null)
                 throw new Exception("Borrow request not found");
 
             var book = borrowRequest.Book;
             if (book == null)
                 throw new Exception("Book not found");
+
             if (book.BorrowStatus == BookStatus.BORROWED)
                 throw new Exception("Book already borrowed");
-
 
             borrowRequest.Status = BorrowRequestStatus.ACCEPTED;
             borrowRequest.RespondedAt = DateTime.UtcNow;
 
-            if (borrowRequest.RespondedAt.HasValue)
+            // ✅ SAFE (AvailabilityDate now loaded)
+            if (borrowRequest.AvailabilityDate != null)
             {
                 borrowRequest.EndedAt = borrowRequest.RespondedAt.Value
                     .AddDays(borrowRequest.AvailabilityDate.Duration);
             }
-
 
             book.CurrentBorrowerId = borrowRequest.ReaderId;
             book.BorrowStatus = BookStatus.BORROWED;
@@ -141,10 +156,9 @@ namespace BookCircle.Services.Implementations
             await _borrowRequest.UpdateAsync(borrowRequest);
             await _bookRepo.UpdateAsync(book);
 
-            var otherRequests = await _borrowRequest
-               .GetAllAsync(
-        criteria: r => r.BookId == book.Id && r.Id != borrowRequestId
-    );
+            var otherRequests = await _borrowRequest.GetAllAsync(
+                r => r.BookId == book.Id && r.Id != borrowRequestId
+            );
 
             foreach (var r in otherRequests)
             {
@@ -154,17 +168,16 @@ namespace BookCircle.Services.Implementations
             }
 
             await _borrowRequest.SaveAsync();
+
             await _notificationService.SendNotificationAsync(
-    receiverId: borrowRequest.ReaderId,
-    senderId: ownerId,
-    message: "Your borrow request has been accepted",
-    type: NotificationType.BORROW_ACCEPTED,
-    borrowRequestId: borrowRequest.Id,
-    bookId: book.Id
-);
+                receiverId: borrowRequest.ReaderId,
+                senderId: ownerId,
+                message: "Your borrow request has been accepted",
+                type: NotificationType.BORROW_ACCEPTED,
+                borrowRequestId: borrowRequest.Id,
+                bookId: book.Id
+            );
         }
-
-
 
         public async Task ReleaseExpiredBorrows()
         {

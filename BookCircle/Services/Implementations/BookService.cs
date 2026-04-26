@@ -558,50 +558,82 @@ namespace BookCircle.Services.Implementations
         }
 
 
-        public async Task<IEnumerable<BookResponseDTO>> SearchBooksAsync(string? genre, string? language, decimal? maxPrice)
+        public async Task<IEnumerable<BookResponseDTO>> SearchBooksAsync(
+            string? title,
+            string? genre,
+            string? language,
+            decimal? maxPrice)
         {
-            var books = await _bookRepo.GetAllAsync(
-      criteria: b =>
-          b.BorrowStatus == BookStatus.AVAILABLE &&
-          b.Status == PostStatus.ACCEPTED &&
-          (string.IsNullOrEmpty(genre) || b.Genre.ToLower() == genre.ToLower()) &&
-          (string.IsNullOrEmpty(language) || b.Language.ToLower() == language.ToLower()) &&
-          (!maxPrice.HasValue || b.BorrowPrice <= maxPrice.Value),
-      includes: new[] { "AvailabilityDates" , "Owner" }
-  );
-            return books.Select(book => new BookResponseDTO
+            try
             {
-                Id = book.Id,
-                Title = book.Title,
-                Genre = book.Genre,
-                ISBN = book.ISBN,
-                Language = book.Language,
-                Description = book.Description,
-            
-                BorrowPrice = book.BorrowPrice,
-                BorrowStatus = book.BorrowStatus.ToString(),
+                var titleLower = title?.Trim().ToLower();
+                var genreLower = genre?.Trim().ToLower();
+                var languageLower = language?.Trim().ToLower();
 
-                PublicationDate = book.PublicationDate,
-                Status = book.Status.ToString(),
+                var books = await _bookRepo.GetAllAsync(
+                    criteria: b =>
+                       
+                        b.Status == PostStatus.ACCEPTED &&
 
-                CoverImageBase64 = book.CoverImage != null
-                    ? Convert.ToBase64String(book.CoverImage)
-                    : null,
+                        // Title filter (null-safe)
+                        (string.IsNullOrEmpty(titleLower) ||
+                         (b.Title != null && b.Title.ToLower().Contains(titleLower))) &&
 
-                AvailabilityDates = book.AvailabilityDates
-                    .Select(a => new AvailabilityDateDTO
+                        // Genre filter (null-safe)
+                        (string.IsNullOrEmpty(genreLower) ||
+                         (b.Genre != null && b.Genre.ToLower().Contains(genreLower))) &&
+
+                        // Language filter (null-safe)
+                        (string.IsNullOrEmpty(languageLower) ||
+                         (b.Language != null && b.Language.ToLower().Contains(languageLower))) &&
+
+                        // Price filter
+                        (!maxPrice.HasValue || b.BorrowPrice <= maxPrice.Value),
+
+                    includes: new[] { "AvailabilityDates", "Owner" }
+                );
+
+                var bookList = books?.ToList() ?? new List<Book>();
+
+                if (!bookList.Any())
+                    return Enumerable.Empty<BookResponseDTO>();
+
+                return bookList.Select(book => new BookResponseDTO
+                {
+                    Id = book.Id,
+                    Title = book.Title,
+                    Genre = book.Genre,
+                    ISBN = book.ISBN,
+                    Language = book.Language,
+                    Description = book.Description,
+                    BorrowPrice = book.BorrowPrice,
+                    BorrowStatus = book.BorrowStatus.ToString(),
+                    PublicationDate = book.PublicationDate,
+                    Status = book.Status.ToString(),
+
+                    CoverImageBase64 = book.CoverImage != null
+                        ? Convert.ToBase64String(book.CoverImage)
+                        : null,
+
+                    AvailabilityDates = book.AvailabilityDates?
+                        .Select(a => new AvailabilityDateDTO
+                        {
+                            Duration = a.Duration
+                        }).ToList() ?? new List<AvailabilityDateDTO>(),
+
+                    Owner = book.Owner == null ? null : new UserDTO
                     {
-                        Duration = a.Duration,
-                    }).ToList(),
-                Owner = book.Owner == null
-    ? null
-    : new UserDTO
-    {
-        Id = book.Owner.Id,
-        Name = book.Owner.Name,
-        Role = book.Owner.Role.ToString()
-    }
-            });
+                        Id = book.Owner.Id,
+                        Name = book.Owner.Name,
+                        Role = book.Owner.Role.ToString()
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[SearchBooksAsync] ERROR: {ex.Message}");
+                return Enumerable.Empty<BookResponseDTO>();
+            }
         }
         public async Task UpdateBookStatuses()
         {
