@@ -9,5 +9,9 @@ namespace BookCircle.Services.Interfaces
         Task RejectBorrowRequest(int ownerId, int borrowRequestId);
         public Task ReturnBook(int bookId, int userId);
         public  Task<IEnumerable<BorrowRequest>> GetPendingBorrowRequests(int ownerId);
+        public Task CancelBorrowRequest(int userId, int borrowRequestId);
+        public  Task<IEnumerable<BorrowRequest>> RequestsSentByUser(int userId);
+
+
     }
 }

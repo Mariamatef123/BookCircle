@@ -17,12 +17,12 @@ namespace BookCircle.DTOs.Books
 
         public DateTime PublicationDate { get; set; }
 
-        public List<AvailabilityDateDTO> AvailabilityDates { get; set; }  // ✔ correct
+        public List<AvailabilityDateDTO> AvailabilityDates { get; set; } 
         public string Description { get; set; }
         public UserDTO Owner { get; set; }
 
         public string Status { get; set; }
 
-        public string? CoverImageBase64 { get; set; } // ✅ instead of byte[]
+        public string? CoverImageBase64 { get; set; } 
     }
 }

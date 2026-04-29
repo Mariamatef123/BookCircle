@@ -172,22 +172,15 @@ namespace BookCircle.Services.Implementations
             if (book.BorrowStatus == Enums.BookStatus.BORROWED)
                 throw new Exception("Can't delete borrowed books");
 
-            // =========================
-            // 1. Availability IDs
-            // =========================
             var availabilityIds = book.AvailabilityDates.Select(a => a.Id).ToList();
 
-            // =========================
-            // 2. BorrowRequests
-            // =========================
+      
             var borrowRequests = await _borrowRequest
                 .GetAllAsync(br => availabilityIds.Contains(br.AvailabilityDateId));
 
             var borrowRequestIds = borrowRequests.Select(b => b.Id).ToList();
 
-            // =========================
-            // 3. Notifications (child first)
-            // =========================
+       
             if (borrowRequestIds.Any())
             {
                 var notifications = await _notificationRepo
@@ -202,28 +195,20 @@ namespace BookCircle.Services.Implementations
                 await _notificationRepo.SaveAsync();
             }
 
-            // =========================
-            // 4. Delete BorrowRequests
-            // =========================
+         
             if (borrowRequests.Any())
                  _borrowRequest.RemoveRange(borrowRequests);
             await _borrowRequest.SaveAsync();
 
-            // =========================
-            // 5. Delete AvailabilityDates
-            // =========================
+   
             if (book.AvailabilityDates.Any())
                  _availabilityRepo.RemoveRange(book.AvailabilityDates);
             await _availabilityRepo.SaveAsync();
 
-            // =========================
-            // 6. Delete Book
-            // =========================
+           
             await _bookRepo.DeleteByIdAsync(book.Id);
             await _bookRepo.SaveAsync();
-            // IMPORTANT: ensure SaveChanges happens in repo methods
-            // OR uncomment this if your repo does NOT auto-save:
-            // await _bookRepo.SaveAsync();
+          
 
             return new BookResponseDTO
             {
@@ -268,7 +253,6 @@ namespace BookCircle.Services.Implementations
             if (user.Role != Role.BOOK_OWNER || user.IsApproved == false)
                 throw new Exception("Only Book Owners can update books");
 
-            // ✅ IMPORTANT: load AvailabilityDates + Owner
             var book = await _bookRepo.GetFirstOrDefaultAsync(
                 b => b.Id == bookId,
                 include: q => q
@@ -279,7 +263,6 @@ namespace BookCircle.Services.Implementations
             if (book == null)
                 throw new Exception("Book not found");
 
-            // ✅ Update only if provided
             if (!string.IsNullOrWhiteSpace(dto.Title))
                 book.Title = dto.Title;
 
@@ -301,10 +284,10 @@ namespace BookCircle.Services.Implementations
             if (!string.IsNullOrWhiteSpace(dto.Description))
                 book.Description = dto.Description;
 
-            // ✅ Keep owner محفوظ
+          
             book.OwnerId = userId;
 
-            // ✅ Image: update only if new uploaded
+          
             if (dto.CoverImage != null)
             {
                 using var ms = new MemoryStream();
@@ -314,18 +297,16 @@ namespace BookCircle.Services.Implementations
 
             if (dto.AvailabilityDates != null && dto.AvailabilityDates.Any())
             {
-                // 1. Get availability ids
+             
                 var availabilityIds = book.AvailabilityDates
                     .Select(a => a.Id)
                     .ToList();
 
-                // 2. Get BorrowRequests linked to these dates
                 var borrowRequests = await _borrowRequest
                     .GetAllAsync(br => availabilityIds.Contains(br.AvailabilityDateId));
 
                 var borrowRequestIds = borrowRequests.Select(br => br.Id).ToList();
 
-                // 3. Delete Notifications FIRST (child of BorrowRequests)
                 if (borrowRequestIds.Any())
                 {
 
@@ -339,17 +320,15 @@ namespace BookCircle.Services.Implementations
                          _notificationRepo.RemoveRange(notifications);
                 }
 
-                // 4. Delete BorrowRequests
+            
                 if (borrowRequests.Any())
                      _borrowRequest.RemoveRange(borrowRequests);
 
-                // 5. Delete AvailabilityDates
                 if (book.AvailabilityDates.Any())
                      _availabilityRepo.RemoveRange(book.AvailabilityDates);
 
                 book.AvailabilityDates.Clear();
 
-                // 6. Add new AvailabilityDates
                 foreach (var d in dto.AvailabilityDates)
                 {
                     book.AvailabilityDates.Add(new AvailabilityDate
@@ -575,19 +554,19 @@ namespace BookCircle.Services.Implementations
                        
                         b.Status == PostStatus.ACCEPTED &&
 
-                        // Title filter (null-safe)
+                    
                         (string.IsNullOrEmpty(titleLower) ||
                          (b.Title != null && b.Title.ToLower().Contains(titleLower))) &&
 
-                        // Genre filter (null-safe)
+                     
                         (string.IsNullOrEmpty(genreLower) ||
                          (b.Genre != null && b.Genre.ToLower().Contains(genreLower))) &&
 
-                        // Language filter (null-safe)
+                        
                         (string.IsNullOrEmpty(languageLower) ||
                          (b.Language != null && b.Language.ToLower().Contains(languageLower))) &&
 
-                        // Price filter
+                     
                         (!maxPrice.HasValue || b.BorrowPrice <= maxPrice.Value),
 
                     includes: new[] { "AvailabilityDates", "Owner" }
@@ -644,7 +623,7 @@ namespace BookCircle.Services.Implementations
                 var activeBorrow = await _borrowRequest.GetFirstOrDefaultAsync(
                     br => br.BookId == book.Id &&
                           br.Status == BorrowRequestStatus.ACCEPTED &&
-                          br.EndedAt > DateTime.UtcNow
+                          br.EndedAt > DateTime.Now
                 );
 
                 if (activeBorrow == null)

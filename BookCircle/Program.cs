@@ -13,7 +13,6 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -37,7 +36,7 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IBorrowRequestService, BorrowRequestService>();
 builder.Services.AddScoped<IReactionService, ReactionService>();
 //builder.Services.AddScoped<IReadingListRepository, ReadingListRepository>();
-// add SignalR
+
 builder.Services.AddSignalR();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 //builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
@@ -55,7 +54,7 @@ builder.Services.AddControllers()
         new JsonStringEnumConverter()
     );
 });
-// map hub
+
 
 builder.Services.AddHangfire(config =>
     config.UseSqlServerStorage(
@@ -78,7 +77,6 @@ var app = builder.Build();
 app.UseCors("AllowReactApp");
 app.UseHangfireDashboard();
 
-// ✅ FIXED JOB REGISTRATION
 using (var scope = app.Services.CreateScope())
 {
     var recurringJob = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
@@ -87,11 +85,11 @@ using (var scope = app.Services.CreateScope())
     recurringJob.AddOrUpdate(
         "sync-book-status",
         () => bookService.UpdateBookStatuses(),
-        Cron.Minutely);
+        Cron.Daily);
 }
 
 app.MapHub<NotificationHub>("/hubs/notifications");
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

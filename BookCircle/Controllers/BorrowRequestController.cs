@@ -46,6 +46,19 @@ namespace BookCircle.Controllers
             await _borrowRequestService.RejectBorrowRequest(ownerId, borrowRequestId);
             return Ok();
         }
+        [HttpGet("myRequests")]
+        public async Task<IActionResult> GetMyRequests([FromQuery] int userId)
+        {
+            var requests = await _borrowRequestService.RequestsSentByUser(userId);
+            return Ok(new { data = requests });
+        }
+
+        [HttpPut("{borrowRequestId}/cancel")]
+        public async Task<IActionResult> CancelRequest(int borrowRequestId, [FromQuery] int userId)
+        {
+            await _borrowRequestService.CancelBorrowRequest(userId, borrowRequestId);
+            return Ok(new { message = "Borrow request cancelled successfully" });
+        }
 
 
     }

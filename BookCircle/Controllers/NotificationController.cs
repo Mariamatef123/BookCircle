@@ -26,8 +26,8 @@ public class NotificationController : ControllerBase
         }
     }
 
-    [HttpPatch("{notificationId}/read")]
-    public async Task<IActionResult> MarkAsRead(int notificationId, [FromQuery] int userId)
+    [HttpPatch("{notificationId}/read/{userId}")]
+    public async Task<IActionResult> MarkAsRead(int notificationId,  int userId)
     {
         try
         {

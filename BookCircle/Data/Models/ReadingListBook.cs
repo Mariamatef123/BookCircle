@@ -19,6 +19,6 @@ namespace BookCircle.Data.Models
 
         public Book Book { get; set; } = null!;
 
-        public DateTime AddedAt { get; set; } = DateTime.UtcNow;
+        public DateTime AddedAt { get; set; } = DateTime.Now;
     }
 }

@@ -1,4 +1,6 @@
 ﻿
+using BookCircle.DTOs.Users;
+
 namespace BookCircle.DTOs.Comments
 {
     public class CommentDTO
@@ -9,7 +11,8 @@ namespace BookCircle.DTOs.Comments
             public int UserId { get; set; }
             public List<ReplyDTO> Replies { get; set; } = new();
            public DateTime CreatedAt { get; set; }
+        public UserDTO User { get; set; } = new();
 
-      
+
     }
 }

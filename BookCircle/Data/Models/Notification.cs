@@ -16,7 +16,7 @@ namespace BookCircle.Data.Models
         [ForeignKey(nameof(ReceiverId))]
         public User Receiver { get; set; } = null!;
 
-        // 🔹 Sender (Optional)
+      
         public int? SenderId { get; set; }
 
         [ForeignKey(nameof(SenderId))]
@@ -27,9 +27,9 @@ namespace BookCircle.Data.Models
 
         public bool IsRead { get; set; } = false;
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // Related entities (optional)
+    
         public int? BorrowRequestId { get; set; }
 
         [ForeignKey(nameof(BorrowRequestId))]
@@ -44,6 +44,6 @@ namespace BookCircle.Data.Models
 
         [ForeignKey(nameof(BookId))]
         public Book? Book { get; set; }
-        public NotificationType Type { get; set; }   // 🔥 IMPORTANT ADDITION
+        public NotificationType Type { get; set; }  
     }
 }

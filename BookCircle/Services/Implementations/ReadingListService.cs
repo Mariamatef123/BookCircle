@@ -4,6 +4,7 @@ using BookCircle.Services.Interfaces;
 using BookCircle.Data.Repositories.Intefaces;
 using BookCircle.DTOs.Books;
 using BookCircle.Migrations;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookCircle.Services.Implementations
 {
@@ -48,7 +49,7 @@ namespace BookCircle.Services.Implementations
             {
                 Name = dto.Name,
                 UserId = userId,
-                CreatedAt= DateTime.UtcNow,
+                CreatedAt= DateTime.Now,
                 Description = dto.Description,
             };
 
@@ -87,7 +88,7 @@ namespace BookCircle.Services.Implementations
             {
                 ReadingListId = readingListId,
                 BookId = bookId,
-                AddedAt = DateTime.UtcNow
+                AddedAt = DateTime.Now
             };
 
             await _readingListBookRepo.AddAsync(readingListBook);
@@ -115,7 +116,7 @@ namespace BookCircle.Services.Implementations
             if (readingList == null)
                 throw new Exception("Reading list not found");
 
-            // delete related books first
+         
             var items = await _readingListBookRepo.
                 GetAllAsync(
             criteria: x => x.ReadingListId == readingListId
@@ -128,32 +129,33 @@ namespace BookCircle.Services.Implementations
 
             await _readingListBookRepo.SaveAsync();
 
-            // now delete reading list
             _readingListRepo.Delete(readingList);
             await _readingListRepo.SaveAsync();
         }
 
         public async Task<IEnumerable<ReadingListDTO>> GetAllReadingLists(int userId)
         {
-            var lists = await _readingListRepo
-    .FindAsync(r => r.UserId == userId);
+            var lists = await _readingListRepo.GetAllAsync(
+  r => r.UserId == userId,
+  includes: new[] { "ReadingListBooks" } // ← Add this if your repo supports it
+);
 
             if (lists == null || !lists.Any())
                 return new List<ReadingListDTO>();
+
 
             return lists.Select(r => new ReadingListDTO
             {
                 Id = r.Id,
                 Name = r.Name,
-                Description=r.Description,
-                CreatedAt=r.CreatedAt,
-                UserId=r.UserId
-
-
-
-
+                Description = r.Description,
+                CreatedAt = r.CreatedAt,
+                UserId = r.UserId,
+                BooksCount = r.ReadingListBooks?.Count ?? 0 // ✅ Now works
             }).ToList();
+
         }
+    
 
 
         public async Task<IEnumerable<BookResponseDTO>> GetBooksInReadingList(int readingListId)

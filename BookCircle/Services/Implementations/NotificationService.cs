@@ -28,7 +28,7 @@ namespace BookCircle.Services
             int? commentId = null,
             int? bookId = null)
         {
-            // 1. Save to DB
+           
             var notification = new Notification
             {
                 ReceiverId = receiverId,
@@ -38,14 +38,13 @@ namespace BookCircle.Services
                 BorrowRequestId = borrowRequestId,
                 CommentId = commentId,
                 BookId = bookId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 IsRead = false
             };
 
             await _notificationRepo.AddAsync(notification);
             await _notificationRepo.SaveAsync();
 
-            // 2. Send via SignalR — won't crash if hub is not connected
             try
             {
                 await _hubContext.Clients
@@ -66,10 +65,9 @@ namespace BookCircle.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"SignalR failed: {ex.Message}");
-                // notification is already saved to DB, so no data loss
             }
         }
-        // GET USER NOTIFICATIONS
+     
         public async Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId)
         {
             return await _notificationRepo.GetAllAsync(
@@ -79,7 +77,7 @@ namespace BookCircle.Services
      );
         }
 
-        // MARK AS READ
+     
         public async Task MarkAsReadAsync(int notificationId, int userId)
         {
             var notification = await _notificationRepo.GetByIdAsync(notificationId);
@@ -90,7 +88,7 @@ namespace BookCircle.Services
             if (notification.ReceiverId != userId)
                 throw new Exception("Unauthorized");
 
-            notification.IsRead = true;
+         notification.IsRead=true;
 
             await _notificationRepo.SaveAsync();
         }

@@ -115,7 +115,7 @@ namespace BookCircle.Services.Implementations
             _userRepo.Delete(owner);
             await _userRepo.SaveAsync();
 
-            // Notify AFTER save succeeds ✅
+          
 
         }
 

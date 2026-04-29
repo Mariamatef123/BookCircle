@@ -105,6 +105,8 @@ namespace BookCircle.Data
     .HasForeignKey(n => n.BookId)
     .OnDelete(DeleteBehavior.Cascade);
 
+  
+
             //        modelBuilder.Entity<WaitingList>()
             //.HasIndex(w => new { w.BookId, w.UserId })
             //.IsUnique();

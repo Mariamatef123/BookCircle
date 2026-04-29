@@ -45,7 +45,7 @@ namespace BookCircle.Services.Implementations
                     UserId = userId,
                     BookId = bookId,
                     Type = ReactionType.LIKE,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.Now
                 });
                 sendNotification = true;
             }
@@ -68,7 +68,7 @@ namespace BookCircle.Services.Implementations
                 await _notificationService.SendNotificationAsync(
                     receiverId: book.OwnerId,
                     senderId: userId,
-                    message: "Someone liked your book",
+                    message: $"${user.Name} liked your book {book.Title}",
                     type: NotificationType.BOOK_LIKED,
                     bookId: book.Id
                 );
@@ -95,7 +95,7 @@ namespace BookCircle.Services.Implementations
                     UserId = userId,
                     BookId = bookId,
                     Type = ReactionType.DISLIKE,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.Now
                 });
             }
             else if (existing.Type == ReactionType.DISLIKE)
@@ -114,7 +114,7 @@ namespace BookCircle.Services.Implementations
             await _notificationService.SendNotificationAsync(
     receiverId: book.OwnerId,
     senderId: userId,
-    message: "Someone disliked your book",
+    message: $"{user.Name} disliked your book {book.Title}",
     type: NotificationType.BOOK_DISLIKED,
     bookId: book.Id
 );

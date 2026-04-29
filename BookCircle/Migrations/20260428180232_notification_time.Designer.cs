@@ -4,6 +4,7 @@ using BookCircle.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookCircle.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260428180232_notification_time")]
+    partial class notification_time
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +43,7 @@ namespace BookCircle.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("AvailabilityDates", (string)null);
+                    b.ToTable("AvailabilityDates");
                 });
 
             modelBuilder.Entity("BookCircle.Data.Models.Book", b =>
@@ -108,7 +111,7 @@ namespace BookCircle.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Books", (string)null);
+                    b.ToTable("Books");
                 });
 
             modelBuilder.Entity("BookCircle.Data.Models.BorrowRequest", b =>
@@ -148,7 +151,7 @@ namespace BookCircle.Migrations
 
                     b.HasIndex("ReaderId");
 
-                    b.ToTable("BorrowRequests", (string)null);
+                    b.ToTable("BorrowRequests");
                 });
 
             modelBuilder.Entity("BookCircle.Data.Models.Comment", b =>
@@ -186,7 +189,7 @@ namespace BookCircle.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("BookCircle.Data.Models.Notification", b =>
@@ -237,7 +240,7 @@ namespace BookCircle.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Notification", (string)null);
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("BookCircle.Data.Models.Reaction", b =>
@@ -258,7 +261,7 @@ namespace BookCircle.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reactions", (string)null);
+                    b.ToTable("Reactions");
                 });
 
             modelBuilder.Entity("BookCircle.Data.Models.ReadingList", b =>
@@ -287,7 +290,7 @@ namespace BookCircle.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ReadingLists", (string)null);
+                    b.ToTable("ReadingLists");
                 });
 
             modelBuilder.Entity("BookCircle.Data.Models.ReadingListBook", b =>
@@ -305,7 +308,7 @@ namespace BookCircle.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("ReadingListBooks", (string)null);
+                    b.ToTable("ReadingListBooks");
                 });
 
             modelBuilder.Entity("BookCircle.Data.Models.User", b =>
@@ -342,7 +345,7 @@ namespace BookCircle.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("BookCircle.Data.Models.AvailabilityDate", b =>

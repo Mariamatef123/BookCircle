@@ -93,7 +93,7 @@ public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         return await query.AsNoTracking().ToListAsync();
     }
 
-    // ── GET FIRST ──────────────────────────────────────────────
+
     public async Task<IEnumerable<T>> GetAllAsync(
         Expression<Func<T, bool>>? criteria = null,
         Expression<Func<T, object>>? orderBy = null,
@@ -131,11 +131,11 @@ public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         if (!tracked)
             query = query.AsNoTracking();
 
-        // expression include (preferred)
+
         if (include != null)
             query = include(query);
 
-        // string include (fallback)
+     
         if (includes != null)
             foreach (var inc in includes)
                 query = query.Include(inc);

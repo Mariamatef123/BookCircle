@@ -17,16 +17,16 @@ namespace BookCircle.Data.Models
 
         public Role Role { get; set; }
 
-        public DateTime CreatedAt { get; set; }=DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }=DateTime.Now;
         public bool IsApproved { get; set; }//for owner approval
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         //any user can write comments
 
-        // Notifications received
+       
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
-        // Notifications sent (optional but important)
+   
         public ICollection<Notification> SentNotifications { get; set; } = new List<Notification>();
 
         //public ICollection<Book> Books { get; set; } = new List<Book>();// owner can manage many books/ admin can accept,reject books

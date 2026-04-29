@@ -23,7 +23,7 @@ public class BorrowRequest
 
     public BorrowRequestStatus Status { get; set; } = BorrowRequestStatus.PENDING;
 
-    public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
+    public DateTime RequestedAt { get; set; } = DateTime.Now;
 
     public DateTime? RespondedAt { get; set; }
 

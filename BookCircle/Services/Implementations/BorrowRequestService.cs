@@ -17,9 +17,10 @@ namespace BookCircle.Services.Implementations
         private readonly IGenericRepository<Book> _bookRepo;
         private readonly IGenericRepository<BorrowRequest> _borrowRequest;
         private readonly IGenericRepository<AvailabilityDate> _availabilityRepo;
+        private readonly IGenericRepository<Notification> _notificationRepo;
         private readonly INotificationService _notificationService;
 
-        public BorrowRequestService(IGenericRepository<User> userRepo, IGenericRepository<Book> bookRepo, IGenericRepository<BorrowRequest> borrowRequest,INotificationService NotificationService, IGenericRepository<AvailabilityDate> availabilityRepo)
+        public BorrowRequestService(IGenericRepository<User> userRepo, IGenericRepository<Book> bookRepo, IGenericRepository<BorrowRequest> borrowRequest,INotificationService NotificationService, IGenericRepository<AvailabilityDate> availabilityRepo,IGenericRepository<Notification> notificationRepo)
         {
 
             _userRepo = userRepo;
@@ -27,6 +28,8 @@ namespace BookCircle.Services.Implementations
             _borrowRequest = borrowRequest;
             _notificationService = NotificationService;
             _availabilityRepo = availabilityRepo;
+            _notificationRepo = notificationRepo;
+
         }
 
         public async Task sendBorrowRequest(int readerId, int bookId, int chosenDuration)
@@ -62,10 +65,10 @@ namespace BookCircle.Services.Implementations
             await _notificationService.SendNotificationAsync( 
                 receiverId: book.OwnerId, 
                 senderId: readerId,
-                message: "You have a new borrow request",
+            message: $"You have a new borrow request on book {book.Title} from {bookRequest.Reader.Name}",
                 type: NotificationType.BORROW_REQUEST, 
                 borrowRequestId: bookRequest.Id,
-                bookId: book.Id );
+                bookId: book.Id ); 
 
         }
 
@@ -86,7 +89,7 @@ namespace BookCircle.Services.Implementations
             var activeBorrow = await _borrowRequest.GetFirstOrDefaultAsync(
                 br => br.BookId == bookId &&
                       br.Status == BorrowRequestStatus.ACCEPTED &&
-                      br.EndedAt > DateTime.UtcNow
+                      br.EndedAt > DateTime.Now
             );
 
             return activeBorrow == null;
@@ -96,7 +99,7 @@ namespace BookCircle.Services.Implementations
             var activeBorrow = await _borrowRequest.GetFirstOrDefaultAsync(
                 br => br.BookId == bookId &&
                       br.Status == BorrowRequestStatus.ACCEPTED &&
-                      br.EndedAt > DateTime.UtcNow
+                      br.EndedAt > DateTime.Now
             );
 
             if (activeBorrow == null)
@@ -105,7 +108,7 @@ namespace BookCircle.Services.Implementations
             if (activeBorrow.ReaderId != userId)
                 throw new Exception("Not your borrow");
 
-            // 👇 user manually returned the book
+     
             activeBorrow.Status = BorrowRequestStatus.RETURNED;
             activeBorrow.Book.BorrowStatus = BookStatus.AVAILABLE;
             var book = await _bookRepo.GetByIdAsync(bookId);
@@ -127,7 +130,7 @@ namespace BookCircle.Services.Implementations
 
             var borrowRequest = await _borrowRequest.GetFirstOrDefaultAsync(
                 criteria: br => br.Id == borrowRequestId,
-                includes: new[] { "Book", "AvailabilityDate" } // 🔥 FIX HERE
+                includes: new[] { "Book", "AvailabilityDate" }
             );
 
             if (borrowRequest == null)
@@ -141,9 +144,8 @@ namespace BookCircle.Services.Implementations
                 throw new Exception("Book already borrowed");
 
             borrowRequest.Status = BorrowRequestStatus.ACCEPTED;
-            borrowRequest.RespondedAt = DateTime.UtcNow;
+            borrowRequest.RespondedAt = DateTime.Now;
 
-            // ✅ SAFE (AvailabilityDate now loaded)
             if (borrowRequest.AvailabilityDate != null)
             {
                 borrowRequest.EndedAt = borrowRequest.RespondedAt.Value
@@ -163,8 +165,17 @@ namespace BookCircle.Services.Implementations
             foreach (var r in otherRequests)
             {
                 r.Status = BorrowRequestStatus.REJECTED;
-                r.RespondedAt = DateTime.UtcNow;
+                r.RespondedAt = DateTime.Now;
                 await _borrowRequest.UpdateAsync(r);
+                await _notificationService.SendNotificationAsync(
+    receiverId: r.ReaderId,
+    senderId: ownerId,
+
+    message: $"Your borrow request on book {book.Title} has been rejected by  {book.Owner.Name} but be available again in {borrowRequest.EndedAt}",
+    type: NotificationType.BORROW_REJECTED,
+    borrowRequestId: borrowRequest.Id,
+    bookId: book.Id
+);
             }
 
             await _borrowRequest.SaveAsync();
@@ -172,7 +183,8 @@ namespace BookCircle.Services.Implementations
             await _notificationService.SendNotificationAsync(
                 receiverId: borrowRequest.ReaderId,
                 senderId: ownerId,
-                message: "Your borrow request has been accepted",
+                
+                message: $"Your borrow request on book {book.Title} has been accepted by  {book.Owner.Name}",
                 type: NotificationType.BORROW_ACCEPTED,
                 borrowRequestId: borrowRequest.Id,
                 bookId: book.Id
@@ -183,7 +195,7 @@ namespace BookCircle.Services.Implementations
         {
             var expiredBorrows = await _borrowRequest.GetAllAsync(
                 br => br.Status == BorrowRequestStatus.ACCEPTED &&
-                      br.EndedAt <= DateTime.UtcNow,
+                      br.EndedAt <= DateTime.Now,
                 includes: new[] { "Book" }
             );
 
@@ -208,7 +220,7 @@ namespace BookCircle.Services.Implementations
 
         public async Task RejectBorrowRequest(int ownerId, int borrowRequestId)
         {
-            // 1. Get owner
+         
             var owner = await _userRepo.GetFirstOrDefaultAsync(
                 criteria: u => u.Id == ownerId
             );
@@ -219,7 +231,7 @@ namespace BookCircle.Services.Implementations
             if (owner.Role != Role.BOOK_OWNER)
                 throw new Exception("Only owners can reject borrow requests");
 
-            // 2. Get borrow request with includes
+         
             var borrowRequest = await _borrowRequest.GetFirstOrDefaultAsync(
                 criteria: br => br.Id == borrowRequestId,
                 includes: new[] { "Book", "Reader" },
@@ -229,9 +241,9 @@ namespace BookCircle.Services.Implementations
             if (borrowRequest == null)
                 throw new Exception("Borrow request not found");
 
-            // 3. Update entity
+      
             borrowRequest.Status = BorrowRequestStatus.REJECTED;
-            borrowRequest.RespondedAt = DateTime.UtcNow;
+            borrowRequest.RespondedAt = DateTime.Now;
             if (borrowRequest == null)
                 throw new Exception("borrowRequest is null");
 
@@ -240,19 +252,74 @@ namespace BookCircle.Services.Implementations
 
             if (borrowRequest.ReaderId == null)
                 throw new Exception("ReaderId is null");
-            // 4. Save changes
+         
             await _borrowRequest.SaveAsync();
 
-            // 5. Notification
+    
             await _notificationService.SendNotificationAsync(
                 receiverId: borrowRequest.ReaderId,
                 senderId: ownerId,
-                message: "Your borrow request has been rejected",
+                message: $"Your borrow request on book {borrowRequest.Book.Title} has been rejected",
                 type: NotificationType.BORROW_REJECTED,
                 borrowRequestId: borrowRequest.Id,
                 bookId: borrowRequest.BookId
             );
         }
 
+        public async Task<IEnumerable<BorrowRequest>> RequestsSentByUser(int userId)
+        {
+            var reader = await _userRepo.GetFirstOrDefaultAsync(
+    criteria: u => u.Id == userId
+);
+
+
+            if (reader == null)
+                throw new Exception("User not found");
+
+            var requests = await _borrowRequest.GetAllAsync(
+              br => br.ReaderId == userId,
+              includes: new[] { "Book" , "AvailabilityDate" }
+          );
+            return requests;
+        }
+        public async Task CancelBorrowRequest(int userId ,int borrowRequestId)
+        {
+            var reader = await _userRepo.GetFirstOrDefaultAsync(
+               criteria: u => u.Id == userId
+           );
+
+
+            if (reader == null)
+                throw new Exception("User not found");
+
+            if (reader.Role != Role.READER)
+                throw new Exception("Only Reader can reject borrow requests");
+
+
+            var borrowRequest = await _borrowRequest.GetFirstOrDefaultAsync(
+                criteria: br => br.Id == borrowRequestId,
+                includes: new[] { "Book", "Reader" ,"Notifications"},
+                tracked: true
+            );
+
+            if (borrowRequest == null)
+                throw new Exception("Borrow request not found");
+
+
+       
+            foreach(var n in borrowRequest.Notifications)
+            {
+               await _notificationRepo.DeleteByIdAsync(n.Id);
+
+            }
+            await _borrowRequest.DeleteByIdAsync(borrowRequestId);
+
+ 
+            await _borrowRequest.SaveAsync();
+
+
+      
+        }
     }
+    
 }

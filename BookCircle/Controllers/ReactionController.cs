@@ -10,7 +10,7 @@ namespace BookCircle.Controllers
     {
 
         private readonly IReactionService _reactionService;
-        //owner
+   
         public ReactionController(IReactionService reactionService)
         {
 

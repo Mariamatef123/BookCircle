@@ -48,7 +48,7 @@ namespace BookCircle.Data.Models
         //public int OwnerId { get; set; }//1 owner can manage Many book posts,1 admin can accept,reject many book posts(dont put it)
 
         //[ForeignKey(nameof(OwnerId))]
-        //public User Owner { get; set; }  = null!;//Navigation property\\
+        //public User Owner { get; set; }  = null!;
         public int OwnerId { get; set; }
 
         [ForeignKey(nameof(OwnerId))]
