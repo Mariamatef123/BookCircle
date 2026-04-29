@@ -8,6 +8,7 @@ namespace BookCircle.DTOs.Comments
         public string Content { get; set; }
         public int UserId { get; set; }
         public DateTime CreatedAt { get; set; }
+
         public UserDTO User { get; set; } = new();
     }
 }
