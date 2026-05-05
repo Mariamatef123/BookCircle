@@ -13,14 +13,14 @@ export default function ImageUpload({ preview, setPreview, setForm }) {
 
   return (
     <div style={styles.uploadBox}>
-      {/* Preview or placeholder */}
+   
       {preview ? (
         <img src={preview} alt="cover" style={styles.image} />
       ) : (
         <div style={styles.placeholder}>No Cover</div>
       )}
 
-      {/* Buttons */}
+ 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         <label style={styles.uploadBtn}>
           {preview ? "Change Cover" : "Upload Cover"}

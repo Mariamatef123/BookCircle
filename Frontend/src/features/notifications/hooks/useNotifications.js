@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getNotifications, markAsRead } from "../../../Service/NotificationService";
 import { getUser } from "../../../utils/auth";
 
-// Maps each type → { label, icon, bg, getTarget }
+
 const TYPE_CONFIG = {
   BORROW_REQUEST:  { label: "Borrow Request",    bg: "#eff6ff", getTarget: ()       => "/dashboard"               },
   BORROW_ACCEPTED: { label: "Request Accepted",  bg: "#f0fdf4", getTarget: (n)      => ({ path: "/payment", state: { bookId: n.bookId } }) },
@@ -32,7 +32,6 @@ export default function useNotifications() {
   const [loading,       setLoading]       = useState(true);
   const [error,         setError]         = useState("");
 
-  // ── Fetch ─────────────────────────────────────────────────────
   const fetchNotifications = async () => {
     if (!userId) return;
     setLoading(true);
@@ -49,7 +48,7 @@ export default function useNotifications() {
 
   useEffect(() => { fetchNotifications(); }, [userId]); // eslint-disable-line
 
-  // ── Mark as read ──────────────────────────────────────────────
+
   const markRead = async (id) => {
     try {
       await markAsRead(id, userId);
@@ -65,7 +64,6 @@ export default function useNotifications() {
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true, IsRead: true })));
   };
 
-  // ── Click handler ─────────────────────────────────────────────
   const handleClick = async (n) => {
     const id = getId(n);
     if (!getIsRead(n)) await markRead(id);
@@ -78,7 +76,7 @@ export default function useNotifications() {
     if (typeof target === "string") {
       navigate(target);
     } else {
-      // object with path + state (e.g. payment)
+
       navigate(target.path, { state: target.state });
     }
   };
@@ -91,7 +89,6 @@ export default function useNotifications() {
   };
 }
 
-// ── Normalizers ───────────────────────────────────────────────
 export function getId(n)      { return n?.id      ?? n?.Id;      }
 export function getIsRead(n)  { return Boolean(n?.isRead ?? n?.IsRead); }
 export function getTitle(n)   { return n?.title   ?? n?.Title   ?? getTypeConfig(n?.type).label; }

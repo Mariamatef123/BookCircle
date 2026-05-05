@@ -18,7 +18,7 @@ export default function PaymentForm({
         <p style={styles.formSubtitle}>Your payment info is encrypted and secure.</p>
       </div>
 
-      {/* ── Live card visual ── */}
+
       <div style={styles.cardVisual}>
         <div style={styles.cardVisualCircle1} />
         <div style={styles.cardVisualCircle2} />
@@ -40,9 +40,9 @@ export default function PaymentForm({
         </div>
       </div>
 
-      {/* ── Fields ── */}
+
       <div style={styles.fieldGroup}>
-        {/* Cardholder */}
+
         <div style={styles.field}>
           <label style={styles.label}>Cardholder Name</label>
           <input
@@ -57,7 +57,6 @@ export default function PaymentForm({
           />
         </div>
 
-        {/* Card number */}
         <div style={styles.field}>
           <label style={styles.label}>Card Number</label>
           <input
@@ -73,7 +72,6 @@ export default function PaymentForm({
           />
         </div>
 
-        {/* Expiry + CVV */}
         <div style={styles.fieldRow}>
           <div style={styles.field}>
             <label style={styles.label}>Expiry Date</label>
@@ -107,11 +105,11 @@ export default function PaymentForm({
         </div>
       </div>
 
-      {/* Error / Success */}
+     
       {error   && <div style={styles.errorBox}>⚠️ {error}</div>}
       {success && <div style={styles.successBox}>✅ {success}</div>}
 
-      {/* Submit */}
+  
       <button
         type="submit"
         onClick={handleSubmit}
@@ -124,7 +122,6 @@ export default function PaymentForm({
         {submitting ? "Processing..." : success ? "Redirecting..." : "Pay Now"}
       </button>
 
-      {/* Secure badge */}
       <div style={styles.secureBadge}>
          Payments are secure
       </div>

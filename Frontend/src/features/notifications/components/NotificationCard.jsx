@@ -5,7 +5,7 @@ import {
   formatDate,
 } from "../hooks/useNotifications";
 
-// Types that show a CTA strip with navigation hint
+
 const CTA_TYPES = {
   BORROW_ACCEPTED: { text: " Complete your payment →" },
   BORROW_REQUEST:  { text: " View in your dashboard →" },
@@ -41,30 +41,27 @@ export default function NotificationCard({ notification: n, onClick }) {
         e.currentTarget.style.boxShadow   = "";
       }}
     >
-      {/* Unread dot */}
+
       {!isRead && <div style={styles.unreadDot} />}
 
       <div style={styles.cardTop}>
-        {/* Icon */}
-        {/* <div style={{ ...styles.iconWrap, background: config.bg }}>
-          {config.icon}
-        </div> */}
+
 
         <div style={styles.cardBody}>
-          {/* Title + time */}
+    
           <div style={styles.cardTitleRow}>
             <p style={styles.cardTitle}>{title}</p>
             <span style={styles.cardTime}>{dateStr}</span>
           </div>
 
-          {/* Message */}
+      
           {message && <p style={styles.cardMessage}>{message}</p>}
 
-          {/* CTA strip */}
+    
           {cta && (
             <div style={styles.ctaStrip}>
               <span style={styles.ctaText}>{cta.text}</span>
-              {/* <span style={styles.ctaArrow}>→</span> */}
+      
             </div>
           )}
         </div>

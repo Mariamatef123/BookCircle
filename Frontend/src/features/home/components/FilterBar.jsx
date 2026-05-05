@@ -7,7 +7,7 @@ const ChevronDown = () => (
   </svg>
 );
 
-// ✅ Dropdown (safe + reusable)
+
 function FilterDropdown({ label, options, value, onChange }) {
   const [open, setOpen] = useState(false);
 
@@ -48,7 +48,7 @@ function FilterDropdown({ label, options, value, onChange }) {
             <div
               key={opt.value}
               onClick={() => {
-                if (onChange) onChange(opt.value); // ✅ prevent crash
+                if (onChange) onChange(opt.value); 
                 setOpen(false);
               }}
               style={{
@@ -66,7 +66,7 @@ function FilterDropdown({ label, options, value, onChange }) {
   );
 }
 
-// ✅ FINAL FilterBar (clean)
+
 export default function FilterBar({
   availableOnly,
   setAvailableOnly,
@@ -76,7 +76,7 @@ export default function FilterBar({
   return (
     <div style={styles.filters}>
       
-      {/* LEFT SIDE */}
+  
       <div style={styles.filterLeft}>
         <div style={styles.toggleWrap}>
           <div
@@ -99,7 +99,6 @@ export default function FilterBar({
         </div>
       </div>
 
-      {/* RIGHT SIDE */}
       <div style={styles.filterRight}>
         <span style={{ fontSize: 13, color: "#888" }}>Sort by</span>
 

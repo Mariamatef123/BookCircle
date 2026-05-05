@@ -3,7 +3,7 @@ import styles from "../styles/paymentStyles";
 export default function BookSummaryCard({ book }) {
   return (
     <div style={styles.bookCard}>
-      {/* Cover */}
+   
       <div style={styles.bookCoverWrap}>
         {book.coverImageBase64 ? (
           <img
@@ -16,7 +16,6 @@ export default function BookSummaryCard({ book }) {
         )}
       </div>
 
-      {/* Info */}
       <div>
         <p style={styles.bookTitle}>{book.title}</p>
         <p style={styles.bookAuthor}>by {book.owner?.name || "Unknown"}</p>
@@ -27,13 +26,12 @@ export default function BookSummaryCard({ book }) {
 
       <hr style={styles.divider} />
 
-      {/* Amount */}
       <div style={styles.amountRow}>
         <span style={styles.amountLabel}>Total</span>
         <span style={styles.amountValue}>{book.borrowPrice} L.E</span>
       </div>
 
-      {/* Availability */}
+   
       {book.availabilityDates?.length > 0 && (
         <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>
           Duration: {book.availabilityDates.map((d) => `${d.duration} days`).join(", ")}

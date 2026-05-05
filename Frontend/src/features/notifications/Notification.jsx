@@ -9,7 +9,6 @@ export default function Notification() {
     unreadCount, handleClick, markAllRead,
   } = useNotifications();
 
-  // ── Loading ───────────────────────────────────────────────────
   if (loading) {
     return (
       <div style={styles.page}>
@@ -21,7 +20,6 @@ export default function Notification() {
     );
   }
 
-  // ── Error ─────────────────────────────────────────────────────
   if (error) {
     return (
       <div style={styles.page}>
@@ -33,12 +31,11 @@ export default function Notification() {
     );
   }
 
-  // ── Page ──────────────────────────────────────────────────────
   return (
     <div style={styles.page}>
       <div style={styles.surface}>
 
-        {/* Header */}
+
         <div style={styles.header}>
           <div>
             <h1 style={styles.h1}>Notifications</h1>
@@ -67,7 +64,6 @@ export default function Notification() {
           </div>
         </div>
 
-        {/* List */}
         {notifications.length === 0 ? (
           <NotificationsEmpty />
         ) : (

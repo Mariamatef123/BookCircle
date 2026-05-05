@@ -25,7 +25,7 @@ export default function useReadingList(userId) {
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
 
-  // ─── LOADERS ───
+
   const loadLists = async () => {
     const res = await getUserLists(userId);
     setLists(res?.data ?? []);
@@ -44,7 +44,6 @@ export default function useReadingList(userId) {
     }
   }, [activeTab, selectedListId]);
 
-  // ─── SEARCH ───
   const handleSearch = useCallback(async (type, value) => {
     setSearching(true);
     setSearchError("");
@@ -66,14 +65,14 @@ export default function useReadingList(userId) {
     }
   }, []);
 
-  // debounce
+
   useEffect(() => {
     if (!addBookModalOpen) return;
     const t = setTimeout(() => handleSearch(filterType, filterValue), 400);
     return () => clearTimeout(t);
   }, [filterValue, filterType, addBookModalOpen]);
 
-  // ─── ACTIONS ───
+
   const createNewList = async () => {
     await createList(userId, { name: newListName, description: newListDesc });
     setCreateModalOpen(false);

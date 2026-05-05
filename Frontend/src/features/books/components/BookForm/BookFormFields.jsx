@@ -8,7 +8,7 @@ export default function BookFormFields({ form, setForm }) {
 
   return (
     <>
-      {/* 2-column grid fields */}
+   
       <div style={styles.grid}>
         <div style={styles.section}>
           <label style={styles.label}>Title</label>
@@ -48,7 +48,7 @@ export default function BookFormFields({ form, setForm }) {
         </div>
       </div>
 
-      {/* Description — full width */}
+    
       <div style={styles.section}>
         <label style={styles.label}>Description</label>
         <textarea

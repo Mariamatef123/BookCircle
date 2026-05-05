@@ -5,7 +5,6 @@ import styles         from "./styles/requestStyles";
 export default function RequestsPage() {
   const { requests, loading, error, toast, canceling, handleCancel } = useRequests();
 
-  // ── Loading ───────────────────────────────────────────────────
   if (loading) {
     return (
       <div style={styles.page}>
@@ -17,7 +16,6 @@ export default function RequestsPage() {
     );
   }
 
-  // ── Error ─────────────────────────────────────────────────────
   if (error) {
     return (
       <div style={styles.page}>
@@ -29,7 +27,6 @@ export default function RequestsPage() {
     );
   }
 
-  // ── Page ──────────────────────────────────────────────────────
   return (
     <div style={styles.page}>
       <style>{`
@@ -40,7 +37,6 @@ export default function RequestsPage() {
         }
       `}</style>
 
-      {/* Toast */}
       {toast && (
         <div style={{
           ...styles.toast,
@@ -52,7 +48,7 @@ export default function RequestsPage() {
 
       <div style={styles.surface} className="requests-surface">
 
-        {/* Header */}
+       
         <div style={styles.header}>
           <div>
             <h1 style={styles.h1}>My Borrow Requests</h1>
@@ -65,7 +61,7 @@ export default function RequestsPage() {
           )}
         </div>
 
-        {/* Table */}
+
         <RequestsTable
           requests={requests}
           canceling={canceling}

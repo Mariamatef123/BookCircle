@@ -9,7 +9,7 @@ function getInitials(name) {
 export default function ProfileHero({ owner, totalBooks, availableCount, borrowedCount }) {
   return (
     <div style={styles.heroCard}>
-      {/* Avatar */}
+   
       <div style={styles.avatar}>
         {getInitials(owner?.name)}
       </div>
@@ -18,7 +18,7 @@ export default function ProfileHero({ owner, totalBooks, availableCount, borrowe
         <h1 style={styles.heroName}>{owner?.name || "Unknown User"}</h1>
         <p style={styles.heroRole}>{owner?.role?.replaceAll("_", " ") || "Member"}</p>
 
-        {/* Stats */}
+      
         <div style={styles.heroStats}>
           <div style={styles.statChip}>
             <span style={styles.statNumber}>{totalBooks}</span>

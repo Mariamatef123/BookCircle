@@ -15,7 +15,7 @@ export default function ReadingList() {
   return (
     <div style={styles.wrapper}>
 
-      {/* Header */}
+
       <div style={styles.header}>
         <div>
           <h1 style={styles.h1}>Reading Lists</h1>
@@ -33,7 +33,6 @@ export default function ReadingList() {
         )}
       </div>
 
-      {/* Tabs */}
       <div style={styles.tabBar}>
         {["lists", "books"].map((tab) => (
           <button
@@ -46,7 +45,6 @@ export default function ReadingList() {
         ))}
       </div>
 
-      {/* Content */}
       {rl.activeTab === "lists" && (
         <ListTable
           lists={rl.lists}
@@ -66,7 +64,7 @@ export default function ReadingList() {
         />
       )}
 
-      {/* Modals */}
+   
       <CreateListModal
         createModalOpen={rl.createModalOpen}
         setCreateModalOpen={rl.setCreateModalOpen}

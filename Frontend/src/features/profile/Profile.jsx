@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import useProfile      from "./hooks/useProfile";
 import ProfileHero     from "./components/ProfileHero";
-// import ProfileBookCard from "./components/ProfileBookCard";
+
 import ProfileEmpty    from "./components/ProfileEmpty";
 import styles          from "./styles/profileStyles";
 import BookCard from "../home/components/BookCard";
@@ -10,7 +10,6 @@ export default function Profile() {
   const navigate = useNavigate();
   const { owner, userBooks, availableCount, borrowedCount, loading, error } = useProfile();
 
-  // ── Loading ───────────────────────────────────────────────────
   if (loading) {
     return (
       <div style={styles.page}>
@@ -22,7 +21,6 @@ export default function Profile() {
     );
   }
 
-  // ── Error ─────────────────────────────────────────────────────
   if (error) {
     return (
       <div style={styles.page}>
@@ -41,7 +39,7 @@ export default function Profile() {
     );
   }
 
-  // ── Page ──────────────────────────────────────────────────────
+ 
   return (
     <div style={styles.page} className="profile-page">
       <style>{`
@@ -60,7 +58,7 @@ export default function Profile() {
 
       <div style={styles.surface}>
 
-        {/* Hero */}
+       
         <ProfileHero
           owner={owner}
           totalBooks={userBooks.length}
@@ -68,7 +66,6 @@ export default function Profile() {
           borrowedCount={borrowedCount}
         />
 
-        {/* Books section */}
         <div style={styles.sectionHeader}>
           <h2 style={styles.sectionTitle}>Listed Books</h2>
           <span style={styles.sectionCount}>{userBooks.length} book{userBooks.length !== 1 ? "s" : ""}</span>

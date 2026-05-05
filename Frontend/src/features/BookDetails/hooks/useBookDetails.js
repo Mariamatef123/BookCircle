@@ -10,8 +10,8 @@ import { normalizeAvailabilityOptions, normalizeReaction, normalizeComment, getR
 
 export default function useBookDetails() {
   const navigate = useNavigate();
-  const { bookId } = useParams();
-  const [searchParams] = useSearchParams();
+  const { bookId } = useParams();//url path
+  const [searchParams] = useSearchParams();//query ?tab=...
   const user   = getUser();
   const userId = user?.id;
   const requestedTab = searchParams.get("tab") === "comments" ? "comments" : "about";
@@ -33,30 +33,30 @@ export default function useBookDetails() {
 
   const [reactions,        setReactions]        = useState([]);
   const [reactionsLoading, setReactionsLoading] = useState(false);
-  const [reactionBusy,     setReactionBusy]     = useState("");
+  const [reactionBusy,     setReactionBusy]     = useState("");//for type
 
   const [comments,          setComments]          = useState([]);
   const [commentsLoading,   setCommentsLoading]   = useState(false);
   const [commentText,       setCommentText]       = useState("");
   const [commentBusy,       setCommentBusy]       = useState(false);
-  const [replyFor,          setReplyFor]          = useState(null);
-  const [replyDrafts,       setReplyDrafts]       = useState({});
+  const [replyFor,          setReplyFor]          = useState(null);//reply input
+  const [replyDrafts,       setReplyDrafts]       = useState({});//for parent
   const [editingCommentId,  setEditingCommentId]  = useState(null);
   const [editingText,       setEditingText]       = useState("");
   const [commentActionId,   setCommentActionId]   = useState(null);
 
   // ── Derived ───────────────────────────────────────────────────
-  const book = books.find((item) => String(item.id) === String(bookId));
-  const availabilityOptions  = normalizeAvailabilityOptions(book?.availabilityDates);
-  const selectedAvailability = availabilityOptions.find((i) => i.key === selectedAvailabilityKey) || availabilityOptions[0];
+  const book = books.find((item) => String(item.id) === String(bookId));//give the book from list
+  const availabilityOptions  = normalizeAvailabilityOptions(book?.availabilityDates);//for ui
+  const selectedAvailability = availabilityOptions.find((i) => i.key === selectedAvailabilityKey) || availabilityOptions[0];// select first option in begining
   const relatedBooks = book
     ? books.filter((i) => i.id !== book.id && (i.genre === book.genre || i.language === book.language)).slice(0, 3)
-    : [];
+    : [];//same genre or same language and excludes current book
   const isAvailable    = book?.borrowStatus?.toUpperCase() === "AVAILABLE";
-  const reactionSummary = getReactionSummary(reactions, userId);
-  const totalComments   = comments.reduce((sum, c) => sum + 1 + (c.replies?.length || 0), 0);
+  const reactionSummary = getReactionSummary(reactions, userId);//total likes total dislikes user’s own reaction
+  const totalComments   = comments.reduce((sum, c) => sum + 1 + (c.replies?.length || 0), 0);//main comments replies
 
-  // ── Loaders ───────────────────────────────────────────────────
+
   useEffect(() => {
     const fetch = async () => {
       setLoading(true); setError("");
@@ -80,11 +80,11 @@ export default function useBookDetails() {
     setEditingCommentId(null);
     setEditingText("");
     setCommentText("");
-  }, [bookId, requestedTab]);
+  }, [bookId, requestedTab]);//When user changes book: reset UI scroll to top
 
   useEffect(() => {
     if (!message) return;
-    const t = setTimeout(() => setMessage(null), 3200);
+    const t = setTimeout(() => setMessage(null), 3200);//auto hide message
     return () => clearTimeout(t);
   }, [message]);
 
@@ -112,12 +112,11 @@ export default function useBookDetails() {
     if (!bookId) return;
     loadReactions(bookId);
     loadComments(bookId);
-  }, [bookId]); // eslint-disable-line
+  }, [bookId]); 
 
-  // ── Auth guard ────────────────────────────────────────────────
-  const ensureSignedIn = () => { if (userId) return true; navigate("/login"); return false; };
+  const ensureSignedIn = () => { if (userId) return true; navigate("/login"); return false; };//Used before ANY action: borrow comment like add to list
 
-  // ── Borrow ────────────────────────────────────────────────────
+
   const handleOpenBorrowModal = () => {
     if (!ensureSignedIn() || !isAvailable || !availabilityOptions.length) return;
     setBorrowModalOpen(true);
@@ -135,7 +134,7 @@ export default function useBookDetails() {
     } finally { setBorrowing(false); }
   };
 
-  // ── Reading list ──────────────────────────────────────────────
+
   const handleOpenReadingLists = async () => {
     if (!ensureSignedIn()) return;
     setListModalOpen(true); setListsLoading(true);
@@ -160,7 +159,6 @@ export default function useBookDetails() {
     } finally { setAddingToList(false); }
   };
 
-  // ── Reactions ─────────────────────────────────────────────────
   const handleReaction = async (type) => {
     if (!ensureSignedIn() || !book) return;
     setReactionBusy(type);
@@ -173,7 +171,6 @@ export default function useBookDetails() {
     } finally { setReactionBusy(""); }
   };
 
-  // ── Comments ──────────────────────────────────────────────────
   const handleCommentSubmit = async () => {
     if (!ensureSignedIn() || !book || !commentText.trim()) return;
     setCommentBusy(true);

@@ -24,7 +24,7 @@ export function getAvailabilityLabel(options) {
 }
 
 export function getOwnerInitials(name) {
-  if (!name) return "BC";
+  if (!name) return "none";
   return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
 }
 

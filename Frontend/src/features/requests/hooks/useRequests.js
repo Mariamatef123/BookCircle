@@ -9,16 +9,15 @@ export default function useRequests() {
   const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState("");
   const [toast,     setToast]     = useState(null);
-  const [canceling, setCanceling] = useState(null); // id being canceled
+  const [canceling, setCanceling] = useState(null); 
 
-  // ── Auto-dismiss toast ────────────────────────────────────────
+
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 3200);
     return () => clearTimeout(t);
   }, [toast]);
 
-  // ── Fetch ─────────────────────────────────────────────────────
   const fetchRequests = async () => {
     if (!userId) return;
     setLoading(true);
@@ -35,7 +34,7 @@ export default function useRequests() {
 
   useEffect(() => { fetchRequests(); }, [userId]);
 
-  // ── Cancel ────────────────────────────────────────────────────
+
   const handleCancel = async (reqId) => {
     if (!window.confirm("Cancel this borrow request?")) return;
     setCanceling(reqId);

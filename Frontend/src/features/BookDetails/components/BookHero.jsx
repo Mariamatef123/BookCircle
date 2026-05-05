@@ -28,7 +28,7 @@ export default function BookHero({
   onOpenReadingLists();
 };const handleBorrowClick = () => {
   if (!user) {
-    navigate("/login"); // or your login route
+    navigate("/login"); 
     return;
   }
 

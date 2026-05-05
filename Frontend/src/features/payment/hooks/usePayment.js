@@ -21,7 +21,7 @@ export default function usePayment() {
     cvv:        "",
   });
 
-  // ── Fetch book ────────────────────────────────────────────────
+ 
   useEffect(() => {
     const fetchBook = async () => {
       setLoading(true);
@@ -42,11 +42,11 @@ export default function usePayment() {
     fetchBook();
   }, [bookId]);
 
-  // ── Form handlers ─────────────────────────────────────────────
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Auto-format card number with spaces
+
     if (name === "cardNumber") {
       const digits = value.replace(/\D/g, "").slice(0, 16);
       const formatted = digits.replace(/(.{4})/g, "$1 ").trim();
@@ -54,7 +54,7 @@ export default function usePayment() {
       return;
     }
 
-    // Auto-format expiry MM/YY
+ 
     if (name === "expiry") {
       const digits = value.replace(/\D/g, "").slice(0, 4);
       const formatted = digits.length > 2
@@ -64,7 +64,7 @@ export default function usePayment() {
       return;
     }
 
-    // CVV digits only
+
     if (name === "cvv") {
       setForm((prev) => ({ ...prev, cvv: value.replace(/\D/g, "").slice(0, 4) }));
       return;
@@ -73,7 +73,7 @@ export default function usePayment() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ── Validation ────────────────────────────────────────────────
+
   const validate = () => {
     if (!form.cardName.trim())          return "Cardholder name is required.";
     const digits = form.cardNumber.replace(/\s/g, "");
@@ -83,7 +83,6 @@ export default function usePayment() {
     return null;
   };
 
-  // ── Submit ────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -94,8 +93,8 @@ export default function usePayment() {
 
     setSubmitting(true);
     try {
-      // await api.post("/payment", { bookId: book.id, ...form });
-      await new Promise((r) => setTimeout(r, 1600)); // ← replace with real call
+
+      await new Promise((r) => setTimeout(r, 1600));
       setSuccess(`Payment successful for "${book.title}" `);
       setTimeout(() => navigate("/"), 2200);
     } catch {
@@ -105,7 +104,7 @@ export default function usePayment() {
     }
   };
 
-  // ── Masked card display ───────────────────────────────────────
+
   const maskedNumber = (() => {
     const digits = form.cardNumber.replace(/\s/g, "");
     if (!digits) return "**** **** **** ****";

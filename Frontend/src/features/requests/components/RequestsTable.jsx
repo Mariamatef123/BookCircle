@@ -70,7 +70,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
                   </div>
                 </td>
 
-                {/* Status */}
+              
                 <td style={styles.td}>
                   <span style={{
                     ...styles.badge,
@@ -82,7 +82,6 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
                   </span>
                 </td>
 
-                {/* Duration */}
                 <td style={styles.td}>
                   {req.availabilityDate.duration ? (
                     <span style={styles.durationChip}>{req.availabilityDate.duration} days</span>
@@ -91,7 +90,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
                   )}
                 </td>
 
-                {/* Date */}
+              
      <td style={styles.td}>
   <p style={{ ...styles.dateText, margin: 0 }}>
     {new Date(req.requestedAt).toLocaleDateString()}
@@ -101,7 +100,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
     {new Date(req.requestedAt).toLocaleTimeString()}
   </p>
 </td>
-                {/* Actions */}
+         
                 <td style={styles.td}>
                   {isPending ? (
                     <button

@@ -25,7 +25,6 @@ export default function useProfile() {
     fetchBooks();
   }, [userId]);
 
-  // ── Derived data ──────────────────────────────────────────────
   const userBooks = books.filter(
     (item) => String(item.owner?.id) === String(userId)
   );

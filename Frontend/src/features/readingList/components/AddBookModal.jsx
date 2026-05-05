@@ -23,7 +23,6 @@ export default function AddBookModal({
       <div style={{ ...styles.modal, width: 580 }}>
         <h2 style={styles.modalTitle}>Add Book to List</h2>
 
-        {/* Filter pills + search input */}
         <div style={styles.searchRow}>
           <div style={styles.pillGroup}>
             {filterOptions.map((opt) => (
@@ -59,7 +58,7 @@ export default function AddBookModal({
           </div>
         </div>
 
-        {/* Active filter badge */}
+  
         {filterValue && (
           <div style={styles.activeBadge}>
             Filtering by <strong style={{ marginLeft: 4 }}>
@@ -68,7 +67,7 @@ export default function AddBookModal({
           </div>
         )}
 
-        {/* Results area */}
+
         <div style={{ maxHeight: 300, overflowY: "auto", marginTop: 8 }}>
           {searching ? (
             <p style={{ fontSize: 12, color: "#6B7280", margin: "8px 0" }}>Searching...</p>

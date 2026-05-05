@@ -22,7 +22,6 @@ export default function BookCard({ book, wishlist, toggleWishlist }) {
         <StatusBadge borrowStatus={book.borrowStatus} />
       </div>
 
-      {/* Info */}
       <div style={styles.cardBody}>
         <p style={styles.bookTitle}>{book.title}</p>
         <p style={styles.bookAuthor}>{book.owner?.name || "Unknown"}</p>
@@ -34,7 +33,7 @@ export default function BookCard({ book, wishlist, toggleWishlist }) {
           </span>
         </p>
 
-        {/* Actions */}
+    
         <div style={styles.actions}>
           <BorrowedButton book={book} />
         </div>

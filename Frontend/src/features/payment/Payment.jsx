@@ -7,7 +7,6 @@ import styles              from "./styles/paymentStyles";
 export default function Payment() {
   const p = usePayment();
 
-  // ── States ────────────────────────────────────────────────────
   if (p.loading) return (
     <PaymentStatePanel icon="⏳" text="Loading book details..." />
   );
@@ -31,7 +30,6 @@ export default function Payment() {
     />
   );
 
-  // ── Page ──────────────────────────────────────────────────────
   return (
     <div style={styles.page} className="payment-page">
       <style>{`
@@ -45,7 +43,7 @@ export default function Payment() {
       `}</style>
 
       <div style={styles.surface}>
-        {/* Back button */}
+  
         <button
           type="button"
           style={styles.backButton}
@@ -54,7 +52,7 @@ export default function Payment() {
           ← Back
         </button>
 
-        {/* Two-column layout */}
+
         <div style={styles.layout} className="payment-layout">
           <BookSummaryCard book={p.book} />
 
