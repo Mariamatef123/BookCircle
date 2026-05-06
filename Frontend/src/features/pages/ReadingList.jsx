@@ -6,7 +6,7 @@
 // import { browseBooks } from "../../Service/BookService";
 
 // export default function ReadingList() {
-//   const user = JSON.parse(localStorage.getItem("user"));
+//   const user = getUser();
 //   const userId = user?.id;
 
 //   const [lists, setLists] = useState([]);
@@ -19,7 +19,7 @@
 //   const [newListDesc, setNewListDesc] = useState("");
 //   const [results, setResults] = useState([]);
 //   const [searching, setSearching] = useState(false);
-//   const [searchError, setSearchError] = useState("");        // ✅ was missing
+//   const [searchError, setSearchError] = useState("");        // was missing
 //   const [filterType, setFilterType] = useState("title");
 //   const [filterValue, setFilterValue] = useState("");
 
@@ -49,7 +49,7 @@
 //   }, [activeTab, selectedListId]);
 
 //   // ─── Search ──────────────────────────────────────────────────
-//   // ✅ Signature fixed: (type, value) to match how it's called below
+//   // Signature fixed: (type, value) to match how it's called below
 // const handleSearch = useCallback(async (type, value) => {
 //   setSearching(true);
 //   setSearchError("");
@@ -62,7 +62,7 @@
 //       maxPrice: type === "maxPrice" ? value : undefined,
 //     });
 
-//     // ✅ FIX: supports both res.data OR direct array response
+//     // FIX: supports both res.data OR direct array response
 //     const data = res?.data ?? res;
 
 //     setResults(Array.isArray(data) ? data : []);
@@ -319,7 +319,7 @@
 //               </div>
 
 //               <div style={styles.searchInputWrapper}>
-//                 <span style={styles.searchIcon}>🔍</span>
+//                 <span style={styles.searchIcon}><SearchIcon /></span>
 //                 <input
 //                   style={styles.searchInput}
 //                   type={filterType === "maxPrice" ? "number" : "text"}
@@ -335,7 +335,7 @@
 //                   autoFocus
 //                 />
 //                 {filterValue && (
-//                   <button style={styles.clearBtn} onClick={() => setFilterValue("")}>✕</button>
+//                   <button style={styles.clearBtn} onClick={() => setFilterValue("")}><XIcon /></button>
 //                 )}
 //               </div>
 //             </div>
@@ -349,9 +349,9 @@
 //               </div>
 //             )}
 
-//             {/* ✅ Error box */}
+//             {/* Error box */}
 //             {searchError && (
-//               <div style={styles.errorBox}>⚠️ {searchError}</div>
+//               <div style={styles.errorBox}>{searchError}</div>
 //             )}
 
 //             {/* Searching indicator */}
@@ -367,7 +367,7 @@
 //     <p style={{ fontSize: 12, color: "#6B7280" }}>Searching...</p>
 
 //   ) : searchError ? (
-//     <div style={styles.errorBox}>⚠️ {searchError}</div>
+//     <div style={styles.errorBox}>{searchError}</div>
 
 //   ) : results?.length === 0 ? (
 //     <div style={styles.emptyState}>
@@ -456,5 +456,5 @@
 //   clearBtn: { background: "none", border: "none", color: "#9CA3AF", cursor: "pointer", fontSize: 14, padding: 0 },
 //   activeBadge: { background: "#EEF2FF", color: "#4F46E5", borderRadius: 8, padding: "5px 10px", fontSize: 12, marginBottom: 8, display: "flex", alignItems: "center", gap: 2 },
 //   emptyState: { textAlign: "center", padding: "24px 0" },
-//   errorBox: { background: "#FEF2F2", color: "#DC2626", borderRadius: 8, padding: "8px 12px", fontSize: 13, marginBottom: 8 }, // ✅ was missing
+//   errorBox: { background: "#FEF2F2", color: "#DC2626", borderRadius: 8, padding: "8px 12px", fontSize: 13, marginBottom: 8 }, // was missing
 // };

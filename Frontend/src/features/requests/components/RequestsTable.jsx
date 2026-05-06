@@ -1,5 +1,6 @@
 import styles from "../styles/requestStyles";
 import RequestsEmpty from "./RequestsEmpty";
+import { BooksIcon } from "../../../components/icons/AppIcons";
 
 function getStatusStyle(status) {
   switch (status?.toUpperCase()) {
@@ -9,15 +10,6 @@ function getStatusStyle(status) {
     case "CANCELLED": return { bg: "#f9fafb", color: "#6b7280", dot: "#9ca3af" };
     default:          return { bg: "#eff6ff", color: "#1d4ed8", dot: "#3b82f6" };
   }
-}
-
-function formatDate(value) {
-  if (!value) return { main: "N/A", sub: "" };
-  const d = new Date(value);
-  return {
-    main: d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-    sub:  d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
-  };
 }
 
 export default function RequestsTable({ requests, canceling, onCancel }) {
@@ -38,7 +30,6 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
         <tbody>
           {requests.map((req) => {
             const statusStyle = getStatusStyle(req.status);
-            const date        = formatDate(req.createdAt);
             const isPending   = req.status?.toUpperCase() === "PENDING";
             const isCanceling = canceling === req.id;
             const bookTitle   = req.bookTitle || req.book?.title || "Unknown Book";
@@ -61,7 +52,9 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
                         style={styles.bookCover}
                       />
                     ) : (
-                      <div style={styles.bookCoverFallback}>📚</div>
+                      <div style={styles.bookCoverFallback}>
+                        <BooksIcon size={18} />
+                      </div>
                     )}
                     <div>
                       <p style={styles.bookTitle}>{bookTitle}</p>

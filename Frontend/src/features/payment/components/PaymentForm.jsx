@@ -1,4 +1,5 @@
 import styles from "../styles/paymentStyles";
+import { AlertTriangleIcon, CheckCircleIcon, LockIcon } from "../../../components/icons/AppIcons";
 
 export default function PaymentForm({
   form, maskedNumber,
@@ -105,9 +106,17 @@ export default function PaymentForm({
         </div>
       </div>
 
-     
-      {error   && <div style={styles.errorBox}>⚠️ {error}</div>}
-      {success && <div style={styles.successBox}>✅ {success}</div>}
+      {/* Error / Success */}
+      {error && (
+        <div style={{ ...styles.errorBox, display: "flex", alignItems: "center", gap: 6 }}>
+          <AlertTriangleIcon size={15} /> {error}
+        </div>
+      )}
+      {success && (
+        <div style={{ ...styles.successBox, display: "flex", alignItems: "center", gap: 6 }}>
+          <CheckCircleIcon size={15} /> {success}
+        </div>
+      )}
 
   
       <button
@@ -123,7 +132,7 @@ export default function PaymentForm({
       </button>
 
       <div style={styles.secureBadge}>
-         Payments are secure
+        <LockIcon size={14} /> Payments are secure
       </div>
     </div>
   );

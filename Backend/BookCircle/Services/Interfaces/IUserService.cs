@@ -11,8 +11,8 @@ namespace BookCircle.Services.Interfaces
         Task RejectOwner(int ownerId, int userId);
         Task<IEnumerable<User>> GetPendingOwners(int userId);
 
-        Task RegisterAsync(RegisterDTO dto);
-        Task<User> LoginAsync(LoginDTO dto);
+        //Task RegisterAsync(RegisterDTO dto);
+        //Task<User> LoginAsync(LoginDTO dto);
       
 
     }

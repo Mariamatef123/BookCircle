@@ -2,6 +2,7 @@ import useNotifications   from "./hooks/useNotifications";
 import NotificationCard   from "./components/NotificationCard";
 import NotificationsEmpty from "./components/NotificationsEmpty";
 import styles             from "./styles/notificationStyles";
+import { AlertTriangleIcon, ClockIcon } from "../../components/icons/AppIcons";
 
 export default function Notification() {
   const {
@@ -13,7 +14,7 @@ export default function Notification() {
     return (
       <div style={styles.page}>
         <div style={styles.stateWrap}>
-          <span style={styles.stateIcon}>⏳</span>
+          <span style={styles.stateIcon}><ClockIcon size={38} /></span>
           <p>Loading notifications...</p>
         </div>
       </div>
@@ -24,7 +25,7 @@ export default function Notification() {
     return (
       <div style={styles.page}>
         <div style={styles.stateWrap}>
-          <span style={styles.stateIcon}></span>
+          <span style={styles.stateIcon}><AlertTriangleIcon size={38} /></span>
           <p style={styles.errorText}>{error}</p>
         </div>
       </div>

@@ -17,7 +17,7 @@ const TYPE_CONFIG = {
   OWNER_APPROVED:  { label: "Owner Approved",     bg: "#fffbeb", getTarget: ()       => "/dashboard"               },
 };
 
-export const DEFAULT_CONFIG = { label: "Notification", icon: "🔔", bg: "#f5f3ff", getTarget: () => null };
+export const DEFAULT_CONFIG = { label: "Notification", icon: "bell", bg: "#f5f3ff", getTarget: () => null };
 
 export function getTypeConfig(type) {
   return TYPE_CONFIG[type?.toUpperCase()] ?? DEFAULT_CONFIG;

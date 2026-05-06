@@ -1,6 +1,7 @@
 import useRequests    from "./hooks/useRequests";
 import RequestsTable  from "./components/RequestsTable";
 import styles         from "./styles/requestStyles";
+import { AlertTriangleIcon, ClockIcon } from "../../components/icons/AppIcons";
 
 export default function RequestsPage() {
   const { requests, loading, error, toast, canceling, handleCancel } = useRequests();
@@ -9,7 +10,7 @@ export default function RequestsPage() {
     return (
       <div style={styles.page}>
         <div style={styles.stateWrap}>
-          <span style={styles.stateIcon}>⏳</span>
+          <span style={styles.stateIcon}><ClockIcon size={38} /></span>
           <p>Loading your requests...</p>
         </div>
       </div>
@@ -20,7 +21,7 @@ export default function RequestsPage() {
     return (
       <div style={styles.page}>
         <div style={styles.stateWrap}>
-          <span style={styles.stateIcon}>⚠️</span>
+          <span style={styles.stateIcon}><AlertTriangleIcon size={38} /></span>
           <p style={styles.errorText}>{error}</p>
         </div>
       </div>

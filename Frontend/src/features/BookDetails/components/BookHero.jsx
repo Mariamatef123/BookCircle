@@ -87,7 +87,7 @@ export default function BookHero({
   type="button"
   style={{
     ...styles.primaryButton,
-    ...((!isAvailable || !availabilityOptions.length || user?.role === "BOOK_OWNER")
+    ...((!isAvailable || !availabilityOptions.length || user?.role === "BOOK_OWNER"||user?.role === "ADMIN")
       ? styles.primaryButtonDisabled
       : {})
   }}
@@ -95,7 +95,7 @@ export default function BookHero({
   disabled={
     !isAvailable ||
     !availabilityOptions.length ||
-    user?.role === "BOOK_OWNER"
+    user?.role === "BOOK_OWNER"||user?.role === "ADMIN"
   }
 >
   Request Borrow
@@ -109,7 +109,7 @@ export default function BookHero({
       : {})
   }}
   onClick={handleReadingListClick}
-  disabled={user?.role === "BOOK_OWNER"}
+  disabled={user?.role === "BOOK_OWNER"||user?.role === "ADMIN"}
 >
   <BookmarkIcon /> Add to Reading List
 </button>

@@ -116,8 +116,6 @@ public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
 
         return await query.AsNoTracking().ToListAsync();
     }
-    public async Task<bool> AnyAsync(Expression<Func<T, bool>> criteria)
-        => await _dbSet.AnyAsync(criteria);
 
     public async Task<T?> GetFirstOrDefaultAsync(
        Expression<Func<T, bool>>? criteria = null,
@@ -146,5 +144,6 @@ public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         return await query.FirstOrDefaultAsync();
     }
 
-
+    public async Task<bool> AnyAsync(Expression<Func<T, bool>> criteria)
+            => await _dbSet.AnyAsync(criteria);
 }

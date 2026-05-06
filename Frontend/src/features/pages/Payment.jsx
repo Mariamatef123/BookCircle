@@ -26,7 +26,7 @@ const [form, setForm] = useState({
           return;
         }
 
-        const res = await getBooks(); // 🔥 get ALL books
+        const res = await getBooks(); // get ALL books
         const books = Array.isArray(res?.data) ? res.data : [];
 
         const foundBook = books.find(
@@ -106,12 +106,12 @@ const [form, setForm] = useState({
     setLoading(true);
 
     try {
-      // 🔥 HERE CALL YOUR BACKEND
+      // HERE CALL YOUR BACKEND
       // await api.post("/payment", { bookId: book.id, ...form });
 
       await new Promise((r) => setTimeout(r, 1500));
 
-      alert(`Payment successful for "${book.title}" 🎉`);
+      alert(`Payment successful for "${book.title}"`);
 
       navigate("/dashboard");
     } catch (err) {

@@ -3,17 +3,18 @@ import PaymentStatePanel   from "./components/PaymentStatePanel";
 import BookSummaryCard     from "./components/BookSummaryCard";
 import PaymentForm         from "./components/PaymentForm";
 import styles              from "./styles/paymentStyles";
+import { AlertTriangleIcon, ArrowLeftIcon, ClockIcon, InboxIcon } from "../../components/icons/AppIcons";
 
 export default function Payment() {
   const p = usePayment();
 
   if (p.loading) return (
-    <PaymentStatePanel icon="⏳" text="Loading book details..." />
+    <PaymentStatePanel icon={<ClockIcon size={40} />} text="Loading book details..." />
   );
 
   if (p.error && !p.book) return (
     <PaymentStatePanel
-      icon="⚠️"
+      icon={<AlertTriangleIcon size={40} />}
       text={p.error}
       isError
       actionLabel="Go Back"
@@ -23,7 +24,7 @@ export default function Payment() {
 
   if (!p.book) return (
     <PaymentStatePanel
-      icon="📭"
+      icon={<InboxIcon size={40} />}
       text="No book selected for payment."
       actionLabel="Browse Books"
       onAction={() => p.navigate("/")}
@@ -49,7 +50,7 @@ export default function Payment() {
           style={styles.backButton}
           onClick={() => p.navigate(-1)}
         >
-          ← Back
+          <ArrowLeftIcon size={16} /> Back
         </button>
 
 

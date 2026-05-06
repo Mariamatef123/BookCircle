@@ -1,29 +1,78 @@
 ﻿using BookCircle.DTOs.Users;
 using BookCircle.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IUserService _service;
+    private readonly IAuthService _authService;
+    private readonly IConfiguration _config;
 
-    public AuthController(IUserService service)
+    public AuthController(IAuthService authService, IConfiguration config)
     {
-        _service = service;
+        _authService = authService;
+        _config = config;
     }
 
+    // REGISTER
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDTO dto)
+    public async Task<IActionResult> Register(UserDTO dto)
     {
-        await _service.RegisterAsync(dto);
-        return Ok("Registered successfully");
+        try
+        {
+            await _authService.RegisterAsync(dto);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
+    // LOGIN
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDTO dto)
     {
-        var user = await _service.LoginAsync(dto);
-        return Ok(user);
+        try
+        {
+            var user = await _authService.LoginAsync(dto);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            };
+
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_config["AppSettings:Token"]));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = creds
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return Ok(new
+            {
+                token = tokenHandler.WriteToken(token)
+            });
+        }
+        catch (Exception ex)
+        {
+            return Unauthorized(ex.Message);
+        }
     }
 }

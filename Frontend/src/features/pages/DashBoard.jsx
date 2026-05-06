@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getUser } from "../../utils/auth";
 
 import Header from "../components/DashBoard/PendingBooks/Header";
 import Tabs from "../components/DashBoard/PendingBooks/Tabs";
@@ -35,7 +36,7 @@ export default function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = getUser();
   const userId = user?.id;
   const role = user?.role;
 
