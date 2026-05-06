@@ -1,5 +1,6 @@
 import { styles } from "../../../styles/readingListStyles";
 import useReadingList from "../hooks/useReadingList";
+import { getUser } from "../../../utils/auth";
 
 import ListTable      from "../components/ListTable";
 import BooksTable     from "../components/BooksTable";
@@ -7,7 +8,7 @@ import CreateListModal from "../components/CreateListModal";
 import AddBookModal   from "../components/AddBookModal";
 
 export default function ReadingList() {
-  const user   = JSON.parse(localStorage.getItem("user"));
+  const user   = getUser();
   const userId = user?.id;
 
   const rl = useReadingList(userId);

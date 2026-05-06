@@ -1,4 +1,5 @@
 import { styles } from "../../../styles/readingListStyles";
+import { AlertTriangleIcon, SearchIcon, XIcon } from "../../../components/icons/AppIcons";
 
 const filterOptions = [
   { value: "title",    label: "Title"     },
@@ -38,7 +39,7 @@ export default function AddBookModal({
           </div>
 
           <div style={styles.searchInputWrapper}>
-            <span style={styles.searchIcon}>🔍</span>
+            <span style={styles.searchIcon}><SearchIcon size={14} /></span>
             <input
               style={styles.searchInput}
               type={filterType === "maxPrice" ? "number" : "text"}
@@ -54,7 +55,9 @@ export default function AddBookModal({
               autoFocus
             />
             {filterValue && (
-              <button style={styles.clearBtn} onClick={() => setFilterValue("")}>✕</button>
+              <button style={styles.clearBtn} onClick={() => setFilterValue("")}>
+                <XIcon size={14} />
+              </button>
             )}
           </div>
         </div>
@@ -73,7 +76,9 @@ export default function AddBookModal({
           {searching ? (
             <p style={{ fontSize: 12, color: "#6B7280", margin: "8px 0" }}>Searching...</p>
           ) : searchError ? (
-            <div style={styles.errorBox}>⚠️ {searchError}</div>
+            <div style={{ ...styles.errorBox, display: "flex", alignItems: "center", gap: 6 }}>
+              <AlertTriangleIcon size={14} /> {searchError}
+            </div>
           ) : results.length === 0 ? (
             <div style={styles.emptyState}>
               <p style={{ margin: 0, fontSize: 14, color: "#9CA3AF" }}>

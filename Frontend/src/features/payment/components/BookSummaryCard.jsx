@@ -1,4 +1,5 @@
 import styles from "../styles/paymentStyles";
+import { BookOpenIcon } from "../../../components/icons/AppIcons";
 
 export default function BookSummaryCard({ book }) {
   return (
@@ -12,7 +13,9 @@ export default function BookSummaryCard({ book }) {
             style={styles.bookCoverImg}
           />
         ) : (
-          <div style={styles.bookCoverFallback}>📖</div>
+          <div style={styles.bookCoverFallback}>
+            <BookOpenIcon size={48} />
+          </div>
         )}
       </div>
 

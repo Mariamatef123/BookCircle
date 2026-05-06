@@ -50,7 +50,7 @@ export const browseBooks = ({ title, genre, language, maxPrice } = {}) => {
 
 
 // ================================
-// 🟡 PENDING / MODERATION APIS
+// PENDING / MODERATION APIS
 // ================================
 
 // GET pending posts

@@ -12,9 +12,9 @@ namespace BookCircle.Data.Models
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-        [Required]
-        public string PasswordHash { get; set; }
-
+       
+        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordSalt { get; set; }
         public Role Role { get; set; }
 
         public DateTime CreatedAt { get; set; }=DateTime.Now;

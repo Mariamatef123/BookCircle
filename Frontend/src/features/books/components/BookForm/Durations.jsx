@@ -1,4 +1,5 @@
 import styles from "../../../../styles/bookFormStyles";
+import { XIcon } from "../../../../components/icons/AppIcons";
 
 export default function Durations({ form, setForm }) {
   const handleChange = (i, value) => {
@@ -36,7 +37,9 @@ export default function Durations({ form, setForm }) {
             placeholder={`Duration ${i + 1} (days)`}
           />
           {form.AvailabilityDates.length > 1 && (
-            <button style={styles.removeBtn} onClick={() => remove(i)}>✕</button>
+            <button style={styles.removeBtn} onClick={() => remove(i)}>
+              <XIcon size={14} />
+            </button>
           )}
         </div>
       ))}

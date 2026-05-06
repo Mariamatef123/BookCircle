@@ -3,6 +3,7 @@ import styles from "../../../../styles/bookFormStyles";
 import ImageUpload from "./ImageUpload";
 import BookFormFields from "./BookFormFields";
 import Durations from "./Durations";
+import { XIcon } from "../../../../components/icons/AppIcons";
 
 export default function BookForm({ isOpen, onClose, onSubmit, editingBook, userId }) {
   const isEdit = !!editingBook;
@@ -91,7 +92,9 @@ export default function BookForm({ isOpen, onClose, onSubmit, editingBook, userI
   
         <div style={styles.header}>
           <h3 style={styles.title}>{isEdit ? "Edit Book" : "Add New Book"}</h3>
-          <button style={styles.closeBtn} onClick={onClose}>✕</button>
+          <button style={styles.closeBtn} onClick={onClose}>
+            <XIcon size={16} />
+          </button>
         </div>
 
         <div style={styles.body}>

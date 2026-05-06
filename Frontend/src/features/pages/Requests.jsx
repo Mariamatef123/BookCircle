@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { getMyRequests, cancelRequest } from "../../Service/BorrowService"; // Adjust path if needed
 import { styles } from "../../styles/requestStyles";
+import { getUser } from "../../utils/auth";
 
 export default function RequestsPage() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = getUser();
   const userId = user?.id;
 
   const [requests, setRequests] = useState([]);

@@ -4,6 +4,7 @@ import {
   getId, getIsRead, getTitle, getMessage, getCreatedAt,
   formatDate,
 } from "../hooks/useNotifications";
+import { BellIcon } from "../../../components/icons/AppIcons";
 
 // Types that show a CTA strip with navigation hint
 const CTA_TYPES = {
@@ -45,10 +46,9 @@ export default function NotificationCard({ notification: n, onClick }) {
       {!isRead && <div style={styles.unreadDot} />}
 
       <div style={styles.cardTop}>
-        {/* Icon */}
-        {/* <div style={{ ...styles.iconWrap, background: config.bg }}>
-          {config.icon}
-        </div> */}
+        <div style={{ ...styles.iconWrap, background: config.bg }}>
+          <BellIcon size={20} />
+        </div>
 
         <div style={styles.cardBody}>
           {/* Title + time */}

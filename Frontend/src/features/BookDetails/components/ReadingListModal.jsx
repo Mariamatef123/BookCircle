@@ -16,7 +16,7 @@ export default function ReadingListModal({ open, onClose, lists, listsLoading, a
         ) : lists.length === 0 ? (
           <div style={styles.modalState}>
             <p style={{ marginTop: 0 }}>You do not have a reading list yet.</p>
-            <button type="button" style={styles.primaryButton} onClick={() => navigate("/readingList")}>
+            <button type="button" style={styles.primaryButton} onClick={() => navigate("/reading-list")}>
               Create Reading List
             </button>
           </div>

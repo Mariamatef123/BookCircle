@@ -5,6 +5,7 @@ import ProfileHero     from "./components/ProfileHero";
 import ProfileEmpty    from "./components/ProfileEmpty";
 import styles          from "./styles/profileStyles";
 import BookCard from "../home/components/BookCard";
+import { AlertTriangleIcon, ClockIcon } from "../../components/icons/AppIcons";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function Profile() {
     return (
       <div style={styles.page}>
         <div style={styles.stateWrap}>
-          <span style={{ fontSize: 36 }}>⏳</span>
+          <span style={{ fontSize: 36 }}><ClockIcon size={36} /></span>
           <p>Loading profile...</p>
         </div>
       </div>
@@ -27,7 +28,7 @@ export default function Profile() {
     return (
       <div style={styles.page}>
         <div style={styles.stateWrap}>
-          <span style={{ fontSize: 36 }}>⚠️</span>
+          <span style={{ fontSize: 36 }}><AlertTriangleIcon size={36} /></span>
           <p style={styles.errorText}>{error}</p>
           <button
             type="button"

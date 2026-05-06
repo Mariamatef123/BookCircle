@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { browseBooks } from "../Service/BookService";
 import { getNotifications, markAsRead } from "../Service/NotificationService";
 import { getUser } from "../utils/auth";
+import { BooksIcon, SettingsIcon, XIcon } from "./icons/AppIcons";
 
 function NavBar() {
   const navigate = useNavigate();
@@ -273,7 +274,7 @@ function NavBar() {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  ⚙️ Filters
+                  <SettingsIcon size={15} /> Filters
                   {activeFilterCount > 0 && (
                     <span style={{
                       background: "#4F46E5", color: "#fff",
@@ -310,9 +311,9 @@ function NavBar() {
                       <button
                         type="button"
                         onClick={clearFilters}
-                        style={{ background: "none", border: "none", color: "#EF4444", fontSize: 12, cursor: "pointer", fontWeight: 500 }}
+                        style={{ background: "none", border: "none", color: "#EF4444", fontSize: 12, cursor: "pointer", fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 4 }}
                       >
-                        ✕ Clear all
+                        <XIcon size={12} /> Clear all
                       </button>
                     )}
                   </div>
@@ -362,19 +363,25 @@ function NavBar() {
                       {filters.genre && (
                         <span style={badgeStyle}>
                           Genre: <strong>{filters.genre}</strong>
-                          <button style={badgeClearStyle} onClick={() => setFilters((p) => ({ ...p, genre: "" }))}>✕</button>
+                          <button style={badgeClearStyle} onClick={() => setFilters((p) => ({ ...p, genre: "" }))}>
+                            <XIcon size={10} />
+                          </button>
                         </span>
                       )}
                       {filters.language && (
                         <span style={badgeStyle}>
                           Language: <strong>{filters.language}</strong>
-                          <button style={badgeClearStyle} onClick={() => setFilters((p) => ({ ...p, language: "" }))}>✕</button>
+                          <button style={badgeClearStyle} onClick={() => setFilters((p) => ({ ...p, language: "" }))}>
+                            <XIcon size={10} />
+                          </button>
                         </span>
                       )}
                       {filters.maxPrice && (
                         <span style={badgeStyle}>
                           Max: <strong>{filters.maxPrice} L.E</strong>
-                          <button style={badgeClearStyle} onClick={() => setFilters((p) => ({ ...p, maxPrice: "" }))}>✕</button>
+                          <button style={badgeClearStyle} onClick={() => setFilters((p) => ({ ...p, maxPrice: "" }))}>
+                            <XIcon size={10} />
+                          </button>
                         </span>
                       )}
                     </div>
@@ -433,7 +440,9 @@ function NavBar() {
                             style={{ width: 34, height: 44, borderRadius: 4, objectFit: "cover", flexShrink: 0 }}
                           />
                         ) : (
-                          <span style={{ fontSize: 22, flexShrink: 0 }}>📚</span>
+                          <span style={{ color: "#4F46E5", flexShrink: 0 }}>
+                            <BooksIcon size={22} />
+                          </span>
                         )}
 
                         {/* Info */}
@@ -559,6 +568,7 @@ const badgeStyle = {
 const badgeClearStyle = {
   background: "none", border: "none", color: "#818CF8",
   cursor: "pointer", fontSize: 11, padding: 0,
+  display: "inline-flex", alignItems: "center",
 };
 const notificationButtonStyle = {
   border: "none",

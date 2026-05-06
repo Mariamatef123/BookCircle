@@ -1,8 +1,9 @@
 import BorrowedButton from "./BorrowedButton";
 import StatusBadge    from "./StatusBadge";
 import styles from "../styles/homeStyles";
+import { BooksIcon } from "../../../components/icons/AppIcons";
 
-export default function BookCard({ book, wishlist, toggleWishlist }) {
+export default function BookCard({ book }) {
   return (
     <div className="book-card" style={styles.card}>
 
@@ -15,8 +16,8 @@ export default function BookCard({ book, wishlist, toggleWishlist }) {
             style={styles.img}
           />
         ) : (
-          <div style={{ ...styles.img, background: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30 }}>
-            📚
+          <div style={{ ...styles.img, background: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center", color: "#4F46E5" }}>
+            <BooksIcon size={30} />
           </div>
         )}
         <StatusBadge borrowStatus={book.borrowStatus} />

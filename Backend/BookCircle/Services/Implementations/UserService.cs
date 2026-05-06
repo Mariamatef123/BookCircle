@@ -32,11 +32,11 @@ namespace BookCircle.Services.Implementations
         //private readonly IBookRequestRepository _borrowRequestRepo;
         private readonly INotificationService _notificationService;
 
-        public UserService( IGenericRepository<User> userRepo, IGenericRepository<Book> bookRepo, IGenericRepository<BorrowRequest>borrowRequest, IGenericRepository<Reaction> reaction ,IGenericRepository<Comment> commentRepo, INotificationService _NotificationService)
+        public UserService(IGenericRepository<User> userRepo, IGenericRepository<Book> bookRepo, IGenericRepository<BorrowRequest> borrowRequest, IGenericRepository<Reaction> reaction, IGenericRepository<Comment> commentRepo, INotificationService _NotificationService)
         {
-           
+
             _userRepo = userRepo;
-      
+
             _bookRepo = bookRepo;
             _borrowRequest = borrowRequest;
             //_borrowRequestRepo = borrowRequestRepo;
@@ -45,7 +45,7 @@ namespace BookCircle.Services.Implementations
             _commentRepo = commentRepo;
             _notificationService = _NotificationService;
         }
-    
+
         public async Task AcceptOwner(int ownerId, int userId)
         {
             var user = await _userRepo.GetByIdAsync(userId);
@@ -115,51 +115,51 @@ namespace BookCircle.Services.Implementations
             _userRepo.Delete(owner);
             await _userRepo.SaveAsync();
 
-          
+
 
         }
 
 
-        public async Task RegisterAsync(RegisterDTO dto)
-        {
-            var existingUser = await _userRepo.FindAsync(u => u.Email == dto.Email);
+        //public async Task RegisterAsync(RegisterDTO dto)
+        //{
+        //    var existingUser = await _userRepo.FindAsync(u => u.Email == dto.Email);
 
-            if (existingUser.Any())
-                throw new Exception("Email already exists");
+        //    if (existingUser.Any())
+        //        throw new Exception("Email already exists");
 
-            var user = new User
-            {
-                Name = dto.Name,
-                Email = dto.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                Role = dto.Role,
-                IsApproved = dto.Role == Role.BOOK_OWNER ? false : true
-            };
+        //    var user = new User
+        //    {
+        //        Name = dto.Name,
+        //        Email = dto.Email,
+        //        //PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+        //        Role = dto.Role,
+        //        IsApproved = dto.Role == Role.BOOK_OWNER ? false : true
+        //    };
 
-            await _userRepo.AddAsync(user);
-            await _userRepo.SaveAsync();
-        }
-        public async Task<User> LoginAsync(LoginDTO dto)
-        {
-            var users = await _userRepo.FindAsync(u => u.Email == dto.Email);
-            var user = users.FirstOrDefault();
+        //    await _userRepo.AddAsync(user);
+        //    await _userRepo.SaveAsync();
+        //}
+        //public async Task<User> LoginAsync(LoginDTO dto)
+        //{
+        //    var users = await _userRepo.FindAsync(u => u.Email == dto.Email);
+        //    var user = users.FirstOrDefault();
 
-            if (user == null)
-                throw new Exception("User not found");
+        //    if (user == null)
+        //        throw new Exception("User not found");
 
-            if (string.IsNullOrWhiteSpace(user.PasswordHash))
-                throw new Exception("Invalid stored password (not hashed)");
+        //    //if (string.IsNullOrWhiteSpace(user.PasswordHash))
+        //    //    throw new Exception("Invalid stored password (not hashed)");
 
-            bool isValidPassword = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+        //    //bool isValidPassword = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
 
-            if (!isValidPassword)
-                throw new Exception("Invalid password");
+        //    //if (!isValidPassword)
+        //    //    throw new Exception("Invalid password");
 
-            if (user.Role == Role.BOOK_OWNER && user.IsApproved == false)
-                throw new Exception("Owner not approved yet");
+        //    if (user.Role == Role.BOOK_OWNER && user.IsApproved == false)
+        //        throw new Exception("Owner not approved yet");
 
-            return user;
-        }
+        //    return user;
+        //}
 
 
 

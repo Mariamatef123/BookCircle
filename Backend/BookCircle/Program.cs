@@ -1,6 +1,6 @@
 ﻿using BookCircle.Data;
 using BookCircle.Data.Models;
-
+using BookCircle.Data.Repositories.Implementations;
 using BookCircle.Data.Repositories.Intefaces;
 using BookCircle.DTOs.Books;
 using BookCircle.Hubs;
@@ -8,7 +8,10 @@ using BookCircle.Services;
 using BookCircle.Services.Implementations;
 using BookCircle.Services.Interfaces;
 using Hangfire;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +25,11 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IAuthService,AuthService>();
 //builder.Services.AddScoped<IBookRepository, BookRepository>();
 ////builder.Services.AddScoped<IUserRepository, UserRepository>();
 ////builder.Services.AddScoped<IReactionRepository, ReactionRepository>();
@@ -73,6 +80,20 @@ builder.Services.AddCors(options =>
 });
 
 
+builder.Services.AddAuthentication(opt =>
+{
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value!))
+    };
+});
 var app = builder.Build();
 app.UseCors("AllowReactApp");
 app.UseHangfireDashboard();
@@ -97,7 +118,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -64,9 +64,7 @@ export default function SideBar() {
       try {
         const res  = await getNotifications(user.id);
         const list = Array.isArray(res?.data) ? res.data : [];
-        const count = list.filter(
-          (n) => !Boolean(n?.isRead ?? n?.IsRead)
-        ).length;
+        const count = list.filter((n) => !(n?.isRead ?? n?.IsRead)).length;
         setUnreadCount(count);
       } catch {
         setUnreadCount(0);
@@ -75,7 +73,7 @@ export default function SideBar() {
 
     fetchUnread();
 
-    // ✅ Poll every 60 seconds to keep count fresh
+    // Poll every 60 seconds to keep count fresh
     const interval = setInterval(fetchUnread, 60_000);
     return () => clearInterval(interval);
   }, [user?.id]);
@@ -89,7 +87,7 @@ export default function SideBar() {
         try {
           const res  = await getNotifications(user.id);
           const list = Array.isArray(res?.data) ? res.data : [];
-          setUnreadCount(list.filter((n) => !Boolean(n?.isRead ?? n?.IsRead)).length);
+          setUnreadCount(list.filter((n) => !(n?.isRead ?? n?.IsRead)).length);
         } catch { /* silent */ }
       }, 1500); // small delay to let markAsRead calls settle
       return () => clearTimeout(timer);
@@ -116,7 +114,7 @@ export default function SideBar() {
       label: "Notifications",
       icon:  NotificationsIcon,
       path:  "/notifications",
-      badge: unreadCount,          // ✅ live count
+      badge: unreadCount,
     }
   ,
     loggedIn
@@ -141,7 +139,7 @@ const handleClick = () => {
 
       {/* Nav */}
       <nav style={styles.nav}>
-        {navItems.map(({ label, icon: Icon, path, badge }) => {
+        {navItems.map(({ label, icon, path, badge }) => {
           const isActive = location.pathname === path;
 
           return (
@@ -164,7 +162,7 @@ const handleClick = () => {
                 ...styles.icon,
                 color: isActive ? "#5b5bd6" : "#9090a0",
               }}>
-                <Icon />
+                {icon()}
               </span>
 
               {/* Label */}
@@ -176,7 +174,7 @@ const handleClick = () => {
                 {label}
               </span>
 
-              {/* ✅ Badge — only shown when count > 0 */}
+              {/* Badge shown only when count > 0 */}
               {badge > 0 && (
                 <span style={styles.badge}>
                   {badge > 99 ? "99+" : badge}

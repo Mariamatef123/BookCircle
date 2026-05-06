@@ -1,6 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Login, Register } from "../../Service/UserService";
 import { useNavigate } from "react-router-dom";
+import { setAuthToken } from "../../utils/auth";
+import {
+  AlertTriangleIcon,
+  ArrowRightIcon,
+  BookOpenIcon,
+  BooksIcon,
+  BoxIcon,
+  CheckCircleIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LockIcon,
+  MailIcon,
+  UserIcon,
+} from "../../components/icons/AppIcons";
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -290,6 +304,9 @@ const styles = `
     font-size: 15px;
     padding: 2px;
     transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .eye-btn:hover { color: var(--text); }
@@ -371,6 +388,10 @@ const styles = `
     overflow: hidden;
     margin-bottom: 22px;
     letter-spacing: 0.2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
   }
 
   .submit-btn:hover {
@@ -416,6 +437,9 @@ const styles = `
     font-family: 'DM Sans', sans-serif;
     font-size: 13.5px;
     margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .switch-link:hover { text-decoration: underline; }
@@ -545,7 +569,6 @@ export default function BookCircleAuth() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [Role, setRole] = useState("");
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [signupForm, setSignupForm] = useState({ Name: "",  email: "", password: "", confirm: "" ,role:""});
   const [errors, setErrors] = useState({});
@@ -555,14 +578,6 @@ export default function BookCircleAuth() {
 
 const navigate = useNavigate();
   
-    const loginEmailRef = useRef(null);
-const loginPwdRef   = useRef(null);
-
-// attached to inputs:
-
-
-
-
   function validateLogin() {
     const e = {};
     if (!loginForm.email) e.email = "Email is required";
@@ -597,8 +612,7 @@ async function handleSubmit() {
       const res = await Login(loginForm);
 
       console.log("LOGIN SUCCESS:", res.data);
-
-localStorage.setItem("user", JSON.stringify(res.data));
+setAuthToken(res.data.token);
       setSuccess(true);
 
       navigate("/");
@@ -608,7 +622,7 @@ const res = await Register({
   Name: signupForm.Name,
   Email: signupForm.email,
   Password: signupForm.password,
-  Role: signupForm.role ?? 2 // default to READER
+  Role: signupForm.role
 });
       console.log("REGISTER SUCCESS:", res.data);
 
@@ -645,7 +659,7 @@ const res = await Register({
         {/* Left panel */}
         <div className="auth-left">
           <div className="logo">
-            <div className="logo-icon">📚</div>
+            <div className="logo-icon"><BooksIcon size={22} /></div>
             <span className="logo-text">BookCircle</span>
           </div>
 
@@ -671,7 +685,7 @@ const res = await Register({
           <div className="form-container">
             {success ? (
               <div className="success-overlay slide-in">
-                <div className="success-icon">✓</div>
+                <div className="success-icon"><CheckCircleIcon size={32} /></div>
                 <h2 className="success-title">{tab === "login" ? "Welcome back!" : "Account created!"}</h2>
                 <p className="success-sub">
                   {tab === "login"
@@ -679,7 +693,7 @@ const res = await Register({
                     : "Your BookCircle account is ready. Start discovering books in your area!"}
                 </p>
                 <button className="submit-btn" onClick={() => { setSuccess(false); setTab("login"); }}>
-                  Go to Home →
+                  Go to Home <ArrowRightIcon size={16} />
                 </button>
               </div>
             ) : (
@@ -702,19 +716,19 @@ const res = await Register({
                       <label style={{ display:"block", fontSize:12.5, fontWeight:500, color:"var(--text)", marginBottom:8 }}>
                         I want to
                       </label>
-<div className="roles">
+  <div className="roles">
   {[
-    { id: 2, icon: "📖", name: "READER", desc: "Find books" },
-    { id: 1, icon: "📦", name: "OWNER", desc: "Share books" }
+    { id: 2, Icon: BookOpenIcon, name: "READER", desc: "Find books" },
+    { id: 1, Icon: BoxIcon, name: "OWNER", desc: "Share books" }
   ].map(r => (
     <div
       key={r.id}
-      className={`role-pill ${signupForm.role === r.id ? "on" : ""}`}
+      className={`role-pill ${signupForm.role === r.name ? "on" : ""}`}
       onClick={() =>
-        setSignupForm(f => ({ ...f, role: r.id }))
+        setSignupForm(f => ({ ...f, role: r.name }))
       }
     >
-      <div className="rp-icon">{r.icon}</div>
+      <div className="rp-icon"><r.Icon size={20} /></div>
       <span className="rp-name">{r.name}</span>
       <span className="rp-desc">{r.desc}</span>
     </div>
@@ -725,11 +739,11 @@ const res = await Register({
                       <div className="field-group">
                         <label> Name</label>
                         <div className="input-wrap">
-                          <span className="input-icon">👤</span>
+                          <span className="input-icon"><UserIcon size={15} /></span>
                           <input type="text" className={errors.Name?"error-input":""} placeholder="Ali" value={signupForm.Name}
                             onChange={e => setSignupForm(f=>({...f,Name:e.target.value}))} />
                         </div>
-                        {errors.Name && <div className="error-msg">⚠ {errors.Name}</div>}
+                        {errors.Name && <div className="error-msg"><AlertTriangleIcon size={13} /> {errors.Name}</div>}
                       </div>
            
                     </div>
@@ -740,7 +754,7 @@ const res = await Register({
                 <div className="field-group">
                   <label>Email address</label>
                   <div className="input-wrap">
-                    <span className="input-icon">✉</span>
+                    <span className="input-icon"><MailIcon size={15} /></span>
                    <input
   type="email"
   className={errors.email ? "error-input" : ""}
@@ -753,14 +767,14 @@ const res = await Register({
   }
 />
                   </div>
-                  {errors.email && <div className="error-msg">⚠ {errors.email}</div>}
+                  {errors.email && <div className="error-msg"><AlertTriangleIcon size={13} /> {errors.email}</div>}
                 </div>
 
                 {/* PASSWORD */}
                 <div className="field-group">
                   <label>Password</label>
                   <div className="input-wrap">
-                    <span className="input-icon">🔒</span>
+                    <span className="input-icon"><LockIcon size={15} /></span>
                   <input
   type={showPwd ? "text" : "password"}
   value={tab === "login" ? loginForm.password : signupForm.password}
@@ -770,9 +784,11 @@ const res = await Register({
       : setSignupForm((f) => ({ ...f, password: e.target.value }))
   }
 />
-                    <button className="eye-btn" onClick={() => setShowPwd(v=>!v)}>{showPwd?"🙈":"👁"}</button>
+                    <button className="eye-btn" onClick={() => setShowPwd(v=>!v)}>
+                      {showPwd ? <EyeOffIcon size={15} /> : <EyeIcon size={15} />}
+                    </button>
                   </div>
-                  {errors.password && <div className="error-msg">⚠ {errors.password}</div>}
+                  {errors.password && <div className="error-msg"><AlertTriangleIcon size={13} /> {errors.password}</div>}
                   {tab==="signup" && signupForm.password && (
                     <>
                       <div className="strength-bar">
@@ -790,20 +806,22 @@ const res = await Register({
                   <div className="field-group">
                     <label>Confirm password</label>
                     <div className="input-wrap">
-                      <span className="input-icon">🔒</span>
+                      <span className="input-icon"><LockIcon size={15} /></span>
                       <input type={showConfirm?"text":"password"} className={errors.confirm?"error-input":""}
                         placeholder="Re-enter password"
                         value={signupForm.confirm}
                         onChange={e => setSignupForm(f=>({...f,confirm:e.target.value}))} />
-                      <button className="eye-btn" onClick={() => setShowConfirm(v=>!v)}>{showConfirm?"🙈":"👁"}</button>
+                      <button className="eye-btn" onClick={() => setShowConfirm(v=>!v)}>
+                        {showConfirm ? <EyeOffIcon size={15} /> : <EyeIcon size={15} />}
+                      </button>
                     </div>
-                    {errors.confirm && <div className="error-msg">⚠ {errors.confirm}</div>}
+                    {errors.confirm && <div className="error-msg"><AlertTriangleIcon size={13} /> {errors.confirm}</div>}
                   </div>
                 )}
 
                 {/* EXTRAS */}
       
-                {errors.terms && <div className="error-msg" style={{marginBottom:14}}>⚠ {errors.terms}</div>}
+                {errors.terms && <div className="error-msg" style={{marginBottom:14}}><AlertTriangleIcon size={13} /> {errors.terms}</div>}
 
                 <button className={`submit-btn ${loading?"loading":""}`} onClick={handleSubmit}>
                   {loading && <span className="btn-spinner"></span>}
@@ -814,7 +832,7 @@ const res = await Register({
                 <div className="switch-prompt">
                   {tab==="login" ? "Don't have an account yet?" : "Already part of the circle?"}
                   <button className="switch-link" onClick={() => switchTab(tab==="login"?"signup":"login")}>
-                    {tab==="login" ? "Create one →" : "Sign in →"}
+                    {tab==="login" ? "Create one" : "Sign in"} <ArrowRightIcon size={14} />
                   </button>
                 </div>
               </div>
