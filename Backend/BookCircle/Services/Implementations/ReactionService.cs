@@ -68,7 +68,7 @@ namespace BookCircle.Services.Implementations
                 await _notificationService.SendNotificationAsync(
                     receiverId: book.OwnerId,
                     senderId: userId,
-                    message: $"${user.Name} liked your book {book.Title}",
+                    message: $"{user.Name} liked your book {book.Title}",
                     type: NotificationType.BOOK_LIKED,
                     bookId: book.Id
                 );

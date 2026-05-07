@@ -66,7 +66,7 @@ namespace BookCircle.Services.Implementations
             await _notificationService.SendNotificationAsync(
     receiverId: ownerId,
     senderId: userId,
-    message: "Your account has been approved",
+    message: "Welcome in your new account",
     type: NotificationType.OWNER_APPROVED
 );
             await _userRepo.SaveAsync();

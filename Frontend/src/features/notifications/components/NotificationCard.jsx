@@ -2,7 +2,7 @@ import styles from "../styles/notificationStyles";
 import {
   getTypeConfig,
   getId, getIsRead, getTitle, getMessage, getCreatedAt,
-  formatDate,
+  formatDate,resolveType
 } from "../hooks/useNotifications";
 import { BellIcon } from "../../../components/icons/AppIcons";
 
@@ -10,10 +10,13 @@ import { BellIcon } from "../../../components/icons/AppIcons";
 const CTA_TYPES = {
   BORROW_ACCEPTED: { text: " Complete your payment →" },
   BORROW_REQUEST:  { text: " View in your dashboard →" },
+  BOOK_LIKED:{text: " View your book →"        },
+  BOOK_DISLIKED:{text: " View your book →"        },
   BOOK_APPROVED:   { text: " View your book →"         },
   OWNER_APPROVED:  { text: " Go to dashboard →"        },
   COMMENT_ADDED:   { text: " Read the comment →"        },
   COMMENT_REPLIED: { text: " See the reply →"           },
+  ACCOUNT_REQUEST:  { text: " GO To Dashboard →" },
 };
 
 export default function NotificationCard({ notification: n, onClick }) {
@@ -23,8 +26,8 @@ export default function NotificationCard({ notification: n, onClick }) {
   const message  = getMessage(n);
   const dateStr  = formatDate(getCreatedAt(n));
   const config   = getTypeConfig(n.type);
-  const cta      = CTA_TYPES[n.type?.toUpperCase()];
-
+// NotificationCard.jsx
+const cta = CTA_TYPES[resolveType(n?.type ?? n?.Type)];
   return (
     <div
       key={id}

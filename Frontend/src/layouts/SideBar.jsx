@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { isLoggedIn, logout, getUser } from "../utils/auth";
-import { getNotifications } from "../Service/NotificationService";
+import { useNotificationsContext } from "../context/notificationContext";
 
-/* ---------------- ICONS ---------------- */
 const HomeIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
@@ -47,105 +45,73 @@ const LogoutIcon = () => (
   </svg>
 );
 
-/* ---------------- COMPONENT ---------------- */
 export default function SideBar() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const loggedIn  = isLoggedIn();
   const user      = getUser();
 
-  const [unreadCount, setUnreadCount] = useState(0);
+  // ─── shared state from context — same instance as NavBar ───
+  const { unreadCount } = useNotificationsContext();
 
-  // ── Fetch unread count ────────────────────────────────────────
-  useEffect(() => {
-    if (!user?.id) return;
+  const handleNotificationsClick = () => {
+    navigate("/notifications");
+  };
 
-    const fetchUnread = async () => {
-      try {
-        const res  = await getNotifications(user.id);
-        const list = Array.isArray(res?.data) ? res.data : [];
-        const count = list.filter((n) => !(n?.isRead ?? n?.IsRead)).length;
-        setUnreadCount(count);
-      } catch {
-        setUnreadCount(0);
-      }
-    };
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
-    fetchUnread();
-
-    // Poll every 60 seconds to keep count fresh
-    const interval = setInterval(fetchUnread, 60_000);
-    return () => clearInterval(interval);
-  }, [user?.id]);
-
-  // ── Also refresh when user navigates back to sidebar ─────────
-  useEffect(() => {
-    if (!user?.id) return;
-    // When user visits /notifications, they likely read some — refetch
-    if (location.pathname === "/notifications") {
-      const timer = setTimeout(async () => {
-        try {
-          const res  = await getNotifications(user.id);
-          const list = Array.isArray(res?.data) ? res.data : [];
-          setUnreadCount(list.filter((n) => !(n?.isRead ?? n?.IsRead)).length);
-        } catch { /* silent */ }
-      }, 1500); // small delay to let markAsRead calls settle
-      return () => clearTimeout(timer);
+  const handleProfileClick = () => {
+    if (user?.role === "BOOK_OWNER") {
+      navigate(`/profile/${user.id}`);
     }
-  }, [location.pathname, user?.id]);
+  };
 
-  // ── Nav items ─────────────────────────────────────────────────
   const navItems = [
-    { label: "Home",          icon: HomeIcon,          path: "/" },
+    { label: "Home", icon: HomeIcon, path: "/" },
 
     user?.role === "READER" && {
       label: "Requests",
-      icon:  RequestsIcon,
-      path:  "/requests",
+      icon: RequestsIcon,
+      path: "/requests",
     },
 
     user?.role === "READER" && {
       label: "Reading List",
-      icon:  ReadingListIcon,
-      path:  "/reading-list",
+      icon: ReadingListIcon,
+      path: "/reading-list",
     },
- loggedIn&& (user) && 
-    {
+
+    loggedIn && (user?.role === "BOOK_OWNER" || user?.role === "READER") && {
       label: "Notifications",
-      icon:  NotificationsIcon,
-      path:  "/notifications",
+      icon: NotificationsIcon,
+      path: "/notifications",
       badge: unreadCount,
-    }
-  ,
+      onClick: handleNotificationsClick,
+    },
+
     loggedIn
       ? (user?.role === "ADMIN" || user?.role === "BOOK_OWNER") && {
           label: "Dashboard",
-          icon:  ProfileIcon,
-          path:  "/dashboard",
+          icon: ProfileIcon,
+          path: "/dashboard",
         }
       : { label: "Login", icon: LoginIcon, path: "/login" },
 
   ].filter(Boolean);
-const handleClick = () => {
-  if (user.role === "BOOK_OWNER") {
-    navigate(`/profile/${user.id}`);
-    styles.userCard. cursor="pointer"
-  }
-};
-  // ── Render ────────────────────────────────────────────────────
+
   return (
     <div style={styles.wrapper}>
-
-
-      {/* Nav */}
       <nav style={styles.nav}>
-        {navItems.map(({ label, icon, path, badge }) => {
+        {navItems.map(({ label, icon: Icon, path, badge, onClick }) => {
           const isActive = location.pathname === path;
 
           return (
             <button
               key={label}
-              onClick={() => navigate(path)}
+              onClick={() => onClick ? onClick() : navigate(path)}
               style={{
                 ...styles.navItem,
                 ...(isActive ? styles.navItemActive : {}),
@@ -157,15 +123,10 @@ const handleClick = () => {
                 if (!isActive) e.currentTarget.style.background = "transparent";
               }}
             >
-              {/* Icon */}
-              <span style={{
-                ...styles.icon,
-                color: isActive ? "#5b5bd6" : "#9090a0",
-              }}>
-                {icon()}
+              <span style={{ ...styles.icon, color: isActive ? "#5b5bd6" : "#9090a0" }}>
+                <Icon />
               </span>
 
-              {/* Label */}
               <span style={{
                 ...styles.label,
                 fontWeight: isActive ? 700 : 500,
@@ -174,7 +135,6 @@ const handleClick = () => {
                 {label}
               </span>
 
-              {/* Badge shown only when count > 0 */}
               {badge > 0 && (
                 <span style={styles.badge}>
                   {badge > 99 ? "99+" : badge}
@@ -185,10 +145,9 @@ const handleClick = () => {
         })}
       </nav>
 
-      {/* User card + Logout */}
       {loggedIn && user && (
         <div style={styles.userSection}>
-          <div style={styles.userCard} onClick={handleClick}>
+          <div style={styles.userCard} onClick={handleProfileClick}>
             <div style={styles.userAvatar}>
               {user.name?.split(" ").map((p) => p[0]?.toUpperCase()).slice(0, 2).join("") || "U"}
             </div>
@@ -201,7 +160,7 @@ const handleClick = () => {
           </div>
 
           <button
-            onClick={() => { logout(); navigate("/login"); }}
+            onClick={handleLogout}
             style={styles.logoutBtn}
             onMouseEnter={(e) => e.currentTarget.style.background = "#fef2f2"}
             onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
@@ -215,7 +174,6 @@ const handleClick = () => {
   );
 }
 
-/* ---------------- STYLES ---------------- */
 const styles = {
   wrapper: {
     backgroundColor: "#ffffff",
@@ -224,42 +182,11 @@ const styles = {
     padding: "20px 12px",
     fontFamily: "'Nunito', sans-serif",
     borderRight: "1px solid #eef0ff",
-    // minHeight: "100vh",
     gap: 4,
-   position:"sticky",
-  //  height:"100vh",
-   top:"0",
-   overflowY:"auto"
+    position: "sticky",
+    top: "0",
+    overflowY: "auto",
   },
-
-  // ── Brand ─────────────────────────────────────────────────────
-  brand: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-    padding: "6px 10px 20px",
-    cursor: "pointer",
-    borderBottom: "1px solid #eef0ff",
-    marginBottom: 8,
-  },
-  brandIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
-    background: "linear-gradient(135deg, #5b5bd6, #8b5cf6)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 17,
-    flexShrink: 0,
-  },
-  brandName: {
-    fontSize: 16,
-    fontWeight: 800,
-    color: "#111827",
-  },
-
-  // ── Nav ───────────────────────────────────────────────────────
   nav: {
     display: "flex",
     flexDirection: "column",
@@ -305,8 +232,6 @@ const styles = {
     padding: "0 5px",
     flexShrink: 0,
   },
-
-  // ── User section ──────────────────────────────────────────────
   userSection: {
     borderTop: "1px solid #eef0ff",
     paddingTop: 14,
@@ -323,7 +248,7 @@ const styles = {
     borderRadius: 12,
     background: "linear-gradient(135deg, #f5f3ff, #eef2ff)",
     border: "1px solid #e0e7ff",
-   
+    cursor: "pointer",
   },
   userAvatar: {
     width: 36,

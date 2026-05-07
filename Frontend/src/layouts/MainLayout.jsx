@@ -1,23 +1,23 @@
 import { Outlet } from "react-router-dom";
-import NavBar from "../components/NavBar";
+import NavBar from "./NavBar/NavBar";
 import SideBar from "./SideBar";
+import { NotificationsProvider } from "../context/notificationContext";
+import "../App.css";
 
 export default function MainLayout() {
   return (
-    <>
-      <NavBar />
-
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-2 p-0">
+    <NotificationsProvider>
+      <div className="app">
+        <NavBar />
+        <main className="mainLayout">
+          <aside className="sidebarWrapper col-2">
             <SideBar />
-          </div>
-
-          <div className="col-10 p-0">
+          </aside>
+          <section className="content col-10">
             <Outlet />
-          </div>
-        </div>
+          </section>
+        </main>
       </div>
-    </>
+    </NotificationsProvider>
   );
 }

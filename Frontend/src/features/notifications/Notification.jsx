@@ -3,12 +3,13 @@ import NotificationCard   from "./components/NotificationCard";
 import NotificationsEmpty from "./components/NotificationsEmpty";
 import styles             from "./styles/notificationStyles";
 import { AlertTriangleIcon, ClockIcon } from "../../components/icons/AppIcons";
+import { useNotificationsContext } from "../../context/notificationContext";
 
 export default function Notification() {
   const {
     notifications, loading, error,
     unreadCount, handleClick, markAllRead,
-  } = useNotifications();
+  } = useNotificationsContext();
 
   if (loading) {
     return (

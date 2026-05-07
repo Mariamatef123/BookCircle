@@ -3,16 +3,21 @@ using BookCircle.Enum;
 using BookCircle.DTOs.Users;
 using BookCircle.Data.Repositories.Intefaces;
 using BookCircle.Services.Interfaces;
+using BookCircle.Enums;
 
 namespace BookCircle.Services
 {
     public class AuthService:IAuthService
     {
         private readonly IAuthRepository _userRepo;
+        private readonly INotificationService _notificationService;
+        private readonly IGenericRepository<User> _user;
 
-        public AuthService(IAuthRepository userRepo)
+        public AuthService(IAuthRepository userRepo,INotificationService notificationService,IGenericRepository<User>user)
         {
             _userRepo = userRepo;
+            _notificationService = notificationService;
+            _user = user;
         }
 
         // REGISTER
@@ -21,6 +26,7 @@ namespace BookCircle.Services
             dto.Email = dto.Email.ToLower();
 
             var exists = await _userRepo.UserExist(dto.Email);
+            var admin = await _user.GetFirstOrDefaultAsync(u => u.Role == Role.ADMIN);
             if (exists)
                 throw new Exception("Email already exists");
 
@@ -32,6 +38,14 @@ namespace BookCircle.Services
             };
 
             await _userRepo.Register(user, dto.Password);
+            await _notificationService.SendNotificationAsync(
+                 receiverId: admin.Id,
+                 senderId: user.Id,
+                 message: $"{user.Name} Request Approved Account",
+                 type: NotificationType.ACCOUNT_REQUEST
+                
+               
+             );
         }
 
         // LOGIN

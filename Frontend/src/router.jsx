@@ -5,13 +5,14 @@ import AuthLayout from "./layouts/AuthLayout";
 
 import FindYourNextRead from "./features/home/FindYourNextRead";
 import BookDetails from "./features/BookDetails/BookDetails";
-import Login from "./features/pages/Login";
+
 import Dashboard from "./features/dashboard/pages/Dashboard";
 import Profile from "./features/profile/Profile";
 import ReadingList from "./features/readingList/pages/ReadingList"
 import Notification from "./features/notifications/Notification";
 import Payment from "./features/payment/Payment";
 import Requests from "./features/requests/RequestsPage";
+import BookCircleAuth from "./features/BookCircleAuth/BookCircleAuth";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/dashboard",
+        
         element: <Dashboard />,
       },
       {
@@ -59,7 +61,10 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/login",
-        element: <Login />,
+        element: <BookCircleAuth />,
+      },{
+        path:"/signup",
+        element:<BookCircleAuth/>
       }
     ],
   },
