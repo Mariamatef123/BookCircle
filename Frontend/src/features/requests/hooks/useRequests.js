@@ -33,6 +33,7 @@ export default function useRequests() {
     }
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchRequests(); }, [userId]);
 
 

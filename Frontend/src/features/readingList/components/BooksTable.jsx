@@ -21,7 +21,7 @@ export default function BooksTable({ books, lists, selectedListId, onSelect, onR
           <tr>
             <th style={styles.th}>Cover</th>
             <th style={styles.th}>Details</th>
-            <th style={styles.th}>Description</th>
+            <th style={{ ...styles.th, width: "50%" }}>Description</th>
             <th style={styles.th}>Price</th>
             <th style={styles.th}>Actions</th>
           </tr>
@@ -32,9 +32,10 @@ export default function BooksTable({ books, lists, selectedListId, onSelect, onR
           ) : books.map((book) => (
             <tr key={book.id} style={styles.row}>
               <td style={styles.td}>
-                <img
-                  src={`data:image/jpeg;base64,${book.coverImageBase64}`}
-                  alt={book.title}
+                 <img
+            src={`https://localhost:7071/${book.coverImage?.replace(/\\/g, "/")}`}
+            alt={book.title}
+           
                   style={styles.img}
                 />
               </td>

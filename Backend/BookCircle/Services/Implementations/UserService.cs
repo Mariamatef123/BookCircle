@@ -27,12 +27,12 @@ namespace BookCircle.Services.Implementations
         private readonly IGenericRepository<Reaction> _reaction;
         //private readonly IReactionRepository _reactionRepo;
         private readonly IGenericRepository<Comment> _commentRepo;
-
+        private readonly IGenericRepository<Notification> _notificationRepo;
 
         //private readonly IBookRequestRepository _borrowRequestRepo;
         private readonly INotificationService _notificationService;
 
-        public UserService(IGenericRepository<User> userRepo, IGenericRepository<Book> bookRepo, IGenericRepository<BorrowRequest> borrowRequest, IGenericRepository<Reaction> reaction, IGenericRepository<Comment> commentRepo, INotificationService _NotificationService)
+        public UserService(IGenericRepository<User> userRepo, IGenericRepository<Book> bookRepo, IGenericRepository<BorrowRequest> borrowRequest, IGenericRepository<Reaction> reaction, IGenericRepository<Comment> commentRepo, INotificationService _NotificationService,IGenericRepository<Notification>notificationRepo)
         {
 
             _userRepo = userRepo;
@@ -44,6 +44,7 @@ namespace BookCircle.Services.Implementations
             //_reactionRepo = reactionRepo;
             _commentRepo = commentRepo;
             _notificationService = _NotificationService;
+            _notificationRepo = notificationRepo;
         }
 
         public async Task AcceptOwner(int ownerId, int userId)
@@ -104,6 +105,14 @@ namespace BookCircle.Services.Implementations
 
             if (owner.Role != Role.BOOK_OWNER)
                 throw new Exception("Must be an owner");
+            var notification = await _notificationRepo.GetFirstOrDefaultAsync(n => n.SenderId == ownerId);
+            if (notification != null)
+            {
+                _notificationRepo.Delete(notification);
+              await  _notificationRepo.SaveAsync();
+
+            }
+
 
             //await _notificationService.SendNotificationAsync(
             //      receiverId: ownerId,

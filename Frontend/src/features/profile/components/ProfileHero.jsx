@@ -6,7 +6,8 @@ function getInitials(name) {
     .map((p) => p[0]?.toUpperCase()).join("");
 }
 
-export default function ProfileHero({ owner, totalBooks, availableCount, borrowedCount }) {
+function ProfileHero(props) {
+  const {owner, totalBooks, availableCount, borrowedCount}=props
   return (
     <div style={styles.heroCard}>
    
@@ -37,3 +38,4 @@ export default function ProfileHero({ owner, totalBooks, availableCount, borrowe
     </div>
   );
 }
+export default ProfileHero;

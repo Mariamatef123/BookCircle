@@ -17,8 +17,9 @@ namespace BookCircle.Data.Models
         public byte[] PasswordSalt { get; set; }
         public Role Role { get; set; }
 
+
         public DateTime CreatedAt { get; set; }=DateTime.Now;
-        public bool IsApproved { get; set; }//for owner approval
+        public bool IsApproved { get; set; } = true;//for owner approval
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         //any user can write comments

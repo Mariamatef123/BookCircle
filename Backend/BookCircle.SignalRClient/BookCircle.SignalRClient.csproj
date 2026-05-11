@@ -12,6 +12,9 @@
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.23" />
     <PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.23" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.25" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization.Policy" Version="2.3.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.25" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.25" />
   </ItemGroup>
 

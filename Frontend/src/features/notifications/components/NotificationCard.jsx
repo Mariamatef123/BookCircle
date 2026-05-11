@@ -28,7 +28,12 @@ export default function NotificationCard({ notification: n, onClick }) {
   const config   = getTypeConfig(n.type);
 // NotificationCard.jsx
 const cta = CTA_TYPES[resolveType(n?.type ?? n?.Type)];
-  return (
+const isPaymentDone = (bookId) => {
+  return localStorage.getItem(`payment_${bookId}`) === "true";
+};
+const isPaymentDisabled =
+  resolveType(n?.type) === "BORROW_ACCEPTED" &&
+  isPaymentDone(n?.bookId); return (
     <div
       key={id}
       style={{
@@ -63,13 +68,20 @@ const cta = CTA_TYPES[resolveType(n?.type ?? n?.Type)];
       
           {message && <p style={styles.cardMessage}>{message}</p>}
 
-    
-          {cta && (
-            <div style={styles.ctaStrip}>
-              <span style={styles.ctaText}>{cta.text}</span>
-      
-            </div>
-          )}
+{cta && (
+  <div
+    style={{
+      ...styles.ctaStrip,
+      opacity: isPaymentDisabled ? 0.4 : 1,
+      pointerEvents: isPaymentDisabled ? "none" : "auto",
+      cursor: isPaymentDisabled ? "not-allowed" : "pointer",
+    }}
+  >
+    <span style={styles.ctaText}>
+      {isPaymentDisabled ? "Payment completed" : cta.text}
+    </span>
+  </div>
+)}
         </div>
       </div>
     </div>

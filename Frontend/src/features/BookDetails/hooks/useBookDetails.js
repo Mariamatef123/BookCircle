@@ -7,7 +7,7 @@ import { likeBook, dislikeBook, getBookReactions } from "../../../Service/Reacti
 import { addComment, deleteComment, getBookComments, replyToComment, updateComment } from "../../../Service/CommentService";
 import { getUser } from "../../../utils/auth";
 import { normalizeAvailabilityOptions, normalizeReaction, normalizeComment, getReactionSummary } from "../utils/normalizers";
-
+import { checkBorrowRequestExists } from "../../../Service/BorrowService";
 export default function useBookDetails() {
   const navigate = useNavigate();
   const { bookId } = useParams();//url path
@@ -44,6 +44,8 @@ export default function useBookDetails() {
   const [editingCommentId,  setEditingCommentId]  = useState(null);
   const [editingText,       setEditingText]       = useState("");
   const [commentActionId,   setCommentActionId]   = useState(null);
+const [exists, setExists] = useState(false);
+
 
   // ── Derived ───────────────────────────────────────────────────
   const book = books.find((item) => String(item.id) === String(bookId));//give the book from list
@@ -107,13 +109,28 @@ export default function useBookDetails() {
     } catch { setComments([]); }
     finally { setCommentsLoading(false); }
   };
+useEffect(() => {
+  if (!bookId) return;
 
-  useEffect(() => {
-    if (!bookId) return;
-    loadReactions(bookId);
-    loadComments(bookId);
-  }, [bookId]); 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  loadComments(bookId);
+  loadReactions(bookId);
+   
+}, [bookId]);
+useEffect(() => {
+  const check = async () => {
+    if (!userId || !bookId) return;
 
+    const result = await checkBorrowRequestExists(userId, bookId);
+   
+    setExists(result.data);
+
+  
+    console.log(result.data)
+  };
+
+  check();
+}, [userId, bookId]);  
   const ensureSignedIn = () => { if (userId) return true; navigate("/login"); return false; };//Used before ANY action: borrow comment like add to list
 
 
@@ -243,7 +260,7 @@ export default function useBookDetails() {
     handleReaction,
     handleCommentSubmit, handleReplySubmit,
     handleStartEdit, handleSaveEdit,
-    handleDeleteComment,
+    handleDeleteComment,exists,setExists,
     onEditCancel: () => { setEditingCommentId(null); setEditingText(""); },
   };
 }

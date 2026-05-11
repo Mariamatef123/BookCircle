@@ -1,29 +1,30 @@
 import api from "../Api/Axios";
 
+import apiClient from "../Api/api_client";
 // CREATE LIST (needs body!)
 export const createList = (userId, data) =>
-  api.post(`/api/ReadingList/create-readinglist/${userId}`, data);
+  apiClient.post(`/api/ReadingList/create-readinglist/${userId}`, data);
 
 // ADD BOOK TO LIST
 export const addBook = (listId, bookId) =>
-  api.post(`/api/ReadingList/add-books/${listId}/${bookId}`);
+  apiClient.post(`/api/ReadingList/add-books/${listId}/${bookId}`);
 
 // REMOVE BOOK FROM LIST (query params)
 export const removeBook = (listId, bookId) =>
-  api.delete(`/api/ReadingList/remove-book`, {
+  apiClient.delete(`/api/ReadingList/remove-book`, {
     params: { readingListId: listId, bookId: bookId }
   });
 
 // DELETE LIST
 export const deleteList = (listId) =>
-  api.delete(`/api/ReadingList/remove-list`, {
+  apiClient.delete(`/api/ReadingList/remove-list`, {
     params: { readingListId: listId }
   });
 
 // GET USER LISTS
 export const getUserLists = (userId) =>
-  api.get(`/api/ReadingList/user/${userId}`);
+  apiClient.get(`/api/ReadingList/user/${userId}`);
 
 // GET BOOKS IN A LIST
 export const getListBooks = (listId) =>
-  api.get(`/api/ReadingList/${listId}/books`);
+  apiClient.get(`/api/ReadingList/${listId}/books`);

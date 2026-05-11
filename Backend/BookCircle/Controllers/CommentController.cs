@@ -1,6 +1,7 @@
 ﻿using BookCircle.Data.Models;
 using BookCircle.Data.Repositories.Intefaces;
 using BookCircle.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -14,7 +15,7 @@ public class CommentController : ControllerBase
     {
         _commentService = commentService;
     }
-
+    [Authorize]
     [HttpPost("add")]
     public async Task<IActionResult> AddComment(int userId, int bookId, [FromBody] string content)
     {
@@ -28,7 +29,7 @@ public class CommentController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
+    [Authorize]
     [HttpPost("reply/{parentId}")]
     public async Task<IActionResult> ReplyToComment(int userId, int parentId, [FromBody] string content)
     {
@@ -42,7 +43,7 @@ public class CommentController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
+    [Authorize]
     [HttpDelete("{commentId}")]
     public async Task<IActionResult> DeleteComment(int userId, int commentId)
     {
@@ -56,12 +57,14 @@ public class CommentController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
     [HttpGet("book-comments/{bookId}")]
     public async Task<IActionResult> GetBookComments(int bookId)
     {
         var result = await _commentService.GetBookCommentsAsync(bookId);
         return Ok(result);
     }
+    [Authorize]
     [HttpPut("{commentId}")]
     public async Task<IActionResult> UpdateComment(int commentId, int userId, string content)
     {

@@ -16,7 +16,7 @@ export default function BookHero({
   
   book, navigate, isAvailable,
   availabilityOptions, reactionSummary, reactionsLoading, reactionBusy,
-  onOpenBorrowModal, onOpenReadingLists, onReaction,
+  onOpenBorrowModal, onOpenReadingLists, onReaction,exists
 })
 
 {const user=getUser();const handleReadingListClick = () => {
@@ -34,16 +34,22 @@ export default function BookHero({
 
   onOpenBorrowModal();
 };
+
   return (
     <>
+   
       <button type="button" style={styles.backButton} onClick={() => navigate("/")}>
         <ArrowLeftIcon /> Back to Home
       </button>
 
       <div style={styles.heroGrid} className="book-details-hero">
         <div style={styles.coverColumn} className="book-details-cover">
-          {book.coverImageBase64 ? (
-            <img src={`data:image/jpeg;base64,${book.coverImageBase64}`} alt={book.title} style={styles.coverImage} />
+          {book.coverImage ? (
+ <img
+  src={`https://localhost:7071/${book.coverImage?.replace(/\\/g, "/")}`}
+  alt={book.title}
+  style={styles.coverImage}
+/>
           ) : (
             <div style={styles.coverFallback}>No Cover</div>
           )}
@@ -87,7 +93,7 @@ export default function BookHero({
   type="button"
   style={{
     ...styles.primaryButton,
-    ...((!isAvailable || !availabilityOptions.length || user?.role === "BOOK_OWNER"||user?.role === "ADMIN")
+    ...((!isAvailable || !availabilityOptions.length || user?.role === "BOOK_OWNER"||user?.role === "ADMIN")||exists
       ? styles.primaryButtonDisabled
       : {})
   }}
@@ -95,7 +101,9 @@ export default function BookHero({
   disabled={
     !isAvailable ||
     !availabilityOptions.length ||
-    user?.role === "BOOK_OWNER"||user?.role === "ADMIN"
+    user?.role === "BOOK_OWNER"||user?.role === "ADMIN"||
+    exists
+    
   }
 >
   Request Borrow

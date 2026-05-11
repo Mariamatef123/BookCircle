@@ -106,7 +106,6 @@ export default function PaymentForm({
         </div>
       </div>
 
-      {/* Error / Success */}
       {error && (
         <div style={{ ...styles.errorBox, display: "flex", alignItems: "center", gap: 6 }}>
           <AlertTriangleIcon size={15} /> {error}
@@ -119,18 +118,21 @@ export default function PaymentForm({
       )}
 
   
-      <button
-        type="submit"
-        onClick={handleSubmit}
-        disabled={submitting || !!success}
-        style={{
-          ...styles.submitBtn,
-          ...(submitting || success ? styles.submitBtnDisabled : {}),
-        }}
-      >
-        {submitting ? "Processing..." : success ? "Redirecting..." : "Pay Now"}
-      </button>
+<button
+  type="submit"
+  disabled={submitting}
+  onClick={handleSubmit}
+  style={{
+    ...styles.submitBtn,
+    ...(submitting
+      ? { opacity: 0.6, cursor: "not-allowed" }
+      : {}),
+     
+  }}
 
+>
+  {submitting ? "Processing..." : "Pay Now"}
+</button>
       <div style={styles.secureBadge}>
         <LockIcon size={14} /> Payments are secure
       </div>

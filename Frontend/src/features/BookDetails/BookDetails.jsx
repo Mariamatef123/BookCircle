@@ -64,6 +64,7 @@ export default function BookDetails() {
           onOpenBorrowModal={d.handleOpenBorrowModal}
           onOpenReadingLists={d.handleOpenReadingLists}
           onReaction={d.handleReaction}
+          exists={d.exists}
         />
 
         <div style={styles.contentGrid} className="book-details-content">

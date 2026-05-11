@@ -6,17 +6,15 @@ namespace BookCircle.Hubs
     {
         public async Task JoinUserGroup(string userId)
         {
-            if (string.IsNullOrEmpty(userId)) return;
+            if (string.IsNullOrEmpty(userId))
+                return;
+
+            Console.WriteLine($"JOINED GROUP: user_{userId}");
 
             await Groups.AddToGroupAsync(
                 Context.ConnectionId,
                 $"user_{userId}"
             );
-        }
-
-        public override async Task OnDisconnectedAsync(Exception? exception)
-        {
-            await base.OnDisconnectedAsync(exception);
         }
     }
 }

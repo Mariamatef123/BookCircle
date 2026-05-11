@@ -57,8 +57,9 @@ namespace BookCircle.Migrations
                     b.Property<int>("BorrowStatus")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("CoverImage")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("CoverImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CurrentBorrowerId")
                         .HasColumnType("int");

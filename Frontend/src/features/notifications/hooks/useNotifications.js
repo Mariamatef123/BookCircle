@@ -29,7 +29,7 @@ export function resolveType(raw) {
 
 const TYPE_CONFIG = {
   BORROW_REQUEST:  { label: "Borrow Request",   bg: "#eff6ff", getTarget: () => "/dashboard" },
-  BORROW_ACCEPTED: { label: "Request Accepted", bg: "#f0fdf4", getTarget: (n) => ({ path: "/payment", state: { bookId: n.bookId } }) },
+  BORROW_ACCEPTED: { label: "Request Accepted", bg: "#f0fdf4", getTarget: (n) => ({ path: "/payment", state: { bookId: n.bookId , paymentDone: false} }) },
   BORROW_REJECTED: { label: "Request Rejected", bg: "#fef2f2", getTarget: (n) => `/book/${n.bookId}` },
   COMMENT_ADDED:   { label: "New Comment",       bg: "#fdf4ff", getTarget: (n) => `/book/${n.bookId}?tab=comments` },
   COMMENT_REPLIED: { label: "Reply to Comment",  bg: "#fdf4ff", getTarget: (n) => `/book/${n.bookId}?tab=comments` },
@@ -54,10 +54,20 @@ export function getTypeConfig(type) {
 export const resolveNotificationRoute = (type, notification) => {
   const key = resolveType(type);
   if (!key) return null;
+
   const config = TYPE_CONFIG[key] || DEFAULT_CONFIG;
+
+  // ❌ BLOCK PAYMENT ROUTE AFTER COMPLETION
+  if (key === "BORROW_ACCEPTED" && notification.paymentDone) {
+    return null;
+  }
+
   const target = config.getTarget(notification);
   if (!target) return null;
-  return typeof target === "string" ? { path: target } : target;
+
+  return typeof target === "string"
+    ? { path: target }
+    : target;
 };
 
 export const getId     = (n) => n?.id     ?? n?.Id;
@@ -137,7 +147,7 @@ export default function useNotifications() {
 
       if (!getIsRead(n)) {
         await markRead(id);
-        // ← badge decrements here because setNotifications above sets isRead: true
+        //badge decrements here because setNotifications above sets isRead: true
         // and unreadCount is derived via useMemo from notifications state
       }
 

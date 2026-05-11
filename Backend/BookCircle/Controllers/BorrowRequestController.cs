@@ -1,10 +1,13 @@
 ﻿using BookCircle.Data.Models;
 using BookCircle.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace BookCircle.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BorrowRequestController : ControllerBase
@@ -59,7 +62,12 @@ namespace BookCircle.Controllers
             await _borrowRequestService.CancelBorrowRequest(userId, borrowRequestId);
             return Ok(new { message = "Borrow request cancelled successfully" });
         }
-
-
+        
+        [HttpGet("borrow-request-exists")]
+        public async Task<IActionResult> IsBorrowRequestExists(int readerId, int bookId)
+        {
+            var exists = await _borrowRequestService.IsBorrowRequestExists(readerId, bookId);
+            return Ok(exists);
+        }
     }
 }

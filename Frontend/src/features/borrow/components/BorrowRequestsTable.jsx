@@ -10,6 +10,7 @@ export default function BorrowRequestsTable({
         <tr>
           <th style={{...styles.th, width: 140}}>Book Name</th>
           <th style={{...styles.th, width: 190}}>Requested At</th>
+          
           <th style={{...styles.th, width: 120}}>Duration</th>
           <th style={{...styles.th, width: 130}}>Reader</th>
           <th style={{...styles.th, width: 100}}>Status</th>

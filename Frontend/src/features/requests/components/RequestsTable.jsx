@@ -24,6 +24,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
             <th style={styles.th}>Status</th>
             <th style={styles.th}>Duration</th>
             <th style={styles.th}>Requested On</th>
+             <th style={styles.th}>Ended At</th>
             <th style={styles.th}>Actions</th>
           </tr>
         </thead>
@@ -42,13 +43,15 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
                 onMouseEnter={(e) => e.currentTarget.style.background = "#fafaff"}
                 onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
               >
-                {/* Book */}
+      
                 <td style={styles.td}>
                   <div style={styles.bookCell}>
-                    {req.book?.coverImageBase64 ? (
-                      <img
-                        src={`data:image/jpeg;base64,${req.book.coverImageBase64}`}
-                        alt={bookTitle}
+                    {req.book?.coverImage ? (
+                          <img
+                               src={`https://localhost:7071/${req.book.coverImage?.replace(/\\/g, "/")}`}
+                               alt={bookTitle}
+                              
+                               
                         style={styles.bookCover}
                       />
                     ) : (
@@ -94,6 +97,21 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
   </p>
 </td>
          
+<td style={styles.td}>
+  {req.endedAt ? (
+    <>
+      <p style={{ ...styles.dateText, margin: 0 }}>
+        {new Date(req.endedAt).toLocaleDateString()}
+      </p>
+
+      <p style={{ ...styles.dateSubText, margin: 0 }}>
+        {new Date(req.endedAt).toLocaleTimeString()}
+      </p>
+    </>
+  ) : (
+    <p style={{ margin: 0, color: "gray" }}>Not ended yet</p>
+  )}
+</td>
                 <td style={styles.td}>
                   {isPending ? (
                     <button

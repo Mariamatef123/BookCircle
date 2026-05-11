@@ -2,10 +2,12 @@
 using BookCircle.DTOs.ReadingLists;
 using BookCircle.Services.Implementations;
 using BookCircle.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCircle.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ReadingListController : ControllerBase

@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import useProfile      from "./hooks/useProfile";
 import ProfileHero     from "./components/ProfileHero";
-
 import ProfileEmpty    from "./components/ProfileEmpty";
 import styles          from "./styles/profileStyles";
 import BookCard from "../home/components/BookCard";

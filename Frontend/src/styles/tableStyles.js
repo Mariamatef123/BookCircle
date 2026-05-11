@@ -13,7 +13,7 @@ export const styles = {
   },
   img: {
     width: 80,
-    height: 56,
+    // height: 56,
     borderRadius: 8,
     objectFit: "cover",
     display: "block",

@@ -8,11 +8,11 @@ export default function BookRow(props) {
   return (
     <tr style={styles.row}>
       <td style={styles.td}>
-        <img
-          src={`data:image/jpeg;base64,${book.coverImageBase64}`}
-          alt={book.title}
-          style={styles.img}
-        />
+ <img
+  src={`https://localhost:7071/${book.coverImage?.replace(/\\/g, "/")}`}
+  alt={book.title}
+  style={styles.img}
+/>
       </td>
 
       <td style={styles.td}>

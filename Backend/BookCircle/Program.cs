@@ -10,6 +10,7 @@ using BookCircle.Services.Interfaces;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -127,7 +128,7 @@ using (var scope = app.Services.CreateScope())
     recurringJob.AddOrUpdate(
         "sync-book-status",
         () => bookService.UpdateBookStatuses(),
-        Cron.Daily);
+        Cron.Hourly);
 }
 
 
@@ -144,7 +145,11 @@ app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources")),
+    RequestPath = new PathString("/Resources")
+});
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");
 

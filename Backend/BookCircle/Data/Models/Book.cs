@@ -39,7 +39,10 @@ namespace BookCircle.Data.Models
         public DateTime PublicationDate { get; set; } 
         public ICollection<AvailabilityDate> AvailabilityDates { get; set; }
      = new List<AvailabilityDate>();
-        public byte[]? CoverImage { get; set; }
+     
+        [FileExtensions(Extensions = "jpg,jpeg,png")]
+        [DataType(DataType.ImageUrl)]
+        public string CoverImage { get; set; }
 
         public PostStatus Status { get; set; } = PostStatus.PENDING;
 

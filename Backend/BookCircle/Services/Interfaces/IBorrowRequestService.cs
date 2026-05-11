@@ -12,6 +12,6 @@ namespace BookCircle.Services.Interfaces
         public Task CancelBorrowRequest(int userId, int borrowRequestId);
         public  Task<IEnumerable<BorrowRequest>> RequestsSentByUser(int userId);
 
-
+        public  Task<bool> IsBorrowRequestExists(int readerId, int bookId);
     }
 }

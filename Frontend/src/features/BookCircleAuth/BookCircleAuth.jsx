@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {  useNavigate } from "react-router-dom";
-import { Login, Register } from "../../Service/UserService";
+import { Login, Register,getRoles } from "../../Service/UserService";
 import { setAuthToken } from "../../utils/auth";
 import AuthLeftPanel from "./components/AuthLeftPanel";
 import AuthRightPanel from "./components/AuthRightPanel";
@@ -15,9 +15,20 @@ export default function BookCircleAuth() {
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [signupForm, setSignupForm] = useState({ Name: "", email: "", password: "", confirm: "", role: "" });
   const [errors, setErrors] = useState({});
-
+const [roles, setRoles] = useState([]);
   const navigate = useNavigate();
+useEffect(() => {
+  async function fetchRoles() {
+    try {
+      const res = await getRoles();
+      setRoles(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
+  fetchRoles();
+}, []);
   function getPasswordStrength(pwd) {
     if (!pwd) return { level: 0, label: "", color: "" };
     let score = 0;
@@ -83,7 +94,7 @@ export default function BookCircleAuth() {
         setTimeout(() => {
           setTab("login");
           setSuccess(false);
-        }, 1500);
+        }, 2000);
       }
     } catch (error) {
       console.log("AUTH ERROR:", error);
@@ -108,6 +119,7 @@ export default function BookCircleAuth() {
         <AuthLeftPanel />
         <AuthRightPanel
           tab={tab}
+          roles={roles}
           showPwd={showPwd}
           setShowPwd={setShowPwd}
           showConfirm={showConfirm}

@@ -5,11 +5,13 @@ using BookCircle.DTOs.Books;
 using BookCircle.DTOs.Users;
 using BookCircle.Enum;
 using BookCircle.Enums;
+using BookCircle.Helpers;
 using BookCircle.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Extensions;
 using System.Linq;
+
 using static System.Reflection.Metadata.BlobBuilder;
 using AvailabilityDateDTO = BookCircle.DTOs.Books.AvailabilityDateDTO;
 
@@ -47,14 +49,7 @@ namespace BookCircle.Services.Implementations
             if (user.Role != Role.BOOK_OWNER || user.IsApproved == false)
                 throw new Exception("Only Book Owners can create books");
 
-            byte[] imageBytes = null;
 
-            if (dto.CoverImage != null)
-            {
-                using var ms = new MemoryStream();
-                await dto.CoverImage.CopyToAsync(ms);
-                imageBytes = ms.ToArray();
-            }
 
             var book = new Book
             {
@@ -65,7 +60,7 @@ namespace BookCircle.Services.Implementations
                 BorrowPrice = dto.BorrowPrice,
                 PublicationDate = dto.PublicationDate,
                 OwnerId = user.Id,
-                CoverImage = imageBytes,
+           
                 Description = dto.Description,
              
 
@@ -77,7 +72,18 @@ namespace BookCircle.Services.Implementations
                 .ToList()
             };
 
-            ;
+            if (dto.CoverImage != null)
+            {
+                var result = UploadHandler.Upload(dto.CoverImage, "Book");
+                if (!string.IsNullOrEmpty(result.ErrorMessage))
+                {
+                    throw new Exception
+                     (result.ErrorMessage);
+
+                }
+                book.CoverImage = result.FileName;
+
+            }
             await _bookRepo.AddAsync(book);
             await _bookRepo.SaveAsync();
 
@@ -97,8 +103,8 @@ namespace BookCircle.Services.Implementations
                 Description=book.Description,
                
 
-                CoverImageBase64 = book.CoverImage != null
-                    ? Convert.ToBase64String(book.CoverImage)
+                CoverImage = book.CoverImage != null
+                    ? book.CoverImage
                     : null,
 
                 AvailabilityDates = book.AvailabilityDates
@@ -129,8 +135,8 @@ namespace BookCircle.Services.Implementations
              
                 PublicationDate = b.PublicationDate,
                 Status = b.Status.ToString(),
-                CoverImageBase64 = b.CoverImage != null
-                    ? Convert.ToBase64String(b.CoverImage)
+                CoverImage = b.CoverImage != null
+                    ? b.CoverImage
                     : null,
 
                 AvailabilityDates = b.AvailabilityDates != null
@@ -223,8 +229,8 @@ namespace BookCircle.Services.Implementations
                 PublicationDate = book.PublicationDate,
                 Status = book.Status.ToString(),
 
-                CoverImageBase64 = book.CoverImage != null
-                    ? Convert.ToBase64String(book.CoverImage)
+                CoverImage = book.CoverImage != null
+                    ? book.CoverImage
                     : null,
 
                 AvailabilityDates = book.AvailabilityDates
@@ -287,14 +293,7 @@ namespace BookCircle.Services.Implementations
           
             book.OwnerId = userId;
 
-          
-            if (dto.CoverImage != null)
-            {
-                using var ms = new MemoryStream();
-                await dto.CoverImage.CopyToAsync(ms);
-                book.CoverImage = ms.ToArray();
-            }
-
+    
             if (dto.AvailabilityDates != null && dto.AvailabilityDates.Any())
             {
              
@@ -341,6 +340,9 @@ namespace BookCircle.Services.Implementations
             await _bookRepo.UpdateAsync(book);
             await _bookRepo.SaveAsync();
 
+            // Get the absolute path
+         
+
             return new BookResponseDTO
             {
                 Id = book.Id,
@@ -354,8 +356,8 @@ namespace BookCircle.Services.Implementations
                 Status = book.Status.ToString(),
                 Description = book.Description,
 
-                CoverImageBase64 = book.CoverImage != null
-                    ? Convert.ToBase64String(book.CoverImage)
+                CoverImage = book.CoverImage != null
+                    ? book.CoverImage
                     : null,
 
                 AvailabilityDates = book.AvailabilityDates
@@ -408,8 +410,8 @@ namespace BookCircle.Services.Implementations
                 PublicationDate = book.PublicationDate,
                 Status = book.Status.ToString(),
 
-                CoverImageBase64 = book.CoverImage != null
-                    ? Convert.ToBase64String(book.CoverImage)
+                CoverImage = book.CoverImage != null
+                    ? book.CoverImage
                     : null,
 
                 AvailabilityDates = book.AvailabilityDates
@@ -516,8 +518,8 @@ namespace BookCircle.Services.Implementations
                 PublicationDate = book.PublicationDate,
                 Status = book.Status.ToString(),
 
-                CoverImageBase64 = book.CoverImage != null
-                    ? Convert.ToBase64String(book.CoverImage)
+                CoverImage = book.CoverImage != null
+                    ? book.CoverImage
                     : null,
 
                 AvailabilityDates = book.AvailabilityDates
@@ -537,47 +539,51 @@ namespace BookCircle.Services.Implementations
         }
 
 
-        public async Task<IEnumerable<BookResponseDTO>> SearchBooksAsync(
+        public async Task<object> SearchBooksAsync(
             string? title,
             string? genre,
             string? language,
-            decimal? maxPrice)
+            decimal? maxPrice,
+            int pageNumber,
+            int pageSize,
+            bool availableOnly)
         {
-            try
-            {
-                var titleLower = title?.Trim().ToLower();
-                var genreLower = genre?.Trim().ToLower();
-                var languageLower = language?.Trim().ToLower();
+            var titleLower = title?.Trim().ToLower();
+            var genreLower = genre?.Trim().ToLower();
+            var languageLower = language?.Trim().ToLower();
 
-                var books = await _bookRepo.GetAllAsync(
-                    criteria: b =>
-                       
-                        b.Status == PostStatus.ACCEPTED &&
-
-                    
-                        (string.IsNullOrEmpty(titleLower) ||
-                         (b.Title != null && b.Title.ToLower().Contains(titleLower))) &&
-
-                     
-                        (string.IsNullOrEmpty(genreLower) ||
-                         (b.Genre != null && b.Genre.ToLower().Contains(genreLower))) &&
-
-                        
-                        (string.IsNullOrEmpty(languageLower) ||
-                         (b.Language != null && b.Language.ToLower().Contains(languageLower))) &&
-
-                     
-                        (!maxPrice.HasValue || b.BorrowPrice <= maxPrice.Value),
-
-                    includes: new[] { "AvailabilityDates", "Owner" }
+            var query = _bookRepo.GetQueryable()
+                .Include("AvailabilityDates")
+                .Include("Owner")
+                .Where(b =>
+                    b.Status == PostStatus.ACCEPTED &&
+                    (string.IsNullOrEmpty(titleLower) || b.Title.ToLower().Contains(titleLower)) &&
+                    (string.IsNullOrEmpty(genreLower) || b.Genre.ToLower().Contains(genreLower)) &&
+                    (string.IsNullOrEmpty(languageLower) || b.Language.ToLower().Contains(languageLower)) &&
+                    (!maxPrice.HasValue || b.BorrowPrice <= maxPrice.Value)
                 );
 
-                var bookList = books?.ToList() ?? new List<Book>();
+            // ✅ ADD THIS
+            if (availableOnly)
+            {
+                query = query.Where(b => b.BorrowStatus == BookStatus.AVAILABLE);
+            }
 
-                if (!bookList.Any())
-                    return Enumerable.Empty<BookResponseDTO>();
+            var totalCount = await query.CountAsync();
 
-                return bookList.Select(book => new BookResponseDTO
+            var books = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Where(b => b.Status == PostStatus.ACCEPTED)
+                .ToListAsync();
+
+            return new
+            {
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                Data = books.Select(book => new BookResponseDTO
                 {
                     Id = book.Id,
                     Title = book.Title,
@@ -589,58 +595,109 @@ namespace BookCircle.Services.Implementations
                     BorrowStatus = book.BorrowStatus.ToString(),
                     PublicationDate = book.PublicationDate,
                     Status = book.Status.ToString(),
-
-                    CoverImageBase64 = book.CoverImage != null
-                        ? Convert.ToBase64String(book.CoverImage)
-                        : null,
-
+                    CoverImage = book.CoverImage,
                     AvailabilityDates = book.AvailabilityDates?
-                        .Select(a => new AvailabilityDateDTO
-                        {
-                            Duration = a.Duration
-                        }).ToList() ?? new List<AvailabilityDateDTO>(),
-
+                        .Select(a => new AvailabilityDateDTO { Duration = a.Duration })
+                        .ToList() ?? new List<AvailabilityDateDTO>(),
                     Owner = book.Owner == null ? null : new UserDTO
                     {
                         Id = book.Owner.Id,
                         Name = book.Owner.Name,
                         Role = book.Owner.Role.ToString()
                     }
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[SearchBooksAsync] ERROR: {ex.Message}");
-                return Enumerable.Empty<BookResponseDTO>();
-            }
+                })
+            };
         }
         public async Task UpdateBookStatuses()
         {
-            var books = await _bookRepo.GetAllAsync();
+            var books = await _bookRepo.GetQueryable()
+                .Include(b => b.BorrowRequests)
+                .ToListAsync();
+
+            var now = DateTime.Now; // ✅ consistent time source
 
             foreach (var book in books)
             {
-                var activeBorrow = await _borrowRequest.GetFirstOrDefaultAsync(
-                    br => br.BookId == book.Id &&
-                          br.Status == BorrowRequestStatus.ACCEPTED &&
-                          br.EndedAt > DateTime.Now
-                );
+                var activeBorrow = book.BorrowRequests?
+                    .FirstOrDefault(br =>
+                        br.Status == BorrowRequestStatus.ACCEPTED &&
+                        br.EndedAt > now);
+
+                Console.WriteLine("date is " + now.ToString("yyyy-MM-dd HH:mm:ss"));
 
                 if (activeBorrow == null)
                 {
                     book.BorrowStatus = BookStatus.AVAILABLE;
                     book.CurrentBorrowerId = null;
+                    await _bookRepo.UpdateAsync(book);
                 }
                 else
                 {
                     book.BorrowStatus = BookStatus.BORROWED;
                 }
-
-                await _bookRepo.UpdateAsync(book);
             }
-
+          
             await _bookRepo.SaveAsync();
         }
+        public async Task<object> GetBooks(int pageNumber, int pageSize, bool availableOnly)
+        {
+            var query = _bookRepo.GetQueryable();
+          
+            // ✅ filter first
+            if (availableOnly)
+            {
+                query = query.Where(b => b.BorrowStatus == BookStatus.AVAILABLE);
+            }
 
+            var totalCount = await query.Where(b => b.Status == PostStatus.ACCEPTED).CountAsync();
+
+            var books = await query
+                .Include(b => b.Owner)
+                .Include(b => b.AvailabilityDates)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                 .Where(b => b.Status == PostStatus.ACCEPTED)
+                .Select(book => new BookResponseDTO
+                {
+                    Id = book.Id,
+                    Title = book.Title,
+                    Genre = book.Genre,
+                    ISBN = book.ISBN,
+                    Language = book.Language,
+                    Description = book.Description,
+                    BorrowPrice = book.BorrowPrice,
+                    BorrowStatus = book.BorrowStatus.ToString(),
+                    PublicationDate = book.PublicationDate,
+                    Status = book.Status.ToString(),
+                    CoverImage = book.CoverImage,
+
+                    AvailabilityDates = book.AvailabilityDates
+                        .Select(a => new AvailabilityDateDTO
+                        {
+                            Duration = a.Duration
+                        })
+                        .ToList(),
+
+                    Owner = book.Owner == null
+                        ? null
+                        : new UserDTO
+                        {
+                            Id = book.Owner.Id,
+                            Name = book.Owner.Name,
+                            Role = book.Owner.Role.ToString()
+                        }
+                })
+                .ToListAsync();
+
+            return new
+            {
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize),
+                AvailableOnly = availableOnly,
+                Data = books
+            };
+        }
     }
 }

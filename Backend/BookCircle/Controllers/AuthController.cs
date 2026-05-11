@@ -75,4 +75,10 @@ public class AuthController : ControllerBase
             return Unauthorized(ex.Message);
         }
     }
+    [HttpGet("roles")]
+    public async Task<IActionResult> GetRoles()
+    {
+        var roles = await _authService.GetRoles();
+        return Ok(roles);
+    }
 }

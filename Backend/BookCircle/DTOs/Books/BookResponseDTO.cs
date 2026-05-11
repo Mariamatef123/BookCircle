@@ -23,6 +23,6 @@ namespace BookCircle.DTOs.Books
 
         public string Status { get; set; }
 
-        public string? CoverImageBase64 { get; set; } 
+        public string CoverImage { get; set; } 
     }
 }

@@ -39,11 +39,12 @@ export default function BookForm({ isOpen, onClose, onSubmit, editingBook, userI
           : [{ duration: "" }],
         CoverImage: null,
       });
-      setPreview(
-        editingBook.coverImageBase64
-          ? `data:image/jpeg;base64,${editingBook.coverImageBase64}`
-          : null
-      );
+setPreview(
+  editingBook.coverImage
+    ? `https://localhost:7071/${editingBook.coverImage}`
+    : null
+);
+     
     } else {
       setForm({ ...emptyForm, ownerId: userId || "" });
       setPreview(null);
@@ -52,24 +53,34 @@ export default function BookForm({ isOpen, onClose, onSubmit, editingBook, userI
 
   if (!isOpen) return null;
 
-  const buildFormData = () => {
-    const fd = new FormData();
-    fd.append("Title",       form.Title);
-    fd.append("Genre",       form.Genre);
-    fd.append("ISBN",        form.ISBN);
-    fd.append("Language",    form.Language);
-    fd.append("BorrowPrice", form.BorrowPrice);
-    fd.append("PublicationDate",
-      form.PublicationDate ? new Date(form.PublicationDate).toISOString() : ""
-    );
-    fd.append("Description", form.Description);
-    fd.append("ownerId",     form.ownerId);
-    form.AvailabilityDates.forEach((d, i) => {
-      fd.append(`AvailabilityDates[${i}][duration]`, d.duration);
-    });
-    if (form.CoverImage) fd.append("CoverImage", form.CoverImage);
-    return fd;
-  };
+const buildFormData = () => {
+  const fd = new FormData();
+
+  fd.append("Title", form.Title);
+  fd.append("Genre", form.Genre);
+  fd.append("ISBN", form.ISBN);
+  fd.append("Language", form.Language);
+  fd.append("BorrowPrice", form.BorrowPrice);
+
+  fd.append(
+    "PublicationDate",
+    form.PublicationDate ? new Date(form.PublicationDate).toISOString() : ""
+  );
+
+  fd.append("Description", form.Description);
+  fd.append("ownerId", form.ownerId);
+
+  form.AvailabilityDates.forEach((d, i) => {
+    fd.append(`AvailabilityDates[${i}][duration]`, d.duration);
+  });
+
+  // ✅ FIX HERE
+  if (form.CoverImage instanceof File) {
+    fd.append("CoverImage", form.CoverImage);
+  }
+
+  return fd;
+};
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -100,6 +111,7 @@ export default function BookForm({ isOpen, onClose, onSubmit, editingBook, userI
         <div style={styles.body}>
           <ImageUpload
             preview={preview}
+            
             setPreview={setPreview}
             setForm={setForm}
           />

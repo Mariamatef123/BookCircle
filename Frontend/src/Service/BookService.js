@@ -1,9 +1,9 @@
 import api from "../Api/axios";
 
-
+import apiClient from "../Api/api_client";
 // GET all books for user
 export const getAllBooks = (userId) =>
-  api.get(`/api/Book/${userId}/get-all-books`);
+  apiClient.get(`/api/Book/${userId}/get-all-books`);
 
 export const getBooks = () =>
   api.get(`/api/Book/get-accepted-books`);
@@ -11,22 +11,29 @@ export const getBooks = () =>
 
 // CREATE book
 export const createBook = (userId, formData) =>
-  api.post(`/api/Book/${userId}/create-post`, formData, {
+  apiClient.post(`/api/Book/${userId}/create-post`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",  // ← explicitly set this
     },
   });
 
 
-
+export const getBooksPaged = (
+  pageNumber = 1,
+  pageSize = 10,
+  availableOnly = false
+) =>
+  api.get(`/api/Book/pagination`, {
+    params: { pageNumber, pageSize, availableOnly },
+  });
 
 // DELETE book
 export const deleteBook = (userId, bookId) =>
-  api.delete(`/api/Book/${userId}/delete-book/${bookId}`);
+  apiClient.delete(`/api/Book/${userId}/delete-book/${bookId}`);
 
 // UPDATE book
 export const updateBook = (userId, bookId, formData) =>
-  api.put(`/api/Book/${userId}/update-book/${bookId}`, formData, {
+  apiClient.put(`/api/Book/${userId}/update-book/${bookId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",  // ← explicitly set this
     },
@@ -37,17 +44,28 @@ export const updateBook = (userId, bookId, formData) =>
 
 
 
-export const browseBooks = ({ title, genre, language, maxPrice } = {}) => {
-  const params = {};
+export const browseBooks = (
+  { title, genre, language, maxPrice } = {},
+  pageNumber = 1,
+  pageSize = 10,
+  availableOnly = true
+) => {
+  const params = {
+    pageNumber,
+    pageSize,
+    availableOnly,
+  };
+
   if (title?.trim()) params.title = title.trim();
   if (genre?.trim()) params.genre = genre.trim();
   if (language?.trim()) params.language = language.trim();
+
   if (maxPrice !== undefined && maxPrice !== null && maxPrice !== "") {
     params.maxPrice = maxPrice;
   }
+
   return api.get("/api/Book/browse", { params });
 };
-
 
 // ================================
 // PENDING / MODERATION APIS
@@ -55,12 +73,12 @@ export const browseBooks = ({ title, genre, language, maxPrice } = {}) => {
 
 // GET pending posts
 export const getPendingPosts = (userId) =>
-  api.get(`/api/Book/${userId}/pending-posts`);
+  apiClient.get(`/api/Book/${userId}/pending-posts`);
 
 // ACCEPT post
 export const acceptPost = (userId, bookId) =>
-  api.post(`/api/Book/${userId}/accept-post/${bookId}`);
+  apiClient.post(`/api/Book/${userId}/accept-post/${bookId}`);
 
 // REJECT post
 export const rejectPost = (userId, bookId) =>
-  api.post(`/api/Book/${userId}/reject-post/${bookId}`);
+  apiClient.post(`/api/Book/${userId}/reject-post/${bookId}`);

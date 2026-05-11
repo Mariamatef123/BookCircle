@@ -84,7 +84,7 @@ export default function SideBar() {
       path: "/reading-list",
     },
 
-    loggedIn && (user?.role === "BOOK_OWNER" || user?.role === "READER") && {
+    loggedIn && user && {
       label: "Notifications",
       icon: NotificationsIcon,
       path: "/notifications",

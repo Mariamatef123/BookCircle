@@ -185,8 +185,8 @@ namespace BookCircle.Services.Implementations
                 
                 BorrowStatus = rb.Book.BorrowStatus.ToString(),
                 PublicationDate = rb.Book.PublicationDate,
-                CoverImageBase64 = rb.Book.CoverImage != null
-                    ? Convert.ToBase64String(rb.Book.CoverImage)
+                CoverImage = rb.Book.CoverImage != null
+                    ? rb.Book.CoverImage
                     : null
             }).ToList();
         }

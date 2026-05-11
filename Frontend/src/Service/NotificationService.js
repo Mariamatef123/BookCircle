@@ -1,7 +1,7 @@
-import api from "../Api/axios";
 
+import apiClient from "../Api/api_client";
 export const getNotifications = (userId) =>
-  api.get(`/api/Notification/${userId}`);
+  apiClient.get(`/api/Notification/${userId}`);
 
 export const markAsRead = (notificationId,userId) =>
-  api.patch(`/api/Notification/${notificationId}/read/${userId}`);
+  apiClient.patch(`/api/Notification/${notificationId}/read/${userId}`);

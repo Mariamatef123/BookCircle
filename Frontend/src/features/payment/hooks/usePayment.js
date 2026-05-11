@@ -13,7 +13,7 @@ export default function usePayment() {
   const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [focusedField, setFocusedField] = useState("");
-
+const [paymentDone, setPaymentDone] = useState(false);
   const [form, setForm] = useState({
     cardName:   "",
     cardNumber: "",
@@ -83,27 +83,35 @@ export default function usePayment() {
     return null;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const validationError = validate();
-    if (validationError) { setError(validationError); return; }
+  setError("");
+  setSuccess("");
 
-    setSubmitting(true);
-    try {
+  const validationError = validate();
+  if (validationError) {
+    setError(validationError);
+    return;
+  }
 
-      await new Promise((r) => setTimeout(r, 1600));
-      setSuccess(`Payment successful for "${book.title}" `);
-      setTimeout(() => navigate("/"), 2200);
-    } catch {
-      setError("Payment failed. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  setSubmitting(true);
 
+  try {
+    await new Promise((r) => setTimeout(r, 1600));
+
+    // ✅ SAVE PAYMENT STATUS (IMPORTANT)
+    localStorage.setItem(`payment_${book.id}`, "true");
+
+    setSuccess(`Payment successful for "${book.title}"`);
+
+    setTimeout(() => navigate("/"), 2200);
+  } catch {
+    setError("Payment failed. Please try again.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const maskedNumber = (() => {
     const digits = form.cardNumber.replace(/\s/g, "");
@@ -116,6 +124,6 @@ export default function usePayment() {
     book, loading, error, success, submitting, form,
     focusedField, setFocusedField,
     maskedNumber,
-    handleChange, handleSubmit, navigate,
+    handleChange, handleSubmit, navigate,paymentDone
   };
 }

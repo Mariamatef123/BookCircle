@@ -15,6 +15,7 @@ import {
 function AuthRightPanel(props) {
  const {
     tab,
+    roles,
     showPwd,
     setShowPwd,
     showConfirm,
@@ -67,31 +68,48 @@ function AuthRightPanel(props) {
               <button className={`tab-btn ${tab==="signup"?"active":""}`} onClick={() => handleTabSwitch("signup")}>Create Account</button>
             </div>
 
-            {/* SIGNUP EXTRAS */}
             {tab === "signup" && (
               <>
                 <div style={{ marginBottom:14 }}>
                   <label style={{ display:"block", fontSize:12.5, fontWeight:500, color:"var(--text)", marginBottom:8 }}>
                     I want to
                   </label>
-                  <div className="roles">
-                    {[
-                      { id: 2, Icon: BookOpenIcon, name: "READER", desc: "Find books" },
-                      { id: 1, Icon: BoxIcon, name: "BOOK_OWNER", desc: "Share books" }
-                    ].map(r => (
-                      <div
-                        key={r.id}
-                        className={`role-pill ${signupForm.role === r.name ? "on" : ""}`}
-                        onClick={() =>
-                          setSignupForm(f => ({ ...f, role: r.name }))
-                        }
-                      >
-                        <div className="rp-icon"><r.Icon size={20} /></div>
-                        <span className="rp-name">{r.name}</span>
-                        <span className="rp-desc">{r.desc}</span>
-                      </div>
-                    ))}
-                  </div>
+                 <div className="roles">
+  {roles.map((role, index) => {
+    const roleData = {
+      READER: {
+        Icon: BookOpenIcon,
+        desc: "Find books"
+      },
+      BOOK_OWNER: {
+        Icon: BoxIcon,
+        desc: "Share books"
+      }
+    };
+
+    const currentRole = roleData[role];
+
+    return (
+      <div
+        key={index}
+        className={`role-pill ${signupForm.role === role ? "on" : ""}`}
+        onClick={() =>
+          setSignupForm(f => ({ ...f, role }))
+        }
+      >
+        <div className="rp-icon">
+          <currentRole.Icon size={20} />
+        </div>
+
+        <span className="rp-name">{role}</span>
+
+        <span className="rp-desc">
+          {currentRole.desc}
+        </span>
+      </div>
+    );
+  })}
+</div>
                 </div>
                 <div className="field-row">
                   <div className="field-group">
@@ -107,7 +125,6 @@ function AuthRightPanel(props) {
               </>
             )}
 
-            {/* EMAIL */}
             <div className="field-group">
               <label>Email address</label>
               <div className="input-wrap">
@@ -127,7 +144,6 @@ function AuthRightPanel(props) {
               {errors.email && <div className="error-msg"><AlertTriangleIcon size={13} /> {errors.email}</div>}
             </div>
 
-            {/* PASSWORD */}
             <div className="field-group">
               <label>Password</label>
               <div className="input-wrap">
@@ -158,7 +174,7 @@ function AuthRightPanel(props) {
               )}
             </div>
 
-            {/* CONFIRM PASSWORD (signup) */}
+       
             {tab==="signup" && (
               <div className="field-group">
                 <label>Confirm password</label>
@@ -176,7 +192,6 @@ function AuthRightPanel(props) {
               </div>
             )}
 
-            {/* EXTRAS */}
             {errors.terms && <div className="error-msg" style={{marginBottom:14}}><AlertTriangleIcon size={13} /> {errors.terms}</div>}
 
             <button className={`submit-btn ${loading?"loading":""}`} onClick={handleSubmit}>

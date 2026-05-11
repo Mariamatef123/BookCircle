@@ -44,16 +44,18 @@ export default function useDashboard(userId, role) {
         setBooks([]);
       }
 
-      if (role === "BOOK_OWNER" && activeTab === "books") {
+     if (role === "BOOK_OWNER") {
+      if (activeTab === "books") {
         const res = await getAllBooks(userId);
         setBooks(res.data);
       }
 
-      if (role === "BOOK_OWNER" && activeTab === "pending") {
+      if (activeTab === "pending") {
         const res = await getPendingRequests(userId);
         setBorrows(res.data);
         setBooks([]);
       }
+    }
     } catch (err) {
       console.log(err);
     }
@@ -64,7 +66,7 @@ export default function useDashboard(userId, role) {
     loadData();
   }, [userId, role, activeTab]);
 
-  // Actions
+
   const refresh = async () => await loadData();
 
   const handleAcceptBook = async (uId, bookId) => {
@@ -105,8 +107,10 @@ export default function useDashboard(userId, role) {
   const handleFormSubmit = async (formData, bookId) => {
     if (bookId) {
       await updateBook(userId, bookId, formData);
+       setModalOpen(false);
     } else {
       await createBook(userId, formData);
+           setModalOpen(false);
     }
     refresh();
   };
@@ -114,11 +118,13 @@ export default function useDashboard(userId, role) {
   const handleEdit = (book) => {
     setEditingBook(book);
     setModalOpen(true);
+      refresh();
   };
 
   const handleCreate = () => {
     setEditingBook(null);
     setModalOpen(true);
+      refresh();
   };
 
   return {

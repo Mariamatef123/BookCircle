@@ -9,12 +9,12 @@ export default function BookCard({ book }) {
 
       {/* Cover */}
       <div style={styles.coverWrap}>
-        {book.coverImageBase64 ? (
-          <img
-            src={`data:image/jpeg;base64,${book.coverImageBase64}`}
-            alt={book.title}
-            style={styles.img}
-          />
+        {book.coverImage ? (
+     <img
+      src={`https://localhost:7071/${book.coverImage?.replace(/\\/g, "/")}`}
+      alt={book.title}
+      style={styles.img}
+    />
         ) : (
           <div style={{ ...styles.img, background: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center", color: "#4F46E5" }}>
             <BooksIcon size={30} />

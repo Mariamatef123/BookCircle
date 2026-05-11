@@ -6,9 +6,10 @@ export default function BookSummaryCard({ book }) {
     <div style={styles.bookCard}>
    
       <div style={styles.bookCoverWrap}>
-        {book.coverImageBase64 ? (
-          <img
-            src={`data:image/jpeg;base64,${book.coverImageBase64}`}
+        {book.coverImage ? (
+  
+           <img
+            src={`https://localhost:7071/${book.coverImage?.replace(/\\/g, "/")}`}
             alt={book.title}
             style={styles.bookCoverImg}
           />

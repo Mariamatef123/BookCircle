@@ -146,4 +146,17 @@ public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
 
     public async Task<bool> AnyAsync(Expression<Func<T, bool>> criteria)
             => await _dbSet.AnyAsync(criteria);
+
+
+
+    public IQueryable<T> GetQueryable(
+        Expression<Func<T, bool>>? criteria = null)
+    {
+        IQueryable<T> query = _dbSet;
+
+        if (criteria != null)
+            query = query.Where(criteria);
+
+        return query.AsNoTracking();
+    }
 }

@@ -67,7 +67,9 @@ function SearchBar({ navigate, location }) {
           language: filters.language.trim() || undefined,
           maxPrice: filters.maxPrice        || undefined,
         });
-        const list = Array.isArray(res?.data) ? res.data : [];
+     const list = Array.isArray(res?.data?.data)
+  ? res.data.data
+  : [];
         setSuggestions(list.slice(0, 8));
         setShowSuggestions(list.length > 0);
         setHighlightedIndex(-1);
@@ -104,7 +106,7 @@ function SearchBar({ navigate, location }) {
     setSearchTerm(book.title);
     setShowSuggestions(false);
     setHighlightedIndex(-1);
-    navigate(`/?q=${encodeURIComponent(book.title)}`);
+    navigate(`book/${book.id}/?q=${encodeURIComponent(book.title)}`);
   };
 
   const clearFilters = () => {
@@ -333,9 +335,9 @@ function SearchBar({ navigate, location }) {
                   }}
                 >
                   {/* Cover */}
-                  {book.coverImageBase64 ? (
+                  {book.coverImage ? (
                     <img
-                      src={`data:image/jpeg;base64,${book.coverImageBase64}`}
+                      src={`https://localhost:7071/${book.coverImage}`}
                       alt={book.title}
                       style={{ width: 34, height: 44, borderRadius: 4, objectFit: "cover", flexShrink: 0 }}
                     />

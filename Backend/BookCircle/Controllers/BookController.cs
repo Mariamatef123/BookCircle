@@ -1,7 +1,9 @@
 ﻿using BookCircle.DTOs.Books;
 using BookCircle.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookCircle.Controllers
 {
@@ -21,7 +23,7 @@ namespace BookCircle.Controllers
 
 
         }
-
+        [Authorize]
         [HttpPost("{userId}/create-post")]
         public async Task<IActionResult> CreateBook([FromForm] BookRequestDTO dto, [FromRoute] int userId)
         {
@@ -32,7 +34,7 @@ namespace BookCircle.Controllers
 
             return Ok(book);
         }
-
+   
         [HttpGet("get-accepted-books")]
         public async Task<ActionResult<IEnumerable<BookResponseDTO>>> GetAllAcceptedBooks()
         {
@@ -43,7 +45,7 @@ namespace BookCircle.Controllers
 
             return Ok(books);
         }
-
+        [Authorize]
         [HttpDelete("{userId}/delete-book/{bookId}")]
         public async Task<ActionResult<BookResponseDTO>> DeleteBookById([FromRoute] int userId, [FromRoute] int bookId)
         {
@@ -54,6 +56,7 @@ namespace BookCircle.Controllers
 
             return Ok(book);
         }
+        [Authorize]
         [HttpPut("{userId}/update-book/{bookId}")]
         public async Task<IActionResult> UpdateBook([FromRoute] int bookId, [FromForm] BookRequestDTO dto, [FromRoute] int userId)
         {
@@ -63,6 +66,7 @@ namespace BookCircle.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpGet("{userId}/get-all-books")]
         public async Task<ActionResult<IEnumerable<BookResponseDTO>>> GetAllBooks([FromRoute] int userId)
         {
@@ -75,7 +79,7 @@ namespace BookCircle.Controllers
         }
 
         //admin
-
+        [Authorize]
         [HttpPost("{userId}/accept-post/{bookId}")]
         public async Task<IActionResult> acceptPost([FromRoute] int bookId, [FromRoute] int userId)
         {
@@ -83,7 +87,7 @@ namespace BookCircle.Controllers
 
             return Ok();
         }
-
+        [Authorize]
         [HttpPost("{userId}/reject-post/{bookId}")]
         public async Task<IActionResult> rejectPost([FromRoute] int bookId, [FromRoute] int userId)
         {
@@ -91,6 +95,7 @@ namespace BookCircle.Controllers
 
             return Ok();
         }
+        [Authorize]
         [HttpGet("{userId}/pending-posts")]
         public async Task<IActionResult> GetPendingPosts(int userId)
         {
@@ -104,20 +109,27 @@ namespace BookCircle.Controllers
     [FromQuery] string? title,
     [FromQuery] string? genre,
     [FromQuery] string? language,
-    [FromQuery] decimal? maxPrice)
+    [FromQuery] decimal? maxPrice, int pageNumber=1, int pageSize=10, bool availableOnly=true)
         {
             if (maxPrice.HasValue && maxPrice.Value < 0)
                 return BadRequest(new { message = "maxPrice cannot be negative." });
 
             try
             {
-                var results = await _bookService.SearchBooksAsync(title, genre, language, maxPrice);
+                var results = await _bookService.SearchBooksAsync(title, genre, language, maxPrice,pageNumber,pageSize,availableOnly);
                 return Ok(results);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Something went wrong.", detail = ex.Message });
             }
+        }
+
+        [HttpGet("pagination")]
+        public async Task<IActionResult> GetBooks(int pageNumber = 1, int pageSize = 10, bool availableOnly = true)
+        {
+            var booksStatistics = await _bookService.GetBooks(pageNumber, pageSize,  availableOnly);
+            return Ok(booksStatistics);
         }
     }
 

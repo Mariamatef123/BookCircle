@@ -10,8 +10,13 @@ export default function RelatedBooks({ relatedBooks }) {
         <p style={styles.relatedEmpty}>No similar books yet.</p>
       ) : relatedBooks.map((item) => (
         <button key={item.id} type="button" style={styles.relatedItem} onClick={() => navigate(`/book/${item.id}`)}>
-          {item.coverImageBase64 ? (
-            <img src={`data:image/jpeg;base64,${item.coverImageBase64}`} alt={item.title} style={styles.relatedImage} />
+          {item.coverImage ? (
+
+             <img
+              src={`https://localhost:7071/${item.coverImage?.replace(/\\/g, "/")}`}
+              alt={item.title}
+              style={styles.relatedImage}
+            />
           ) : (
             <div style={styles.relatedImageFallback}>Book</div>
           )}

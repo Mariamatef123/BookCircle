@@ -1,16 +1,17 @@
 
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace BookCircle.Data.Repositories.Intefaces
 {
-        public interface IGenericRepository<T> where T : class
-        {
-            Task<List<T>> GetAllAsync();
-            Task<T?> GetByIdAsync(int id);
+    public interface IGenericRepository<T> where T : class
+    {
+        Task<List<T>> GetAllAsync();
+        Task<T?> GetByIdAsync(int id);
 
-            Task AddAsync(T entity);
+        Task AddAsync(T entity);
         Task UpdateAsync(T entity);
-            void Delete(T entity);
+        void Delete(T entity);
         Task<T?> UpdateAsync(int id, T newEntity);
         Task<T?> DeleteByIdAsync(int id);
 
@@ -18,7 +19,7 @@ namespace BookCircle.Data.Repositories.Intefaces
 
         Task SaveAsync();
 
-       public void RemoveRange(IEnumerable<T> entities);
+        public void RemoveRange(IEnumerable<T> entities);
         Task<IEnumerable<T>> GetAllAsync(
             Expression<Func<T, bool>>? criteria = null,
             Expression<Func<T, object>>? orderBy = null,
@@ -26,7 +27,7 @@ namespace BookCircle.Data.Repositories.Intefaces
             string[]? includes = null
         );
 
-        public  Task<T?> GetFirstOrDefaultAsync(
+        public Task<T?> GetFirstOrDefaultAsync(
           Expression<Func<T, bool>>? criteria = null,
           Func<IQueryable<T>, IQueryable<T>>? include = null,
           string[]? includes = null,
@@ -34,5 +35,8 @@ namespace BookCircle.Data.Repositories.Intefaces
       );
 
         Task<bool> AnyAsync(Expression<Func<T, bool>> criteria);
+        public IQueryable<T> GetQueryable(
+           Expression<Func<T, bool>>? criteria = null);
+
     }
 }

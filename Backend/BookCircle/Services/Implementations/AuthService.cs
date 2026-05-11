@@ -20,7 +20,13 @@ namespace BookCircle.Services
             _user = user;
         }
 
-        // REGISTER
+        public Task<IEnumerable<Role>> GetRoles()
+        {
+            var roles = System.Enum.GetValues<Role>()
+                            .Where(r => r != Role.ADMIN);
+
+            return Task.FromResult(roles);
+        }
         public async Task RegisterAsync(UserDTO dto)
         {
             dto.Email = dto.Email.ToLower();
@@ -36,6 +42,10 @@ namespace BookCircle.Services
                 Email = dto.Email,
                 Role = System.Enum.Parse<Role>(dto.Role)
             };
+            if (user.Role == Role.BOOK_OWNER)
+            {
+                user.IsApproved = false;
+            }
 
             await _userRepo.Register(user, dto.Password);
             await _notificationService.SendNotificationAsync(
@@ -43,8 +53,8 @@ namespace BookCircle.Services
                  senderId: user.Id,
                  message: $"{user.Name} Request Approved Account",
                  type: NotificationType.ACCOUNT_REQUEST
-                
-               
+
+
              );
         }
 
@@ -61,5 +71,7 @@ namespace BookCircle.Services
 
             return user;
         }
+
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BookCircle.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,13 +18,14 @@ namespace BookCircle.Controllers
             _reactionService = reactionService;
 
         }
-
+        [Authorize]
         [HttpPost("{userId}/like/{bookId}")]
         public async Task<IActionResult> like(int userId, int bookId)
         {
             await _reactionService.Like(userId, bookId);
             return Ok();
         }
+        [Authorize]
         [HttpPost("{userId}/dislike/{bookId}")]
         public async Task<IActionResult> dislike(int userId, int bookId)
         {

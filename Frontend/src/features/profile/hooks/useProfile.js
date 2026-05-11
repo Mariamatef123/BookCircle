@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getBooks } from "../../../Service/BookService";
 
-export default function useProfile() {
+ function useProfile() {
   const { userId } = useParams();
 
   const [books,   setBooks]   = useState([]);
@@ -49,3 +49,4 @@ export default function useProfile() {
     error,
   };
 }
+export default useProfile;

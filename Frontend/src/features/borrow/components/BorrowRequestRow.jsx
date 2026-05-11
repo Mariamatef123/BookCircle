@@ -10,6 +10,7 @@ export default function BorrowRequestRow({
       <td style={styles.td}>
         {new Date(borrow.requestedAt).toLocaleDateString("en-GB")}
       </td>
+      
 
       <td style={styles.td}>{borrow.availabilityDate.duration}</td>
 
