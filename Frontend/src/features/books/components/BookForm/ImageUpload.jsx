@@ -12,7 +12,6 @@ export default function ImageUpload({ preview, setPreview, setForm }) {
       CoverImage: file,
     }));
 
-    // local preview only (temporary)
     setPreview(URL.createObjectURL(file));
   };
 

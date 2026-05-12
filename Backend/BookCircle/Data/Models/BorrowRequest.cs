@@ -29,20 +29,17 @@ public class BorrowRequest
 
     public DateTime? EndedAt { get; set; }
 
-
-
     public int AvailabilityDateId { get; set; }
 
     [ForeignKey(nameof(AvailabilityDateId))]
     public AvailabilityDate AvailabilityDate { get; set; } = null!;
 
-    //public int OwnerId { get; set; }
-    //[ForeignKey(nameof(OwnerId))]
-    //public User Owner { get; set; }
+
 
     public int ReaderId { get; set; }
 
     [ForeignKey(nameof(ReaderId))]
     public User Reader { get; set; } = null!;
+
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

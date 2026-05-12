@@ -4,7 +4,7 @@ import useNotifications from "../features/notifications/hooks/useNotifications";
 const NotificationsContext = createContext(null);
 
 export function NotificationsProvider({ children }) {
-  const value = useNotifications(); // single shared instance
+  const value = useNotifications();
   return (
     <NotificationsContext.Provider value={value}>
       {children}

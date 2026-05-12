@@ -50,7 +50,6 @@ namespace BookCircle.Services.Implementations
                 throw new Exception("Only Book Owners can create books");
 
 
-
             var book = new Book
             {
                 Title = dto.Title,
@@ -94,15 +93,11 @@ namespace BookCircle.Services.Implementations
                 Genre = book.Genre,
                 ISBN = book.ISBN,
                 Language = book.Language,
-
                 BorrowPrice = book.BorrowPrice,
                 BorrowStatus = book.BorrowStatus.ToString(),
-
                 PublicationDate = book.PublicationDate,
                 Status = book.Status.ToString(),
                 Description=book.Description,
-               
-
                 CoverImage = book.CoverImage != null
                     ? book.CoverImage
                     : null,
@@ -146,14 +141,15 @@ namespace BookCircle.Services.Implementations
                     }).ToList()
                     : new List<AvailabilityDateDTO>(),
                 Owner = b.Owner == null
-    ? null
-    : new UserDTO
-    {
-        Id = b.Owner.Id,
-        Name = b.Owner.Name,
-        Role = b.Owner.Role.ToString()
-    }
+                    ? null
+                    : new UserDTO
+                    {
+                        Id = b.Owner.Id,
+                        Name = b.Owner.Name,
+                        Role = b.Owner.Role.ToString()
+                    }
             });
+     //every book create response dto
         }
         public async Task<BookResponseDTO> DeleteBookById(int userId, int bookId)
         {
@@ -174,6 +170,8 @@ namespace BookCircle.Services.Implementations
 
             if (book == null)
                 throw new Exception("Book not found");
+            if (book.OwnerId != userId)
+                throw new Exception("You are not allowed to delete this book");
 
             if (book.BorrowStatus == Enums.BookStatus.BORROWED)
                 throw new Exception("Can't delete borrowed books");
@@ -212,11 +210,9 @@ namespace BookCircle.Services.Implementations
             await _availabilityRepo.SaveAsync();
 
            
-            await _bookRepo.DeleteByIdAsync(book.Id);
-            await _bookRepo.SaveAsync();
-          
-
-            return new BookResponseDTO
+    
+         
+            var result = new BookResponseDTO
             {
                 Id = book.Id,
                 Title = book.Title,
@@ -248,6 +244,11 @@ namespace BookCircle.Services.Implementations
                         Role = book.Owner.Role.ToString()
                     }
             };
+
+            await _bookRepo.DeleteByIdAsync(book.Id);
+            await _bookRepo.SaveAsync();
+
+            return result;
         }
         public async Task<BookResponseDTO> UpdateBookAsync(int bookId, BookRequestDTO dto, int userId)
         {
@@ -306,6 +307,7 @@ namespace BookCircle.Services.Implementations
 
                 var borrowRequestIds = borrowRequests.Select(br => br.Id).ToList();
 
+                /////////////////
                 if (borrowRequestIds.Any())
                 {
 
@@ -326,6 +328,8 @@ namespace BookCircle.Services.Implementations
                 if (book.AvailabilityDates.Any())
                      _availabilityRepo.RemoveRange(book.AvailabilityDates);
 
+                /////////////////
+                
                 book.AvailabilityDates.Clear();
 
                 foreach (var d in dto.AvailabilityDates)
@@ -340,8 +344,7 @@ namespace BookCircle.Services.Implementations
             await _bookRepo.UpdateAsync(book);
             await _bookRepo.SaveAsync();
 
-            // Get the absolute path
-         
+    
 
             return new BookResponseDTO
             {
@@ -446,6 +449,7 @@ namespace BookCircle.Services.Implementations
 
             if (book == null)
                 throw new Exception("Book not found");
+
             book.Status = PostStatus.ACCEPTED;
             await _bookRepo.SaveAsync();
             await _notificationService.SendNotificationAsync(
@@ -614,7 +618,7 @@ namespace BookCircle.Services.Implementations
                 .Include(b => b.BorrowRequests)
                 .ToListAsync();
 
-            var now = DateTime.Now; // ✅ consistent time source
+            var now = DateTime.Now; 
 
             foreach (var book in books)
             {

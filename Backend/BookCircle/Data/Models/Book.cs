@@ -35,7 +35,9 @@ namespace BookCircle.Data.Models
 
         [Column(TypeName = "decimal(10,2)")]
         public decimal BorrowPrice { get; set; }
+
         public BookStatus BorrowStatus { get; set; } = BookStatus.AVAILABLE;
+
         public DateTime PublicationDate { get; set; } 
         public ICollection<AvailabilityDate> AvailabilityDates { get; set; }
      = new List<AvailabilityDate>();
@@ -46,16 +48,13 @@ namespace BookCircle.Data.Models
 
         public PostStatus Status { get; set; } = PostStatus.PENDING;
 
-
-
-        //public int OwnerId { get; set; }//1 owner can manage Many book posts,1 admin can accept,reject many book posts(dont put it)
-
-        //[ForeignKey(nameof(OwnerId))]
-        //public User Owner { get; set; }  = null!;
         public int OwnerId { get; set; }
 
         [ForeignKey(nameof(OwnerId))]
         public User Owner { get; set; }
+
+
+
         public ICollection<BorrowRequest> BorrowRequests { get; set; } = new List<BorrowRequest>();
         public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();
 
@@ -70,8 +69,7 @@ namespace BookCircle.Data.Models
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
-        //public ICollection<WaitingList> WaitingLists { get; set; } = new List<WaitingList>();
-     
+
         public Book() { }   
     }
 }

@@ -10,7 +10,7 @@
 
         public static UploadResult Upload(IFormFile file, string folder)
         {
-            // validate file exists
+            
             if (file == null || file.Length == 0)
             {
                 return new UploadResult
@@ -20,7 +20,7 @@
                 };
             }
 
-            // extension validation
+    
             List<string> validExtentions = new List<string>()
             {
                 ".jpg", ".png", ".jpeg"
@@ -37,7 +37,7 @@
                 };
             }
 
-            // file size validation (10MB)
+      
             long size = file.Length;
 
             if (size > (10 * 1024 * 1024))
@@ -60,7 +60,7 @@
                     folderName
                 );
 
-                // 🔥 FIX: create folder if not exists
+             
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);

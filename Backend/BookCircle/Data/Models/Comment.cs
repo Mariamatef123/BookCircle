@@ -26,8 +26,6 @@ namespace BookCircle.Data.Models
 
         [ForeignKey("Book")]
         public int BookId { get; set; }
-
-
         public Book Book { get; set; }
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }

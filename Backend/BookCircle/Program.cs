@@ -12,8 +12,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Win32;
 using System.Text;
 using System.Text.Json.Serialization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,40 +28,30 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IAuthService,AuthService>();
-//builder.Services.AddScoped<IBookRepository, BookRepository>();
-////builder.Services.AddScoped<IUserRepository, UserRepository>();
-////builder.Services.AddScoped<IReactionRepository, ReactionRepository>();
-
-//builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-//builder.Services.AddScoped<IBookRequestRepository, BorrowRequestRepository>();
-//builder.Services.AddScoped<IReadingListBookRepository, ReadingListBookRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReadingListService, ReadingListService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IBorrowRequestService, BorrowRequestService>();
 builder.Services.AddScoped<IReactionService, ReactionService>();
-//builder.Services.AddScoped<IReadingListRepository, ReadingListRepository>();
-
 builder.Services.AddScoped<INotificationService, NotificationService>();
-//builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-
 
 builder.Services.AddHangfire(config =>
     config.UseSqlServerStorage(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddHangfireServer();
+builder.Services.AddHangfireServer();//Hangfire runs background tasks using SQL Server storage
+//AddHangfireServer() starts worker process
 
 builder.Services.AddAuthentication(opt =>
 {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
+    //App uses JWT tokens for login
+//Every request must be validated using token
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -72,7 +64,7 @@ builder.Services.AddAuthentication(opt =>
         )
     };
 
-    // ✅ THIS IS REQUIRED FOR SIGNALR
+  
     options.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -130,14 +122,15 @@ using (var scope = app.Services.CreateScope())
         () => bookService.UpdateBookStatuses(),
         Cron.Hourly);
 }
-
+//Creates scoped services
+//Registers a background job
+//Runs every hour
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
 app.UseRouting();
 
@@ -152,7 +145,6 @@ app.UseStaticFiles(new StaticFileOptions()
 });
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");
-
 app.Run();
 
 

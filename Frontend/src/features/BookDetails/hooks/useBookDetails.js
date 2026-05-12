@@ -38,7 +38,7 @@ export default function useBookDetails() {
   const [comments,          setComments]          = useState([]);
   const [commentsLoading,   setCommentsLoading]   = useState(false);
   const [commentText,       setCommentText]       = useState("");
-  const [commentBusy,       setCommentBusy]       = useState(false);
+  const [commentBusy,       setCommentBusy]       = useState(false);//for loading to disable button
   const [replyFor,          setReplyFor]          = useState(null);//reply input
   const [replyDrafts,       setReplyDrafts]       = useState({});//for parent
   const [editingCommentId,  setEditingCommentId]  = useState(null);
@@ -193,7 +193,8 @@ useEffect(() => {
     setCommentBusy(true);
     try {
       await addComment(userId, book.id, commentText.trim());
-      setCommentText(""); setActiveTab("comments");
+      setCommentText("");
+      setActiveTab("comments");
       await loadComments();
       setMessage({ type: "success", text: "Comment added." });
     } catch (err) {
@@ -223,7 +224,8 @@ useEffect(() => {
     setCommentActionId(commentId);
     try {
       await updateComment(userId, commentId, editingText.trim());
-      setEditingCommentId(null); setEditingText("");
+      setEditingCommentId(null);
+       setEditingText("");
       await loadComments();
       setMessage({ type: "success", text: "Comment updated." });
     } catch (err) {

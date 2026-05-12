@@ -15,7 +15,7 @@ namespace BookCircle.Controllers
 
         private readonly IBookService _bookService;
 
-        //owner
+       
         public BookController(IBookService bookService)
         {
 

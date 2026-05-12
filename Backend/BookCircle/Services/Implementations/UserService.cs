@@ -112,14 +112,6 @@ namespace BookCircle.Services.Implementations
               await  _notificationRepo.SaveAsync();
 
             }
-
-
-            //await _notificationService.SendNotificationAsync(
-            //      receiverId: ownerId,
-            //      senderId: userId,
-            //      message: "Your account has been rejected",
-            //      type: NotificationType.OWNER_REJECTED
-            //  );
             owner.IsApproved = false;
             _userRepo.Delete(owner);
             await _userRepo.SaveAsync();
@@ -127,50 +119,6 @@ namespace BookCircle.Services.Implementations
 
 
         }
-
-
-        //public async Task RegisterAsync(RegisterDTO dto)
-        //{
-        //    var existingUser = await _userRepo.FindAsync(u => u.Email == dto.Email);
-
-        //    if (existingUser.Any())
-        //        throw new Exception("Email already exists");
-
-        //    var user = new User
-        //    {
-        //        Name = dto.Name,
-        //        Email = dto.Email,
-        //        //PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-        //        Role = dto.Role,
-        //        IsApproved = dto.Role == Role.BOOK_OWNER ? false : true
-        //    };
-
-        //    await _userRepo.AddAsync(user);
-        //    await _userRepo.SaveAsync();
-        //}
-        //public async Task<User> LoginAsync(LoginDTO dto)
-        //{
-        //    var users = await _userRepo.FindAsync(u => u.Email == dto.Email);
-        //    var user = users.FirstOrDefault();
-
-        //    if (user == null)
-        //        throw new Exception("User not found");
-
-        //    //if (string.IsNullOrWhiteSpace(user.PasswordHash))
-        //    //    throw new Exception("Invalid stored password (not hashed)");
-
-        //    //bool isValidPassword = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
-
-        //    //if (!isValidPassword)
-        //    //    throw new Exception("Invalid password");
-
-        //    if (user.Role == Role.BOOK_OWNER && user.IsApproved == false)
-        //        throw new Exception("Owner not approved yet");
-
-        //    return user;
-        //}
-
-
 
     }
 

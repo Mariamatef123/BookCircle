@@ -75,9 +75,8 @@ namespace BookCircle.Services.Implementations
             await _borrowRequest.AddAsync(bookRequest);
             await _borrowRequest.SaveAsync();
 
-            // ✅ FIX: use already-loaded `reader` variable, NOT bookRequest.Reader (null after save)
             await _notificationService.SendNotificationAsync(
-                receiverId: book.OwnerId,   // ← only the OWNER receives this
+                receiverId: book.OwnerId,   
                 senderId: readerId,
                 message: $"You have a new borrow request on book {book.Title} from {reader.Name}",
                 type: NotificationType.BORROW_REQUEST,
@@ -165,10 +164,7 @@ namespace BookCircle.Services.Implementations
             {
                 borrowRequest.EndedAt = now.AddDays(borrowRequest.AvailabilityDate.Duration);
             }
-            
-
-            
-
+          
             
 
             book.CurrentBorrowerId = borrowRequest.ReaderId;

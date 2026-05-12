@@ -6,7 +6,6 @@ import {
 } from "../hooks/useNotifications";
 import { BellIcon } from "../../../components/icons/AppIcons";
 
-// Types that show a CTA strip with navigation hint
 const CTA_TYPES = {
   BORROW_ACCEPTED: { text: " Complete your payment →" },
   BORROW_REQUEST:  { text: " View in your dashboard →" },
@@ -26,14 +25,15 @@ export default function NotificationCard({ notification: n, onClick }) {
   const message  = getMessage(n);
   const dateStr  = formatDate(getCreatedAt(n));
   const config   = getTypeConfig(n.type);
-// NotificationCard.jsx
+
 const cta = CTA_TYPES[resolveType(n?.type ?? n?.Type)];
 const isPaymentDone = (bookId) => {
   return localStorage.getItem(`payment_${bookId}`) === "true";
 };
 const isPaymentDisabled =
   resolveType(n?.type) === "BORROW_ACCEPTED" &&
-  isPaymentDone(n?.bookId); return (
+  isPaymentDone(n?.bookId);
+   return (
     <div
       key={id}
       style={{

@@ -12,9 +12,7 @@ namespace BookCircle.Data
             : base(options) { }
 
         public DbSet<User> Users { get; set; }
-        //public DbSet<Admin> Admins { get; set; }
-        //public DbSet<BookOwner> BookOwners { get; set; }
-        //public DbSet<Reader> Readers { get; set; }
+
         public DbSet<Book> Books { get; set; }
         public DbSet<AvailabilityDate> AvailabilityDates { get; set; }
         //public DbSet<Post> Posts { get; set; }
@@ -69,19 +67,15 @@ namespace BookCircle.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Comment>()
-    .HasOne(c => c.Parent)
-    .WithMany(c => c.Replies)
-    .HasForeignKey(c => c.ParentId)
-    .OnDelete(DeleteBehavior.Restrict); 
+            .HasOne(c => c.Parent)
+            .WithMany(c => c.Replies)
+            .HasForeignKey(c => c.ParentId)
+            .OnDelete(DeleteBehavior.Restrict); 
 
-            modelBuilder.Entity<Book>()
-    .HasOne(b => b.Owner)
-    .WithMany(u => u.OwnedBooks)
-    .HasForeignKey(b => b.OwnerId)
-    .OnDelete(DeleteBehavior.Restrict); 
+
 
             modelBuilder.Entity<Reaction>()
-        .HasKey(r => new { r.BookId, r.UserId });
+            .HasKey(r => new { r.BookId, r.UserId });
 
 
 
@@ -105,21 +99,6 @@ namespace BookCircle.Data
     .HasForeignKey(n => n.BookId)
     .OnDelete(DeleteBehavior.Cascade);
 
-  
-
-            //        modelBuilder.Entity<WaitingList>()
-            //.HasIndex(w => new { w.BookId, w.UserId })
-            //.IsUnique();
-
-            //        modelBuilder.Entity<WaitingList>()
-            //            .HasOne(w => w.Book)
-            //            .WithMany(b => b.WaitingLists)
-            //            .HasForeignKey(w => w.BookId);
-
-            //        modelBuilder.Entity<WaitingList>()
-            //            .HasOne(w => w.User)
-            //            .WithMany(u => u.WaitingLists)
-            //            .HasForeignKey(w => w.UserId);
 
         }
     }

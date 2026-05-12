@@ -19,14 +19,17 @@ export default function BookHero({
   onOpenBorrowModal, onOpenReadingLists, onReaction,exists
 })
 
-{const user=getUser();const handleReadingListClick = () => {
+{
+  const user=getUser();
+  const handleReadingListClick = () => {
   if (!user) {
     navigate("/login");
     return;
   }
 
   onOpenReadingLists();
-};const handleBorrowClick = () => {
+};
+const handleBorrowClick = () => {
   if (!user) {
     navigate("/login"); 
     return;

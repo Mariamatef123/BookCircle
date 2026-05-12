@@ -19,7 +19,7 @@ public class AuthController : ControllerBase
         _config = config;
     }
 
-    // REGISTER
+   
     [HttpPost("register")]
     public async Task<IActionResult> Register(UserDTO dto)
     {
@@ -34,7 +34,6 @@ public class AuthController : ControllerBase
         }
     }
 
-    // LOGIN
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDTO dto)
     {
@@ -51,16 +50,18 @@ public class AuthController : ControllerBase
             };
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["AppSettings:Token"]));
+                Encoding.UTF8.GetBytes(_config["AppSettings:Token"]));//secret key from config
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            //Use HMAC SHA512 algorithm
+            //Protect token from tampering
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(claims),
+                Subject = new ClaimsIdentity(claims),//payload
                 Expires = DateTime.Now.AddDays(1),
-                SigningCredentials = creds
-            };
+                SigningCredentials = creds//signature
+             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -75,6 +76,7 @@ public class AuthController : ControllerBase
             return Unauthorized(ex.Message);
         }
     }
+    
     [HttpGet("roles")]
     public async Task<IActionResult> GetRoles()
     {

@@ -7,12 +7,11 @@ class SignalRService {
   connection = null;
   startPromise = null;
   callbacks = new Set();
-  currentUserId = null; // ✅ track who is connected
+  currentUserId = null; 
 
   async startConnection(userId) {
     if (!userId) return;
 
-    // ✅ if already connected AS THIS USER, skip
     if (
       this.currentUserId === userId &&
       this.connection?.state === signalR.HubConnectionState.Connected
@@ -20,14 +19,14 @@ class SignalRService {
       return;
     }
 
-    // prevent duplicate starts
+  
     if (this.startPromise) {
       return this.startPromise;
     }
 
     this.startPromise = (async () => {
       try {
-        // stop old connection safely (handles user switch)
+      
         if (this.connection) {
           await this.connection.stop().catch(() => {});
           this.connection = null;
@@ -37,7 +36,7 @@ class SignalRService {
 
         this.connection = new signalR.HubConnectionBuilder()
           .withUrl(HUB_URL, {
-            accessTokenFactory: () => getUser()?.token || "", // ✅ always fresh token
+            accessTokenFactory: () => getUser()?.token || "", 
             withCredentials: true,
           })
           .withAutomaticReconnect()
@@ -60,13 +59,13 @@ class SignalRService {
 
         this.connection.onclose((err) => {
           console.log("SignalR disconnected", err);
-          this.currentUserId = null; // ✅ reset on close
+          this.currentUserId = null; 
         });
 
         await this.connection.start();
         await this.connection.invoke("JoinUserGroup", userId.toString());
 
-        this.currentUserId = userId; // ✅ save who joined
+        this.currentUserId = userId;
         console.log(`✅ SignalR connected as user_${userId}`);
       } catch (err) {
         console.error("❌ SignalR error:", err);
@@ -101,7 +100,7 @@ class SignalRService {
 
   async stopConnection() {
     this.callbacks.clear();
-    this.currentUserId = null; // ✅ clear on logout
+    this.currentUserId = null; 
 
     try {
       if (this.connection) {

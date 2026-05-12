@@ -84,8 +84,7 @@ namespace BookCircle.Services.Implementations
 
             await _commentRepo.AddAsync(comment);
             await _commentRepo.SaveAsync();
-
-            // ✅ Avoid notifying yourself (important edge case)
+            
             if (parent.UserId != userId)
             {
                 await _notificationService.SendNotificationAsync(
@@ -102,7 +101,7 @@ namespace BookCircle.Services.Implementations
         {
             var comment = await _commentRepo.GetFirstOrDefaultAsync(
                 c => c.Id == commentId,
-                includes: new[] { "Replies", "Notifications", "Replies.Notifications" } // ✅ important
+                includes: new[] { "Replies", "Notifications", "Replies.Notifications" } 
             );
 
             if (comment == null)
@@ -111,7 +110,6 @@ namespace BookCircle.Services.Implementations
             if (comment.UserId != userId)
                 throw new Exception("You can only delete your own comments");
 
-            // ✅ 1. Delete notifications of replies
             foreach (var reply in comment.Replies.ToList())
             {
                 foreach (var notif in reply.Notifications.ToList())
@@ -122,13 +120,11 @@ namespace BookCircle.Services.Implementations
                 _commentRepo.Delete(reply);
             }
 
-            // ✅ 2. Delete notifications of main comment
             foreach (var notif in comment.Notifications.ToList())
             {
                 _notificationRepo.Delete(notif);
             }
 
-            // ✅ 3. Delete main comment
             _commentRepo.Delete(comment);
 
             await _commentRepo.SaveAsync();

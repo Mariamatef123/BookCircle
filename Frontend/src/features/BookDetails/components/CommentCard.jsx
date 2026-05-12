@@ -49,6 +49,8 @@ export default function CommentCard({
       )}
 
       {replyFor === comment.id && (
+        //Show reply textarea ONLY for the selected comment
+        //Hide it for all others
         <div style={styles.replyComposer}>
           <textarea rows={3} style={styles.commentTextarea} value={replyDraft}
             onChange={(e) => setReplyDraft(e.target.value)} placeholder="Write a reply..." />

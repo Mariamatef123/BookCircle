@@ -36,8 +36,8 @@ export default function useBookForm(editingBook, userId, isOpen) {
         CoverImage: null,
       });
 
-      if (editingBook.coverImageBase64) {
-        setPreview(`data:image/jpeg;base64,${editingBook.coverImageBase64}`);
+      if (editingBook.coverImage) {
+        setPreview(`https://localhost:7071/${editingBook.coverImage?.replace(/\\/g, "/")}`);
       }
     } else {
       setForm({ ...emptyForm, ownerId: userId || "" });

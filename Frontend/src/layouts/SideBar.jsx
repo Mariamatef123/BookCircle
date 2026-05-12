@@ -51,7 +51,7 @@ export default function SideBar() {
   const loggedIn  = isLoggedIn();
   const user      = getUser();
 
-  // ─── shared state from context — same instance as NavBar ───
+  
   const { unreadCount } = useNotificationsContext();
 
   const handleNotificationsClick = () => {

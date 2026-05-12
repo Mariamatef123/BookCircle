@@ -21,7 +21,7 @@ export default function FindYourNextRead() {
   const [totalCount, setTotalCount] = useState(0);
   const pageSize = 10;
 
-  // ─── Read URL params ─────────────────────────────
+
   const searchTerm = searchParams.get("q")?.trim().toLowerCase() ?? "";
   const genre      = searchParams.get("genre")?.trim() ?? "";
   const language   = searchParams.get("language")?.trim() ?? "";
@@ -29,12 +29,10 @@ export default function FindYourNextRead() {
 
   const hasSearchFilters = Boolean(searchTerm || genre || language || maxPrice);
 
-  // ─── Reset page when filters change ─────────────
   useEffect(() => {
     setPageNumber(1);
   }, [searchTerm, genre, language, maxPrice, availableOnly]);
 
-  // ─── Fetch books ─────────────────────────────────
 useEffect(() => {
   const fetchBooks = async () => {
     setLoading(true);
@@ -53,17 +51,17 @@ res = await browseBooks(
   },
   pageNumber,
   pageSize,
-  availableOnly // ✅ MUST BE HERE
+  availableOnly 
 );
       } else {
-        // ─── Default paged endpoint ────────────────
+  
         res = await getBooksPaged(pageNumber, pageSize, availableOnly);
       }
 
       const data = res?.data;
       setBooks(data?.data || []);
       setTotalPages(data?.totalPages ?? data?.TotalPages ?? 1);
-setTotalCount(data?.totalCount ?? 0); // ✅ ADD THIS
+setTotalCount(data?.totalCount ?? 0); 
     } catch (err) {
       setBooks([]);
       setError(err?.message || "Failed to load books.");
@@ -82,17 +80,16 @@ setTotalCount(data?.totalCount ?? 0); // ✅ ADD THIS
   pageNumber,
   availableOnly,
 ]);
-  // ─── Wishlist toggle ──────────────────────────────
+
   const toggleWishlist = (id) =>
     setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  // ─── Sort only (filter is done server-side now) ───
   const safeDate = (book) => {
     const ts = new Date(book.publicationDate).getTime();
     return Number.isNaN(ts) ? 0 : ts;
   };
 
-  // ✅ Remove the client-side availableOnly filter — backend handles it
+
   const finalBooks = [...books].sort((a, b) => {
     const titleA = (a.title ?? "").trim();
     const titleB = (b.title ?? "").trim();
@@ -109,7 +106,7 @@ setTotalCount(data?.totalCount ?? 0); // ✅ ADD THIS
     }
   });
 
-  // ─── Active filters summary ───────────────────────
+
   const activeFilters = [
     searchTerm ? `Title: ${searchParams.get("q")?.trim()}` : null,
     genre      ? `Genre: ${genre}`                         : null,
@@ -117,7 +114,7 @@ setTotalCount(data?.totalCount ?? 0); // ✅ ADD THIS
     maxPrice   ? `Max price: ${maxPrice} L.E`              : null,
   ].filter(Boolean);
 
-  // ─── Render ───────────────────────────────────────
+
   return (
     <div style={styles.page}>
       <style>{`
@@ -140,7 +137,7 @@ setTotalCount(data?.totalCount ?? 0); // ✅ ADD THIS
         setSort={setSort}
       />
 
-      {/* Section header */}
+
       <div style={styles.sectionHeader}>
         <h2 style={styles.sectionTitle}>
           {hasSearchFilters
@@ -149,15 +146,14 @@ setTotalCount(data?.totalCount ?? 0); // ✅ ADD THIS
         </h2>
       </div>
 
-      {/* Active filters */}
+
       {hasSearchFilters && activeFilters.length > 0 && (
         <p style={styles.resultInfo}>{activeFilters.join(" | ")}</p>
       )}
 
-      {/* Error */}
+
       {error && <div style={styles.errorBox}>{error}</div>}
 
-      {/* Content */}
       {loading ? (
         <div style={styles.stateBox}>Loading books...</div>
       ) : finalBooks.length === 0 ? (
@@ -168,7 +164,7 @@ setTotalCount(data?.totalCount ?? 0); // ✅ ADD THIS
         <BookGrid books={finalBooks} wishlist={wishlist} toggleWishlist={toggleWishlist} />
       )}
 
-      {/* Pagination */}
+
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginTop: "30px", fontFamily: "'Nunito', sans-serif" }}>
         <button
           disabled={pageNumber === 1}

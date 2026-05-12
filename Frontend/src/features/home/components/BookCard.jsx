@@ -7,7 +7,7 @@ export default function BookCard({ book }) {
   return (
     <div className="book-card" style={styles.card}>
 
-      {/* Cover */}
+  
       <div style={styles.coverWrap}>
         {book.coverImage ? (
      <img

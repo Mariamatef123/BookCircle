@@ -13,7 +13,7 @@ export const getBooks = () =>
 export const createBook = (userId, formData) =>
   apiClient.post(`/api/Book/${userId}/create-post`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",  // ← explicitly set this
+      "Content-Type": "multipart/form-data",  
     },
   });
 
@@ -27,20 +27,18 @@ export const getBooksPaged = (
     params: { pageNumber, pageSize, availableOnly },
   });
 
-// DELETE book
 export const deleteBook = (userId, bookId) =>
   apiClient.delete(`/api/Book/${userId}/delete-book/${bookId}`);
 
-// UPDATE book
 export const updateBook = (userId, bookId, formData) =>
   apiClient.put(`/api/Book/${userId}/update-book/${bookId}`, formData, {
     headers: {
-      "Content-Type": "multipart/form-data",  // ← explicitly set this
+      "Content-Type": "multipart/form-data",  
     },
   });
 
 
-// BROWSE (public books)
+
 
 
 
@@ -67,18 +65,14 @@ export const browseBooks = (
   return api.get("/api/Book/browse", { params });
 };
 
-// ================================
-// PENDING / MODERATION APIS
-// ================================
 
-// GET pending posts
 export const getPendingPosts = (userId) =>
   apiClient.get(`/api/Book/${userId}/pending-posts`);
 
-// ACCEPT post
+
 export const acceptPost = (userId, bookId) =>
   apiClient.post(`/api/Book/${userId}/accept-post/${bookId}`);
 
-// REJECT post
+
 export const rejectPost = (userId, bookId) =>
   apiClient.post(`/api/Book/${userId}/reject-post/${bookId}`);

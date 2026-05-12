@@ -18,7 +18,7 @@ export default function AddBookModal({
   closeAddModal,
 }) {
 
-  // SAFE ARRAY
+ 
   const books = results?.data || [];
 
   console.log(results);

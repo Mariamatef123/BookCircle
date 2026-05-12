@@ -7,14 +7,17 @@ namespace BookCircle.Data.Models
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         public string Name { get; set; }
+
         [Required]
         [EmailAddress]
         public string Email { get; set; }
        
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+
         public Role Role { get; set; }
 
 
@@ -24,14 +27,9 @@ namespace BookCircle.Data.Models
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         //any user can write comments
 
-       
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
-
-   
         public ICollection<Notification> SentNotifications { get; set; } = new List<Notification>();
 
-        //public ICollection<Book> Books { get; set; } = new List<Book>();// owner can manage many books/ admin can accept,reject books
-        //public ICollection<Book> OwnedBooks { get; set; } = new List<Book>();
         public ICollection<Book> OwnedBooks { get; set; } = new List<Book>();
         public ICollection<Book> BorrowedBooks { get; set; } = new List<Book>();
         public ICollection<BorrowRequest> BorrowRequests { get; set; } = new List<BorrowRequest>();
@@ -39,7 +37,7 @@ namespace BookCircle.Data.Models
         public ICollection<Reaction> Reactions { get; set; } = new List<Reaction>();//any user can  react on a book
         public ICollection<ReadingList> ReadingLists { get; set; } = new List<ReadingList>();//reader can create many readinglists
 
-        //public ICollection<WaitingList> WaitingLists { get; set; } = new List<WaitingList>();
+
         public User() { }
 
     }

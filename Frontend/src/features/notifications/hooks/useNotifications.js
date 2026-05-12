@@ -4,7 +4,6 @@ import { getNotifications, markAsRead } from "../../../Service/NotificationServi
 import { getUser } from "../../../utils/auth";
 import signalRService from "../../../Service/SignalR";
 
-/* ================= TYPE CONFIG ================= */
 const NOTIFICATION_TYPE = {
   0:  "BORROW_REQUEST",
   1:  "BORROW_ACCEPTED",
@@ -20,7 +19,7 @@ const NOTIFICATION_TYPE = {
   11: "ACCOUNT_REQUEST",
 };
 
-// helper — works for both "BOOK_LIKED" and 5
+
 export function resolveType(raw) {
   if (raw == null) return null;
   if (typeof raw === "number") return NOTIFICATION_TYPE[raw] ?? null;
@@ -43,7 +42,6 @@ const TYPE_CONFIG = {
 
 export const DEFAULT_CONFIG = { label: "Notification", bg: "#f5f3ff", getTarget: () => null };
 
-/* ================= HELPERS ================= */
 
 export function getTypeConfig(type) {
   const key = resolveType(type);
@@ -57,7 +55,7 @@ export const resolveNotificationRoute = (type, notification) => {
 
   const config = TYPE_CONFIG[key] || DEFAULT_CONFIG;
 
-  // ❌ BLOCK PAYMENT ROUTE AFTER COMPLETION
+
   if (key === "BORROW_ACCEPTED" && notification.paymentDone) {
     return null;
   }
@@ -73,7 +71,6 @@ export const resolveNotificationRoute = (type, notification) => {
 export const getId     = (n) => n?.id     ?? n?.Id;
 export const getIsRead = (n) => Boolean(n?.isRead ?? n?.IsRead);
 
-/* ================= HOOK ================= */
 
 export default function useNotifications() {
   const navigate = useNavigate();
@@ -83,7 +80,6 @@ export default function useNotifications() {
   const [loading, setLoading]             = useState(true);
   const [error, setError]                 = useState(null);
 
-  /* ---------- FETCH ---------- */
   const fetchNotifications = useCallback(async () => {
     if (!user?.id) return;
     try {
@@ -102,7 +98,6 @@ export default function useNotifications() {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  /* ---------- SIGNALR ---------- */
   useEffect(() => {
     if (!user?.id) return;
 
@@ -123,17 +118,12 @@ export default function useNotifications() {
     };
   }, [user?.id]);
 
-  /* ---------- DERIVED ---------- */
   const unreadCount = useMemo(
     () => notifications.filter((n) => !getIsRead(n)).length,
     [notifications]
   );
 
-  /* ---------- ACTIONS ---------- */
 
-  // ✅ FIX: mark the notification as read (update isRead flag in state)
-  // instead of removing it — this makes unreadCount decrement correctly
-  // and the badge number updates immediately after clicking.
   const markRead = useCallback(async (id) => {
     await markAsRead(id, user.id);
     setNotifications((prev) =>
@@ -147,8 +137,7 @@ export default function useNotifications() {
 
       if (!getIsRead(n)) {
         await markRead(id);
-        //badge decrements here because setNotifications above sets isRead: true
-        // and unreadCount is derived via useMemo from notifications state
+
       }
 
       const route = resolveNotificationRoute(n.type, n);
@@ -178,7 +167,7 @@ export default function useNotifications() {
   };
 }
 
-/* ================= FORMATTERS ================= */
+
 
 export function getTitle(n)     { return n?.title     ?? n?.Title     ?? getTypeConfig(n?.type).label; }
 export function getMessage(n)   { return n?.message   ?? n?.Message   ?? ""; }

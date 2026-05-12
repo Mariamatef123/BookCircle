@@ -2,7 +2,7 @@
 {
     public enum BorrowRequestStatus
     {
-          PENDING=0,
+         PENDING=0,
         ACCEPTED=1,
         REJECTED=2,
     

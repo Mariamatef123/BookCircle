@@ -137,7 +137,7 @@ namespace BookCircle.Services.Implementations
         {
             var lists = await _readingListRepo.GetAllAsync(
   r => r.UserId == userId,
-  includes: new[] { "ReadingListBooks" } // ← Add this if your repo supports it
+  includes: new[] { "ReadingListBooks" } 
 );
 
             if (lists == null || !lists.Any())
@@ -151,7 +151,7 @@ namespace BookCircle.Services.Implementations
                 Description = r.Description,
                 CreatedAt = r.CreatedAt,
                 UserId = r.UserId,
-                BooksCount = r.ReadingListBooks?.Count ?? 0 // ✅ Now works
+                BooksCount = r.ReadingListBooks?.Count ?? 0 
             }).ToList();
 
         }

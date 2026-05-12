@@ -14,7 +14,7 @@ export default function Header({ handleCreate, activeTab, role }) {
         </h1>
 
         <p style={{ color: "#6B7280", margin: "4px 0 0" }}>
-          Welcome back, {user?.name || "User"} <SparklesIcon size={16} style={{ color: "#4F46E5" }} />
+          Welcome back, {user?.name || "User"} 
         </p>
       </div>
 

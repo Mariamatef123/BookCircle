@@ -1,6 +1,9 @@
 ﻿using BookCircle.Data.Models;
 using BookCircle.Data.Repositories.Intefaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Cryptography;
 
 namespace BookCircle.Data.Repositories.Implementations
 {
@@ -33,12 +36,14 @@ namespace BookCircle.Data.Repositories.Implementations
 
         private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))//use the same salt used during registration
             {
                 var computedHash = hmac.ComputeHash(
                     System.Text.Encoding.UTF8.GetBytes(password)
                 );
-
+//Convert password to bytes
+// Hash it using HMACSHA512 +salt
+//Produce new hash
                 for (int i = 0; i < computedHash.Length; i++)
                 {
                     if (computedHash[i] != passwordHash[i])
@@ -46,10 +51,13 @@ namespace BookCircle.Data.Repositories.Implementations
                         return false;
                     }
                 }
-            }
+            }//compare every byte
 
             return true;
-        }
+        }//check pass correct or not
+// password user input 
+//passwordHash stored hashed password from DB
+//passwordSalt random key used during hashing
 
         public async Task<User> Register(User user, string password)
         {

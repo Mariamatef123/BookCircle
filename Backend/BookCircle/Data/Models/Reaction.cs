@@ -11,8 +11,6 @@ namespace BookCircle.Data.Models
 
         public ReactionType Type { get; set; }
 
-
-
         [ForeignKey("Book")]
         public int BookId { get; set; }
         public Book Book { get; set; }
