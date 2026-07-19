@@ -5,7 +5,7 @@ import SearchBar from "./components/SearchBar";
 import NotificationsBell from "./components/NotificationBell";
 import UserSection from "./components/UserSection";
 
-function NavBar() {
+function NavBar({ onMenuToggle, isSidebarOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
   const user = getUser();
@@ -16,6 +16,18 @@ function NavBar() {
         className="container-fluid mt-2 book-navbar-inner"
         style={{ borderBottom: "1px solid #f0f0f5", paddingBottom: "15px" }}
       >
+        <button
+          type="button"
+          className="book-navbar-toggle"
+          aria-label="Toggle navigation menu"
+          aria-expanded={isSidebarOpen}
+          onClick={onMenuToggle}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
         {/* BRAND */}
         <div className="col-2 text-center book-navbar-brand">
           <Link

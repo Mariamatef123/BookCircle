@@ -45,7 +45,7 @@ const LogoutIcon = () => (
   </svg>
 );
 
-export default function SideBar() {
+export default function SideBar({ onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const loggedIn = isLoggedIn();
@@ -54,16 +54,19 @@ export default function SideBar() {
 
   const handleNotificationsClick = () => {
     navigate("/notifications");
+    onClose?.();
   };
 
   const handleLogout = () => {
     logout();
     navigate("/login");
+    onClose?.();
   };
 
   const handleProfileClick = () => {
     if (user?.role === "BOOK_OWNER") {
       navigate(`/profile/${user.id}`);
+      onClose?.();
     }
   };
 
@@ -109,7 +112,15 @@ export default function SideBar() {
             <button
               key={label}
               className="sidebar-nav-item"
-              onClick={() => (onClick ? onClick() : navigate(path))}
+              onClick={() => {
+                if (onClick) {
+                  onClick();
+                  return;
+                }
+
+                navigate(path);
+                onClose?.();
+              }}
               style={{
                 ...styles.navItem,
                 ...(isActive ? styles.navItemActive : {}),
