@@ -9,7 +9,7 @@ export default function BookSummaryCard({ book }) {
         {book.coverImage ? (
   
            <img
-            src={`https://localhost:7071/${book.coverImage?.replace(/\\/g, "/")}`}
+            src={`${import.meta.env.VITE_API_URL}/${book.coverImage?.replace(/\\/g, "/")}`}
             alt={book.title}
             style={styles.bookCoverImg}
           />

@@ -13,7 +13,7 @@ export default function RelatedBooks({ relatedBooks }) {
           {item.coverImage ? (
 
              <img
-              src={`https://localhost:7071/${item.coverImage?.replace(/\\/g, "/")}`}
+              src={`${import.meta.env.VITE_API_URL}/${item.coverImage?.replace(/\\/g, "/")}`}
               alt={item.title}
               style={styles.relatedImage}
             />

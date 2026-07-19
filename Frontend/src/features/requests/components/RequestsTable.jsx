@@ -48,7 +48,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
                   <div style={styles.bookCell}>
                     {req.book?.coverImage ? (
                           <img
-                               src={`https://localhost:7071/${req.book.coverImage?.replace(/\\/g, "/")}`}
+                               src={`${import.meta.env.VITE_API_URL}/${req.book.coverImage?.replace(/\\/g, "/")}`}
                                alt={bookTitle}
                               
                                

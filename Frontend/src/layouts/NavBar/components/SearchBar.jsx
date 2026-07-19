@@ -337,7 +337,7 @@ function SearchBar({ navigate, location }) {
                   {/* Cover */}
                   {book.coverImage ? (
                     <img
-                      src={`https://localhost:7071/${book.coverImage}`}
+                      src={`${import.meta.env.VITE_API_URL}/${book.coverImage}`}
                       alt={book.title}
                       style={{ width: 34, height: 44, borderRadius: 4, objectFit: "cover", flexShrink: 0 }}
                     />

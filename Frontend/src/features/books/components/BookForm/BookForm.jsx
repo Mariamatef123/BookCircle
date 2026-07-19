@@ -41,7 +41,7 @@ export default function BookForm({ isOpen, onClose, onSubmit, editingBook, userI
       });
 setPreview(
   editingBook.coverImage
-    ? `https://localhost:7071/${editingBook.coverImage}`
+    ? `${import.meta.env.VITE_API_URL}/${editingBook.coverImage}`
     : null
 );
      

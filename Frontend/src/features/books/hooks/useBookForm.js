@@ -37,7 +37,7 @@ export default function useBookForm(editingBook, userId, isOpen) {
       });
 
       if (editingBook.coverImage) {
-        setPreview(`https://localhost:7071/${editingBook.coverImage?.replace(/\\/g, "/")}`);
+        setPreview(`${import.meta.env.VITE_API_URL}/${editingBook.coverImage?.replace(/\\/g, "/")}`);
       }
     } else {
       setForm({ ...emptyForm, ownerId: userId || "" });
