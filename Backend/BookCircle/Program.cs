@@ -156,6 +156,9 @@ app.UseStaticFiles(new StaticFileOptions()
     FileProvider = new PhysicalFileProvider(resourcesPath),
     RequestPath = new PathString("/Resources")
 });
+Console.WriteLine($"ContentRoot: {Directory.GetCurrentDirectory()}");
+Console.WriteLine($"Resources: {resourcesPath}");
+Console.WriteLine($"Exists: {Directory.Exists(resourcesPath)}");
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");
 app.Run();
