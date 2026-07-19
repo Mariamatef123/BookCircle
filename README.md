@@ -321,15 +321,9 @@ This automation eliminates manual intervention and ensures books are returned to
 #### Architecture
 - Dependency Injection
 
-## Authentication
 
-* JWT Authentication
 
-## Real-Time Communication
-
-* SignalR
-
-## Deployment
+### Deployment
 
 * Frontend: Vercel
 * Backend: monsterasp.net
