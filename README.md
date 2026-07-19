@@ -330,7 +330,6 @@ This automation eliminates manual intervention and ensures books are returned to
 * Database: monsterasp.net
 
 ---
----
 
 # 📂 Project Structure
 
