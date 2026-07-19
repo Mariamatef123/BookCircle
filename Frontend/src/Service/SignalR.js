@@ -1,7 +1,8 @@
 import * as signalR from "@microsoft/signalr";
 import { getUser } from "../utils/auth";
+import { VITE_API_URL } from "../config";
 
-const HUB_URL = "https://localhost:7071/hubs/notifications";
+const HUB_URL = `${VITE_API_URL}/hubs/notifications`;
 
 class SignalRService {
   connection = null;
