@@ -1,4 +1,3 @@
-import api from "../Api/axios";
 
 import apiClient from "../Api/api_client";
 
