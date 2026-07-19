@@ -231,7 +231,7 @@ Notifications are delivered instantly without refreshing the page.
 
 ---
 
-#⏰ Background Jobs (Hangfire)
+# ⏰ Background Jobs (Hangfire)
 
 BookCircle uses Hangfire to automate book availability management after a borrowing period ends.
 
