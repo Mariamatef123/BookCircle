@@ -12,19 +12,22 @@ function FilterDropdown({ label, options, value, onChange }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", width: "100%" }}>
       <button
         onClick={() => setOpen(!open)}
         style={{
           display: "flex",
           alignItems: "center",
+          justifyContent: "space-between",
           gap: 6,
+          width: "100%",
           padding: "8px 14px",
           borderRadius: 8,
           border: "1px solid #e5e7eb",
           background: "white",
           fontSize: 13,
           cursor: "pointer",
+          textAlign: "left",
         }}
       >
         {options.find(o => o.value === value)?.label || label}
@@ -36,12 +39,15 @@ function FilterDropdown({ label, options, value, onChange }) {
           style={{
             position: "absolute",
             top: "110%",
-            left: "-27px",
+            right: 0,
+            left: 0,
             background: "white",
             border: "1px solid #e5e7eb",
             borderRadius: 8,
             minWidth: 140,
-            zIndex: 10,
+            maxWidth: "calc(100vw - 24px)",
+            zIndex: 30,
+            boxShadow: "0 10px 28px rgba(0,0,0,0.08)",
           }}
         >
           {options.map(opt => (
@@ -99,12 +105,12 @@ export default function FilterBar({
         </div>
       </div>
 
-      <div className="home-filter-right" style={styles.filterRight}>
-        <span style={{ fontSize: 13, color: "#888" }}>Sort by</span>
+      <div className="home-filter-right" style={{ ...styles.filterRight, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 13, color: "#888", minWidth: 54 }}>Sort by</span>
 
         <FilterDropdown
           value={sort}
-          onChange={setSort} 
+          onChange={setSort}
           options={[
             { label: "Latest", value: "latest" },
             { label: "Oldest", value: "oldest" },

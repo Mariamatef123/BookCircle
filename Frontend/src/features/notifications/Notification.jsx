@@ -34,12 +34,10 @@ export default function Notification() {
   }
 
   return (
-    <div style={styles.page}>
-      <div style={styles.surface}>
-
-
-        <div style={styles.header}>
-          <div>
+    <div style={styles.page} className="notifications-page">
+      <div style={styles.surface} className="notifications-surface">
+        <div style={styles.header} className="notifications-header">
+          <div className="notifications-heading">
             <h1 style={styles.h1}>Notifications</h1>
             <p style={styles.sub}>
               {unreadCount > 0
@@ -48,9 +46,12 @@ export default function Notification() {
             </p>
           </div>
 
-          <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <div
+            style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}
+            className="notifications-toolbar"
+          >
             {notifications.length > 0 && (
-              <span style={styles.countChip}>
+              <span style={styles.countChip} className="notifications-count-chip">
                 {notifications.length} total
               </span>
             )}
@@ -59,6 +60,7 @@ export default function Notification() {
                 type="button"
                 style={styles.markAllBtn}
                 onClick={markAllRead}
+                className="notifications-mark-all"
               >
                 Mark all as read
               </button>
