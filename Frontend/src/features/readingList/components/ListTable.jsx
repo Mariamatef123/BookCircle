@@ -2,8 +2,8 @@ import { styles } from "../../../styles/readingListStyles";
 
 export default function ListTable({ lists, onDelete, onView }) {
   return (
-    <div style={styles.card}>
-      <table style={styles.table}>
+    <div className="table-scroll reading-list-table-card" style={styles.card}>
+      <table className="responsive-table reading-list-table" style={styles.table}>
         <thead>
           <tr>
             <th style={styles.th}>List Name</th>
@@ -18,14 +18,14 @@ export default function ListTable({ lists, onDelete, onView }) {
      
             return (
               <tr key={list.id} style={styles.row}>
-                <td style={styles.td}>
+                <td style={styles.td} data-label="List Name">
                   <p style={styles.title}>{list.name}</p>
                   <p style={styles.meta}>{list.description}</p>
                 </td>
-                <td style={styles.td}>
+                <td style={styles.td} data-label="Books">
                   {list.booksCount} {list.booksCount === 1 ? 'book' : 'books'}
                 </td>
-                <td style={styles.td}>
+                <td style={styles.td} data-label="Actions">
                   <div style={styles.actions}>
                     <button style={styles.btnView} onClick={() => onView(list.id)}>View Books</button>
                     <button style={styles.btnDelete} onClick={() => onDelete(list.id)}>Delete</button>

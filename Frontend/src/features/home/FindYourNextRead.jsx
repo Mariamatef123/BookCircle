@@ -116,7 +116,7 @@ setTotalCount(data?.totalCount ?? 0);
 
 
   return (
-    <div style={styles.page}>
+    <div className="home-page" style={styles.page}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Nunito:wght@400;500;600;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -138,7 +138,7 @@ setTotalCount(data?.totalCount ?? 0);
       />
 
 
-      <div style={styles.sectionHeader}>
+      <div className="home-section-header" style={styles.sectionHeader}>
         <h2 style={styles.sectionTitle}>
           {hasSearchFilters
             ? `Search Results (${finalBooks.length})`
@@ -165,7 +165,7 @@ setTotalCount(data?.totalCount ?? 0);
       )}
 
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginTop: "30px", fontFamily: "'Nunito', sans-serif" }}>
+      <div className="home-pagination" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginTop: "30px", fontFamily: "'Nunito', sans-serif" }}>
         <button
           disabled={pageNumber === 1}
           onClick={() => setPageNumber((p) => p - 1)}

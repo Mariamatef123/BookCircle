@@ -56,7 +56,7 @@ export default function Profile() {
         }
       `}</style>
 
-      <div style={styles.surface}>
+      <div className="profile-surface" style={styles.surface}>
 
        
         <ProfileHero

@@ -5,7 +5,7 @@ export default function PendingOwnersTable({
   owners, role, userId, onAcceptOwner, onRejectOwner
 }) {
   return (
-    <table style={styles.table}>
+    <table className="responsive-table dashboard-table" style={styles.table}>
       <thead>
         <tr>
           <th style={{...styles.th, width: 140}}>Name</th>

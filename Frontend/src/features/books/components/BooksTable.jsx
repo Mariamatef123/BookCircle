@@ -5,7 +5,7 @@ export default function BooksTable({
   books, role, userId, onAccept, onReject, onEdit, onDelete
 }) {
   return (
-    <table style={styles.table}>
+    <table className="responsive-table dashboard-table" style={styles.table}>
       <thead>
         <tr>
           <th style={{...styles.th, width: 100}}>Cover</th>

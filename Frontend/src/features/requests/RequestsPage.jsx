@@ -33,8 +33,6 @@ export default function RequestsPage() {
       <style>{`
         @media (max-width: 720px) {
           .requests-surface { padding: 16px !important; }
-          .requests-table th:nth-child(3),
-          .requests-table td:nth-child(3) { display: none; }
         }
       `}</style>
 

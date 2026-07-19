@@ -16,8 +16,8 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
   if (requests.length === 0) return <RequestsEmpty />;
 
   return (
-    <div style={styles.tableCard}>
-      <table style={styles.table}>
+    <div className="table-scroll requests-table-card" style={styles.tableCard}>
+      <table className="responsive-table requests-table" style={styles.table}>
         <thead style={styles.thead}>
           <tr>
             <th style={styles.th}>Book</th>
@@ -44,7 +44,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
                 onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
               >
       
-                <td style={styles.td}>
+                <td style={styles.td} data-label="Book">
                   <div style={styles.bookCell}>
                     {req.book?.coverImage ? (
                           <img
@@ -67,7 +67,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
                 </td>
 
               
-                <td style={styles.td}>
+                <td style={styles.td} data-label="Status">
                   <span style={{
                     ...styles.badge,
                     background: statusStyle.bg,
@@ -78,7 +78,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
                   </span>
                 </td>
 
-                <td style={styles.td}>
+                <td style={styles.td} data-label="Duration">
                   {req.availabilityDate.duration ? (
                     <span style={styles.durationChip}>{req.availabilityDate.duration} days</span>
                   ) : (
@@ -87,7 +87,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
                 </td>
 
               
-     <td style={styles.td}>
+     <td style={styles.td} data-label="Requested On">
   <p style={{ ...styles.dateText, margin: 0 }}>
     {new Date(req.requestedAt).toLocaleDateString()}
   </p>
@@ -97,7 +97,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
   </p>
 </td>
          
-<td style={styles.td}>
+<td style={styles.td} data-label="Ended At">
   {req.endedAt ? (
     <>
       <p style={{ ...styles.dateText, margin: 0 }}>
@@ -112,7 +112,7 @@ export default function RequestsTable({ requests, canceling, onCancel }) {
     <p style={{ margin: 0, color: "gray" }}>Not ended yet</p>
   )}
 </td>
-                <td style={styles.td}>
+                <td style={styles.td} data-label="Actions">
                   {isPending ? (
                     <button
                       style={{

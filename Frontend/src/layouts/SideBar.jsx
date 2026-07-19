@@ -46,12 +46,10 @@ const LogoutIcon = () => (
 );
 
 export default function SideBar() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const loggedIn  = isLoggedIn();
-  const user      = getUser();
-
-  
+  const navigate = useNavigate();
+  const location = useLocation();
+  const loggedIn = isLoggedIn();
+  const user = getUser();
   const { unreadCount } = useNotificationsContext();
 
   const handleNotificationsClick = () => {
@@ -99,19 +97,19 @@ export default function SideBar() {
           path: "/dashboard",
         }
       : { label: "Login", icon: LoginIcon, path: "/login" },
-
   ].filter(Boolean);
 
   return (
-    <div style={styles.wrapper}>
-      <nav style={styles.nav}>
+    <div className="sidebar" style={styles.wrapper}>
+      <nav className="sidebar-nav" style={styles.nav}>
         {navItems.map(({ label, icon: Icon, path, badge, onClick }) => {
           const isActive = location.pathname === path;
 
           return (
             <button
               key={label}
-              onClick={() => onClick ? onClick() : navigate(path)}
+              className="sidebar-nav-item"
+              onClick={() => (onClick ? onClick() : navigate(path))}
               style={{
                 ...styles.navItem,
                 ...(isActive ? styles.navItemActive : {}),
@@ -127,11 +125,13 @@ export default function SideBar() {
                 <Icon />
               </span>
 
-              <span style={{
-                ...styles.label,
-                fontWeight: isActive ? 700 : 500,
-                color: isActive ? "#5b5bd6" : "#3d3d4e",
-              }}>
+              <span
+                style={{
+                  ...styles.label,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? "#5b5bd6" : "#3d3d4e",
+                }}
+              >
                 {label}
               </span>
 
@@ -146,8 +146,8 @@ export default function SideBar() {
       </nav>
 
       {loggedIn && user && (
-        <div style={styles.userSection}>
-          <div style={styles.userCard} onClick={handleProfileClick}>
+        <div className="sidebar-user-section" style={styles.userSection}>
+          <div className="sidebar-user-card" style={styles.userCard} onClick={handleProfileClick}>
             <div style={styles.userAvatar}>
               {user.name?.split(" ").map((p) => p[0]?.toUpperCase()).slice(0, 2).join("") || "U"}
             </div>
@@ -160,6 +160,7 @@ export default function SideBar() {
           </div>
 
           <button
+            className="sidebar-logout"
             onClick={handleLogout}
             style={styles.logoutBtn}
             onMouseEnter={(e) => e.currentTarget.style.background = "#fef2f2"}

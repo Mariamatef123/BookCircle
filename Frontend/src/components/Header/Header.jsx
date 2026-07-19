@@ -7,7 +7,7 @@ export default function Header({ handleCreate, activeTab, role }) {
   const user = useUser();
 
   return (
-    <div style={styles.header}>
+    <div className="dashboard-header" style={styles.header}>
       <div>
         <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700 }}>
           My Dashboard

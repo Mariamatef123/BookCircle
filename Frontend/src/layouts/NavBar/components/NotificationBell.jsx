@@ -39,7 +39,7 @@ function NotificationsBell({ navigate, user }) {
   };
 
   return (
-    <div ref={notificationRef} style={{ position: "relative" }}>
+    <div className="navbar-notification" ref={notificationRef} style={{ position: "relative" }}>
       <button type="button" style={notificationButtonStyle} onClick={handleNotificationToggle}>
         <svg width="22" height="22" fill="currentColor" className="bi bi-bell" viewBox="0 0 16 16">
           <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2" />
@@ -49,7 +49,7 @@ function NotificationsBell({ navigate, user }) {
       </button>
 
       {notificationsOpen && (
-        <div style={notificationPanelStyle}>
+        <div className="notification-dropdown-panel" style={notificationPanelStyle}>
           <div style={notificationHeaderStyle}>
             <span>Notifications</span>
             {notificationsLoading && <span style={notificationSubtleStyle}>Loading...</span>}

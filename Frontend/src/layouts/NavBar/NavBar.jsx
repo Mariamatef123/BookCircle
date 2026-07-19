@@ -1,4 +1,4 @@
-import { useLocation, useNavigate ,Link} from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { getUser } from "../../utils/auth";
 
 import SearchBar from "./components/SearchBar";
@@ -11,13 +11,13 @@ function NavBar() {
   const user = getUser();
 
   return (
-    <nav className="navbar  bg-body-white pb-0 col-12" style={{ backgroundColor: "white" }}>
+    <nav className="navbar bg-body-white pb-0 col-12 book-navbar" style={{ backgroundColor: "white" }}>
       <div
-        className="container-fluid mt-2"
+        className="container-fluid mt-2 book-navbar-inner"
         style={{ borderBottom: "1px solid #f0f0f5", paddingBottom: "15px" }}
       >
         {/* BRAND */}
-        <div className="col-2 text-center">
+        <div className="col-2 text-center book-navbar-brand">
           <Link
             className="navbar-brand fs-4"
             to="/"
@@ -29,14 +29,14 @@ function NavBar() {
 
         {/* SEARCH */}
         <div
-          className="col-8 justify-content-center"
+          className="col-8 justify-content-center book-navbar-search"
           id="navbarSupportedContent"
         >
           <SearchBar navigate={navigate} location={location} />
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="d-flex align-items-center gap-3 col-2 justify-content-center">
+        <div className="d-flex align-items-center gap-3 col-2 justify-content-center book-navbar-actions">
           <NotificationsBell navigate={navigate} user={user} />
           <UserSection user={user} />
         </div>

@@ -14,7 +14,7 @@ export default function Dashboard() {
   const dashboard = useDashboard(userId, role);
 
   return (
-    <div style={{ padding: 32 }}>
+    <div className="dashboard-page" style={{ padding: 32 }}>
 
       <Header
         activeTab={dashboard.activeTab}

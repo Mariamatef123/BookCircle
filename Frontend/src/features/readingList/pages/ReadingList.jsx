@@ -14,10 +14,10 @@ export default function ReadingList() {
   const rl = useReadingList(userId);
 
   return (
-    <div style={styles.wrapper}>
+    <div className="reading-list-page" style={styles.wrapper}>
 
 
-      <div style={styles.header}>
+      <div className="reading-list-header" style={styles.header}>
         <div>
           <h1 style={styles.h1}>Reading Lists</h1>
           <p style={styles.sub}>Manage your curated book collections</p>
@@ -34,7 +34,7 @@ export default function ReadingList() {
         )}
       </div>
 
-      <div style={styles.tabBar}>
+      <div className="reading-list-tabs" style={styles.tabBar}>
         {["lists", "books"].map((tab) => (
           <button
             key={tab}

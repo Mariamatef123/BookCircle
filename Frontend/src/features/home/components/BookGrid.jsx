@@ -3,7 +3,7 @@ import styles from "../styles/homeStyles";
 
 export default function BookGrid({ books, wishlist, toggleWishlist }) {
   return (
-    <div style={styles.grid}>
+    <div className="home-grid" style={styles.grid}>
       
       {books.map((book) => (
         <BookCard

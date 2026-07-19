@@ -5,7 +5,7 @@ export default function BorrowRequestsTable({
   borrows, role, userId, onAcceptRequest, onRejectRequest
 }) {
   return (
-    <table style={styles.table}>
+    <table className="responsive-table dashboard-table" style={styles.table}>
       <thead>
         <tr>
           <th style={{...styles.th, width: 140}}>Book Name</th>

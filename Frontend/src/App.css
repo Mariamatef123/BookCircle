@@ -1,3 +1,29 @@
+.app,
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
 .app {
   min-height: 100vh;
   display: flex;
@@ -9,6 +35,8 @@
   display: flex;
   flex: 1;
   align-items: flex-start;
+  width: 100%;
+  min-width: 0;
 }
 
 .sidebarWrapper {
@@ -16,13 +44,427 @@
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  flex-shrink: 0;
+  flex: 0 0 230px;
+  width: 230px;
+  max-width: 22vw;
   background-color: white;
 }
 
 .content {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  width: calc(100% - 230px);
   padding: 20px;
   overflow-x: hidden;
+}
+
+.book-navbar-inner {
+  gap: 0;
+}
+
+.book-navbar-brand,
+.book-navbar-search,
+.book-navbar-actions {
+  min-width: 0;
+}
+
+.navbar-search-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.responsive-table {
+  min-width: 760px;
+}
+
+.dashboard-table {
+  min-width: 1280px;
+}
+
+.requests-table {
+  min-width: 900px;
+}
+
+.reading-list-table {
+  min-width: 760px;
+}
+
+.notification-dropdown-panel {
+  max-width: calc(100vw - 24px);
+}
+
+@media (max-width: 992px) {
+  .mainLayout {
+    flex-direction: column;
+  }
+
+  .sidebarWrapper {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    width: 100% !important;
+    max-width: none;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-bottom: 1px solid #eef0ff;
+  }
+
+  .content {
+    width: 100% !important;
+    padding: 16px;
+  }
+
+  .sidebar {
+    width: max-content;
+    min-width: 100%;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 10px 12px !important;
+    border-right: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+
+  .sidebar-nav {
+    flex: 0 0 auto !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+  }
+
+  .sidebar-nav-item {
+    width: auto !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .sidebar-user-section {
+    flex: 0 0 auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    border-top: 0 !important;
+    border-left: 1px solid #eef0ff;
+    padding-top: 0 !important;
+    padding-left: 10px;
+    margin-top: 0 !important;
+  }
+
+  .sidebar-user-card {
+    min-width: 150px;
+  }
+
+  .sidebar-logout {
+    width: auto !important;
+    white-space: nowrap;
+  }
+
+  .dashboard-page,
+  .home-page,
+  .reading-list-page,
+  .requests-surface,
+  .profile-page,
+  .book-details-page,
+  .payment-page {
+    padding: 20px !important;
+  }
+
+  .book-details-content,
+  .payment-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .payment-layout {
+    gap: 18px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .book-navbar-inner {
+    gap: 10px;
+    align-items: center;
+  }
+
+  .book-navbar-brand {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    text-align: left !important;
+  }
+
+  .book-navbar-search {
+    order: 3;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+  }
+
+  .book-navbar-actions {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    justify-content: flex-end !important;
+  }
+
+  .navbar-search-form {
+    gap: 8px;
+  }
+
+  .navbar-search-submit {
+    margin-left: 0 !important;
+    padding: 8px 14px !important;
+  }
+
+  .navbar-filter-panel,
+  .navbar-suggestions-panel {
+    max-height: min(360px, 70vh) !important;
+    overflow-y: auto !important;
+  }
+
+  .notification-dropdown-panel {
+    position: fixed !important;
+    top: 74px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+  }
+
+  .home-page {
+    padding: 20px 16px !important;
+  }
+
+  .home-filters,
+  .home-filter-left,
+  .home-filter-right,
+  .home-section-header,
+  .reading-list-header,
+  .dashboard-header {
+    align-items: flex-start !important;
+    width: 100%;
+  }
+
+  .home-filters,
+  .reading-list-header,
+  .dashboard-header {
+    flex-direction: column !important;
+  }
+
+  .home-filter-right,
+  .reading-list-tabs,
+  .dashboard-tabs {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    max-width: 100%;
+  }
+
+  .home-grid,
+  .profile-grid {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) !important;
+    gap: 16px !important;
+  }
+
+  .home-pagination {
+    flex-wrap: wrap;
+  }
+
+  .home-pagination button {
+    flex: 1 1 130px;
+    max-width: 190px;
+  }
+
+  .profile-surface,
+  .book-details-surface,
+  .payment-page > div,
+  .requests-surface {
+    padding: 18px !important;
+    border-radius: 18px !important;
+  }
+
+  .hero-card {
+    align-items: flex-start !important;
+    padding: 24px 20px !important;
+  }
+
+  .book-details-hero {
+    grid-template-columns: 1fr !important;
+  }
+
+  .book-details-cover {
+    max-width: 280px;
+  }
+
+  .book-details-meta {
+    grid-template-columns: 1fr !important;
+  }
+
+  .book-details-title-row,
+  .book-details-owner-card,
+  .book-details-comment-footer {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .book-details-title {
+    font-size: 30px !important;
+  }
+
+  .responsive-table {
+    min-width: 0 !important;
+    display: block !important;
+  }
+
+  .responsive-table thead {
+    display: none !important;
+  }
+
+  .responsive-table tbody {
+    display: grid !important;
+    gap: 12px;
+    width: 100% !important;
+  }
+
+  .responsive-table tr {
+    display: grid !important;
+    gap: 10px;
+    width: 100% !important;
+    padding: 14px !important;
+    border: 1px solid #eef0ff !important;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .responsive-table td {
+    display: grid !important;
+    grid-template-columns: minmax(92px, 34%) minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    width: 100% !important;
+    padding: 0 !important;
+    border: 0 !important;
+    font-size: 13px !important;
+  }
+
+  .responsive-table td::before {
+    content: attr(data-label);
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .responsive-table td[colspan] {
+    display: block !important;
+    text-align: center;
+  }
+
+  .responsive-table td[colspan]::before {
+    content: "";
+  }
+
+  .reading-list-select-row {
+    display: grid;
+    gap: 8px;
+  }
+
+  .reading-list-select-row select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .content {
+    padding: 12px;
+  }
+
+  .book-navbar .navbar-brand {
+    font-size: 1.1rem !important;
+  }
+
+  .navbar-search-form {
+    flex-wrap: wrap;
+  }
+
+  .navbar-search-submit {
+    width: 100%;
+  }
+
+  .navbar-search-control {
+    flex-wrap: wrap;
+    overflow: hidden !important;
+  }
+
+  .navbar-filter-toggle {
+    width: 100%;
+    justify-content: center;
+    border-left: 0 !important;
+    border-top: 1px solid #dee2e6 !important;
+  }
+
+  .navbar-user-copy {
+    display: none;
+  }
+
+  .dashboard-page,
+  .home-page,
+  .reading-list-page,
+  .requests-surface,
+  .profile-page,
+  .book-details-page,
+  .payment-page {
+    padding: 12px !important;
+  }
+
+  .home-grid,
+  .profile-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-surface,
+  .book-details-surface,
+  .payment-page > div,
+  .requests-surface {
+    padding: 14px !important;
+    border-radius: 16px !important;
+  }
+
+  .responsive-table td {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .responsive-table td::before {
+    margin-bottom: 2px;
+  }
+
+  .book-details-title {
+    font-size: 26px !important;
+  }
+
+  .book-details-cover {
+    max-width: 220px;
+  }
+
+  .book-details-owner-card,
+  .book-details-action-row,
+  .book-details-modal-footer {
+    width: 100%;
+  }
+
+  .book-details-page button,
+  .payment-page button,
+  .reading-list-page button {
+    max-width: 100%;
+  }
+
+  .book-details-page .book-details-surface button,
+  .payment-page .payment-layout button {
+    white-space: normal !important;
+  }
+
+  .home-pagination button {
+    max-width: none;
+  }
 }

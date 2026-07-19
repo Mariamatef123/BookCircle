@@ -6,7 +6,7 @@ export default function Tabs({ role, activeTab, setActiveTab }) {
   const tabs = TABS_CONFIG[role] || TABS_CONFIG.DEFAULT;
 
   return (
-    <div style={styles.tabs}>
+    <div className="dashboard-tabs" style={styles.tabs}>
       {tabs.map(tab => (
         <TabButton
           key={tab.key}

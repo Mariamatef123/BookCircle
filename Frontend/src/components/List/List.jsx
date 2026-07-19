@@ -8,7 +8,7 @@ export default function List(props) {
   const { activeTab, role } = props;
 
   return (
-    <div style={styles.container}>
+    <div className="table-scroll dashboard-table-scroll" style={styles.container}>
 
       {activeTab === "books" && (
         <BooksTable {...props} />

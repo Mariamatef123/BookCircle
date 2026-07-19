@@ -134,14 +134,14 @@ function SearchBar({ navigate, location }) {
 
   return (
     <form
-      className="d-flex w-100"
+      className="d-flex w-100 navbar-search-form"
       role="search"
       onSubmit={handleSubmit}
       style={{ position: "relative" }}
     >
       {/* Search input row */}
-      <div style={{ position: "relative", flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "center", border: "1px solid #dee2e6", borderRadius: 8, overflow: "visible", background: "#fff" }}>
+      <div className="navbar-search-input-wrap" style={{ position: "relative", flex: 1 }}>
+        <div className="navbar-search-control" style={{ display: "flex", alignItems: "center", border: "1px solid #dee2e6", borderRadius: 8, overflow: "visible", background: "#fff" }}>
 
           {/* Title input */}
           <input
@@ -159,6 +159,7 @@ function SearchBar({ navigate, location }) {
 
           {/* Filter toggle button */}
           <button
+            className="navbar-filter-toggle"
             type="button"
             onClick={() => setShowFilters((p) => !p)}
             style={{
@@ -193,6 +194,7 @@ function SearchBar({ navigate, location }) {
         {/* ── FILTER PANEL ── */}
         {showFilters && (
           <div
+            className="navbar-filter-panel"
             ref={filterPanelRef}
             style={{
               position: "absolute",
@@ -294,6 +296,7 @@ function SearchBar({ navigate, location }) {
         {/* ── SUGGESTIONS DROPDOWN ── */}
         {showSuggestions && !showFilters && (
           <div
+            className="navbar-suggestions-panel"
             ref={dropdownRef}
             style={{
               position: "absolute",
@@ -376,7 +379,7 @@ function SearchBar({ navigate, location }) {
 
       {/* Search button */}
       <button
-        className="btn ms-2"
+        className="btn ms-2 navbar-search-submit"
         type="submit"
         style={{ border: "1px solid #dee2e6", whiteSpace: "nowrap", background: "#4F46E5", color: "#fff", borderRadius: 8, padding: "8px 18px", fontWeight: 500 }}
       >

@@ -2,8 +2,8 @@ import { styles } from "../../../styles/readingListStyles";
 
 export default function BooksTable({ books, lists, selectedListId, onSelect, onRemove }) {
   return (
-    <div style={styles.card}>
-      <div style={{ marginBottom: 12 }}>
+    <div className="table-scroll reading-list-table-card" style={styles.card}>
+      <div className="reading-list-select-row" style={{ marginBottom: 12 }}>
         <label style={{ fontSize: 12, color: "#6B7280", marginRight: 8 }}>Select list:</label>
         <select
           value={selectedListId || ""}
@@ -16,7 +16,7 @@ export default function BooksTable({ books, lists, selectedListId, onSelect, onR
         </select>
       </div>
 
-      <table style={styles.table}>
+      <table className="responsive-table reading-list-table" style={styles.table}>
         <thead>
           <tr>
             <th style={styles.th}>Cover</th>
@@ -31,7 +31,7 @@ export default function BooksTable({ books, lists, selectedListId, onSelect, onR
             <tr><td colSpan={5} style={styles.empty}>No books in this list</td></tr>
           ) : books.map((book) => (
             <tr key={book.id} style={styles.row}>
-              <td style={styles.td}>
+              <td style={styles.td} data-label="Cover">
                  <img
             src={`${import.meta.env.VITE_API_URL}/${book.coverImage?.replace(/\\/g, "/")}`}
             alt={book.title}
@@ -39,15 +39,15 @@ export default function BooksTable({ books, lists, selectedListId, onSelect, onR
                   style={styles.img}
                 />
               </td>
-              <td style={styles.td}>
+              <td style={styles.td} data-label="Details">
                 <p style={styles.title}>{book.title}</p>
                 <p style={styles.meta}>{book.genre} • {book.language}</p>
               </td>
-              <td style={styles.td}>{book.description}</td>
-              <td style={styles.td}>
+              <td style={styles.td} data-label="Description">{book.description}</td>
+              <td style={styles.td} data-label="Price">
                 <span style={styles.price}>{book.borrowPrice} L.E</span>
               </td>
-              <td style={styles.td}>
+              <td style={styles.td} data-label="Actions">
                 <button style={styles.btnDelete} onClick={() => onRemove(book.id)}>Remove</button>
               </td>
             </tr>

@@ -74,10 +74,10 @@ export default function FilterBar({
   setSort
 }) {
   return (
-    <div style={styles.filters}>
+    <div className="home-filters" style={styles.filters}>
       
   
-      <div style={styles.filterLeft}>
+      <div className="home-filter-left" style={styles.filterLeft}>
         <div style={styles.toggleWrap}>
           <div
             onClick={() => setAvailableOnly(!availableOnly)}
@@ -99,7 +99,7 @@ export default function FilterBar({
         </div>
       </div>
 
-      <div style={styles.filterRight}>
+      <div className="home-filter-right" style={styles.filterRight}>
         <span style={{ fontSize: 13, color: "#888" }}>Sort by</span>
 
         <FilterDropdown

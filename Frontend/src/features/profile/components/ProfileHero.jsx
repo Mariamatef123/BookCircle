@@ -9,7 +9,7 @@ function getInitials(name) {
 function ProfileHero(props) {
   const {owner, totalBooks, availableCount, borrowedCount}=props
   return (
-    <div style={styles.heroCard}>
+    <div className="hero-card" style={styles.heroCard}>
    
       <div style={styles.avatar}>
         {getInitials(owner?.name)}
