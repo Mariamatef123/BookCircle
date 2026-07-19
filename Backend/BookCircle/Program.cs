@@ -126,6 +126,7 @@ app.UseHangfireDashboard();
 //Registers a background job
 //Runs every hour
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
