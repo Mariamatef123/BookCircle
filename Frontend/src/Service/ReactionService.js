@@ -1,4 +1,4 @@
-import api from "../Api/Axios";
+import api from "../Api/axios";
 
 import apiClient from "../Api/api_client";
 export const likeBook = (userId, bookId) =>
