@@ -13,14 +13,14 @@ export default function PaymentForm({
   });
 
   return (
-    <div style={styles.formCard}>
-      <div style={styles.formHeader}>
+    <div style={styles.formCard} className="payment-form-card">
+      <div style={styles.formHeader} className="payment-form-header">
         <h2 style={styles.formTitle}>Complete Payment</h2>
         <p style={styles.formSubtitle}>Your payment info is encrypted and secure.</p>
       </div>
 
 
-      <div style={styles.cardVisual}>
+      <div style={styles.cardVisual} className="payment-card-visual">
         <div style={styles.cardVisualCircle1} />
         <div style={styles.cardVisualCircle2} />
         <div style={styles.cardVisualChip} />
@@ -42,7 +42,7 @@ export default function PaymentForm({
       </div>
 
 
-      <div style={styles.fieldGroup}>
+      <div style={styles.fieldGroup} className="payment-field-group">
 
         <div style={styles.field}>
           <label style={styles.label}>Cardholder Name</label>
@@ -73,7 +73,7 @@ export default function PaymentForm({
           />
         </div>
 
-        <div style={styles.fieldRow}>
+        <div style={styles.fieldRow} className="payment-field-row">
           <div style={styles.field}>
             <label style={styles.label}>Expiry Date</label>
             <input
@@ -122,6 +122,7 @@ export default function PaymentForm({
   type="submit"
   disabled={submitting}
   onClick={handleSubmit}
+  className="payment-submit-btn"
   style={{
     ...styles.submitBtn,
     ...(submitting

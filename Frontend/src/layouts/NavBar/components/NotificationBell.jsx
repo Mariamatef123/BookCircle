@@ -40,12 +40,21 @@ function NotificationsBell({ navigate, user }) {
 
   return (
     <div className="navbar-notification" ref={notificationRef} style={{ position: "relative" }}>
-      <button type="button" style={notificationButtonStyle} onClick={handleNotificationToggle}>
+      <button
+        type="button"
+        className="navbar-notification-button"
+        style={notificationButtonStyle}
+        onClick={handleNotificationToggle}
+      >
         <svg width="22" height="22" fill="currentColor" className="bi bi-bell" viewBox="0 0 16 16">
           <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2" />
           <path d="M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92z" />
         </svg>
-        {unreadCount > 0 && <span style={notificationBadgeStyle}>{unreadCount > 9 ? "9+" : unreadCount}</span>}
+        {unreadCount > 0 && (
+          <span className="navbar-notification-badge" style={notificationBadgeStyle}>
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
       </button>
 
       {notificationsOpen && (

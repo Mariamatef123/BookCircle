@@ -3,9 +3,9 @@ import { BookOpenIcon } from "../../../components/icons/AppIcons";
 
 export default function BookSummaryCard({ book }) {
   return (
-    <div style={styles.bookCard}>
+    <div style={styles.bookCard} className="payment-book-card">
    
-      <div style={styles.bookCoverWrap}>
+      <div style={styles.bookCoverWrap} className="payment-book-cover-wrap">
         {book.coverImage ? (
   
            <img
