@@ -128,11 +128,11 @@ using (var scope = app.Services.CreateScope())
 //Runs every hour
 
 
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 app.UseHttpsRedirection();
 app.UseRouting();
 
