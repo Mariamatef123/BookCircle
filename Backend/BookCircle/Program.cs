@@ -140,9 +140,20 @@ app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
+//app.UseStaticFiles(new StaticFileOptions()
+//{
+//    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources")),
+//    RequestPath = new PathString("/Resources")
+//});
+var resourcesPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
+if (!Directory.Exists(resourcesPath))
+{
+    Directory.CreateDirectory(resourcesPath);
+}
+
 app.UseStaticFiles(new StaticFileOptions()
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources")),
+    FileProvider = new PhysicalFileProvider(resourcesPath),
     RequestPath = new PathString("/Resources")
 });
 app.MapControllers();
