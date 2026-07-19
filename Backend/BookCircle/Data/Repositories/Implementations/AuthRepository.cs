@@ -41,9 +41,9 @@ namespace BookCircle.Data.Repositories.Implementations
                 var computedHash = hmac.ComputeHash(
                     System.Text.Encoding.UTF8.GetBytes(password)
                 );
-//Convert password to bytes
-// Hash it using HMACSHA512 +salt
-//Produce new hash
+                    //Convert password to bytes
+                    // Hash it using HMACSHA512 +salt
+                    //Produce new hash
                 for (int i = 0; i < computedHash.Length; i++)
                 {
                     if (computedHash[i] != passwordHash[i])

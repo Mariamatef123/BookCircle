@@ -44,7 +44,7 @@ class SignalRService {
           .build();
 
         this.connection.on("ReceiveNotification", (notification) => {
-          console.log("🔔 Notification received:", notification);
+          console.log(" Notification received:", notification);
           this.callbacks.forEach((cb) => cb(notification));
         });
 
@@ -66,9 +66,9 @@ class SignalRService {
         await this.connection.invoke("JoinUserGroup", userId.toString());
 
         this.currentUserId = userId;
-        console.log(`✅ SignalR connected as user_${userId}`);
+        console.log(` SignalR connected as user_${userId}`);
       } catch (err) {
-        console.error("❌ SignalR error:", err);
+        console.error("  SignalR error:", err);
         this.currentUserId = null;
       } finally {
         this.startPromise = null;

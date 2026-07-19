@@ -61,7 +61,7 @@ namespace BookCircle.Services.Implementations
             var user = await _userRepo.GetByIdAsync(userId);
             if (user == null) throw new Exception("User not found");
 
-            // ✅ FIX: get the actual parent comment by Id
+ 
             var parent = await _commentRepo.GetFirstOrDefaultAsync(
                 p => p.Id == parentId,
                 includes: new[] { "Book" }
@@ -69,7 +69,7 @@ namespace BookCircle.Services.Implementations
 
             if (parent == null) throw new Exception("Comment not found");
 
-            // ✅ Enforce single-level replies
+     
             if (parent.ParentId != null)
                 throw new Exception("Cannot reply to a reply");
 

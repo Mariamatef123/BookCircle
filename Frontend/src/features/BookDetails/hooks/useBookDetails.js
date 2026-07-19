@@ -75,6 +75,7 @@ const [exists, setExists] = useState(false);
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setActiveTab(requestedTab);
+    navigate(requestedTab);//sync url with tab
     setMessage(null);
     setBorrowModalOpen(false);
     setListModalOpen(false);
@@ -195,6 +196,7 @@ useEffect(() => {
       await addComment(userId, book.id, commentText.trim());
       setCommentText("");
       setActiveTab("comments");
+      navigate("comments");
       await loadComments();
       setMessage({ type: "success", text: "Comment added." });
     } catch (err) {

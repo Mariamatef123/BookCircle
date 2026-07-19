@@ -82,10 +82,10 @@ namespace BookCircle.Data
 
 
             modelBuilder.Entity<BorrowRequest>()
-    .HasOne(br => br.Book)
-    .WithMany(b => b.BorrowRequests)
-    .HasForeignKey(br => br.BookId)
-    .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(br => br.Book)
+                .WithMany(b => b.BorrowRequests)
+                .HasForeignKey(br => br.BookId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<BorrowRequest>()
     .HasOne(br => br.AvailabilityDate)

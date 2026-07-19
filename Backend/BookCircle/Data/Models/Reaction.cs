@@ -6,9 +6,6 @@ namespace BookCircle.Data.Models
 {
     public class Reaction
     {
-
-
-
         public ReactionType Type { get; set; }
 
         [ForeignKey("Book")]

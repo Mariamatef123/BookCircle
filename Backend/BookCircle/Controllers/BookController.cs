@@ -25,6 +25,7 @@ namespace BookCircle.Controllers
         }
         [Authorize]
         [HttpPost("{userId}/create-post")]
+        //fromQuery
         public async Task<IActionResult> CreateBook([FromForm] BookRequestDTO dto, [FromRoute] int userId)
         {
             var book = await _bookService.CreateBookPostAsync(dto, userId);

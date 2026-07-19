@@ -35,6 +35,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         return await _dbSet.FirstOrDefaultAsync(e =>
             EF.Property<int>(e, "Id") == id);
+
         //it represent single row from table e.Id
      //can be return await _dbSet.FindAsync(id);
     }
@@ -71,7 +72,8 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         _context.Entry(existingEntity).CurrentValues.SetValues(newEntity);
 
         return existingEntity;
-    }//get values and update the old value but with same id if value not changes remained
+    }
+    //get values and update the old value but with same id if value not changes remained
     public void Delete(T entity)
     {
         _dbSet.Remove(entity);
@@ -86,7 +88,8 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
 {
     return await _dbSet.Where(predicate).ToListAsync();
-}//get all record from table match this condition
+}
+    //get all record from table match this condition
     //Func<Book, bool> predicate = b => b.Price > 100;
 
     //IEnumerable read-only query results not add,remove from the collection lightweight best for db

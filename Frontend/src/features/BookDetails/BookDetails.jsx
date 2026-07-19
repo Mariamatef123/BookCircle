@@ -7,7 +7,9 @@ import BookTabs from "./components/BookTabs";
 import RelatedBooks from "./components/RelatedBooks";
 import BorrowModal from "./components/BorrowModal";
 import ReadingListModal from "./components/ReadingListModal";
-
+import { NavLink } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import BookTabsNav from "./BookTabNav";
 export default function BookDetails() {
   const d = useBookDetails();
 
@@ -66,37 +68,22 @@ export default function BookDetails() {
           onReaction={d.handleReaction}
           exists={d.exists}
         />
+<div style={styles.contentGrid} className="book-details-content">
 
-        <div style={styles.contentGrid} className="book-details-content">
-          <BookTabs
-            activeTab={d.activeTab}
-            setActiveTab={d.setActiveTab}
-            book={d.book}
-            totalComments={d.totalComments}
-            userId={d.userId}
-            commentText={d.commentText}
-            setCommentText={d.setCommentText}
-            commentBusy={d.commentBusy}
-            commentsLoading={d.commentsLoading}
-            comments={d.comments}
-            replyFor={d.replyFor}
-            setReplyFor={d.setReplyFor}
-            replyDrafts={d.replyDrafts}
-            setReplyDrafts={d.setReplyDrafts}
-            editingCommentId={d.editingCommentId}
-            editingText={d.editingText}
-            setEditingText={d.setEditingText}
-            commentActionId={d.commentActionId}
-            onCommentSubmit={d.handleCommentSubmit}
-            onReplySubmit={d.handleReplySubmit}
-            onEditStart={d.handleStartEdit}
-            onEditSave={d.handleSaveEdit}
-            onEditCancel={d.onEditCancel}
-            onDelete={d.handleDeleteComment}
-          />
+  {/* LEFT SIDE: TABS + CONTENT */}
+  <div>
 
-          <RelatedBooks relatedBooks={d.relatedBooks} />
-        </div>
+      <BookTabsNav totalComments={d.totalComments} />
+ 
+    <div style={styles.tabPanel}>
+      <Outlet context={d} />
+    </div>
+
+  </div>
+
+  <RelatedBooks relatedBooks={d.relatedBooks} />
+
+</div>
       </div>
 
       <BorrowModal

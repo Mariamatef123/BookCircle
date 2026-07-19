@@ -87,9 +87,11 @@ import BookCircleAuth from "./features/BookCircleAuth/BookCircleAuth";
 
 import GuestGuard from "./gaurds/GuestGuard";
 import AuthGuard from "./gaurds/AuthGuard";
+import BookAbout from "./features/BookDetails/BookAbout";
+import BookComments from "./features/BookDetails/BookComments";
 
 export const router = createBrowserRouter([
-  // PUBLIC ROUTES
+
   {
     path: "/",
     element: <MainLayout />,
@@ -98,10 +100,24 @@ export const router = createBrowserRouter([
         index: true,
         element: <FindYourNextRead />,
       },
-      {
-        path: "book/:bookId",
-        element: <BookDetails />,
-      },
+{
+  path: "book/:bookId",
+  element: <BookDetails />,
+  children: [
+    {
+      index: true,
+      element: <Navigate to="about" replace />,
+    },
+    {
+      path: "about",
+      element: <BookAbout />,
+    },
+    {
+      path: "comments",
+      element: <BookComments />,
+    },
+  ],
+}
     ],
   },
 
@@ -126,7 +142,7 @@ export const router = createBrowserRouter([
   ],
 },
 
-  // GUEST ROUTES
+
   {
     path: "/",
     element: <GuestGuard />,

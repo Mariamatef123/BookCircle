@@ -31,12 +31,12 @@ namespace BookCircle.Services.Implementations
             _notificationRepo = notificationRepo;
 
         }
+
         public async Task<bool> IsBorrowRequestExists(int readerId, int bookId)
         {
             var borrowReq = await _borrowRequest.GetFirstOrDefaultAsync(
                 a => a.ReaderId == readerId && a.BookId == bookId
             );
-
             return borrowReq != null;
         }
         public async Task sendBorrowRequest(int readerId, int bookId, int chosenDuration)
@@ -192,7 +192,7 @@ namespace BookCircle.Services.Implementations
                 await _notificationService.SendNotificationAsync(
                     receiverId: r.ReaderId,
                     senderId: ownerId,
-                    message: $"Your borrow request on book {book.Title} was rejected by {owner.Name}",
+                    message: $"Your borrow request on book {book.Title} was rejected by {owner.Name} and book will be available again {borrowRequest.EndedAt}",
                     type: NotificationType.BORROW_REJECTED,
                     borrowRequestId: r.Id,
                     bookId: book.Id
