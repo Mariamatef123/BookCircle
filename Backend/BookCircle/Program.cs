@@ -1,4 +1,5 @@
-﻿using BookCircle.Data;
+﻿
+using BookCircle.Data;
 using BookCircle.Data.Models;
 using BookCircle.Data.Repositories.Implementations;
 using BookCircle.Data.Repositories.Intefaces;
@@ -8,7 +9,6 @@ using BookCircle.Services;
 using BookCircle.Services.Implementations;
 using BookCircle.Services.Interfaces;
 using Hangfire;
-using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -25,10 +25,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddDbContext<DataContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
@@ -40,15 +39,13 @@ builder.Services.AddScoped<IBorrowRequestService, BorrowRequestService>();
 builder.Services.AddScoped<IReactionService, ReactionService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
-
-
-// Program.cs - choose storage by environment
 builder.Services.AddHangfire(config =>
-    config.UsePostgreSqlStorage(
+    config.UseSqlServerStorage(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHangfireServer();//Hangfire runs background tasks using SQL Server storage
+//AddHangfireServer() starts worker process
 
-builder.Services.AddHangfireServer();
 builder.Services.AddAuthentication(opt =>
 {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -116,12 +113,16 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 app.UseHangfireDashboard();
 
-//var recurringJob = app.Services.GetRequiredService<IRecurringJobManager>();
+using (var scope = app.Services.CreateScope())
+{
+    var recurringJob = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+    var bookService = scope.ServiceProvider.GetRequiredService<IBookService>();
 
-//recurringJob.AddOrUpdate<IBookService>(
-//    "sync-book-status",
-//    svc => svc.UpdateBookStatuses(),
-//    Cron.Hourly);
+    recurringJob.AddOrUpdate(
+        "sync-book-status",
+        () => bookService.UpdateBookStatuses(),
+        Cron.Hourly);
+}
 //Creates scoped services
 //Registers a background job
 //Runs every hour
@@ -147,7 +148,6 @@ app.UseStaticFiles(new StaticFileOptions()
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");
 app.Run();
-
 
 
 
