@@ -7,6 +7,7 @@ const HUB_URL = `${import.meta.env.VITE_API_URL}/hubs/notifications`;
 class SignalRService {
   connection = null;
   startPromise = null;
+  
   callbacks = new Set();
   currentUserId = null; 
 
