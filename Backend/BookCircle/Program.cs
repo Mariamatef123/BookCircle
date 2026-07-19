@@ -126,6 +126,7 @@ using (var scope = app.Services.CreateScope())
 //Registers a background job
 //Runs every hour
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
